@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import {
+  Command,
   CommandDialog,
   CommandInput,
   CommandList,
@@ -11,6 +12,12 @@ import {
   CommandShortcut,
   CommandSeparator,
 } from '@/components/ui/command';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Code2,
   History,
@@ -65,12 +72,10 @@ export function CommandPalette({
     onOpenChange(false);
   };
 
-  return (
-    <CommandDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      className="bg-popover border border-border shadow-2xl text-foreground rounded-[14px]"
-    >
+  const isMobile = useIsMobile();
+
+  const commandBody = (
+    <>
       <CommandInput
         placeholder="Search APIs, endpoints, country, or jump to view..."
         className="text-xs font-mono"
@@ -189,6 +194,30 @@ export function CommandPalette({
           ))}
         </CommandGroup>
       </CommandList>
+    </>
+  );
+
+  // Mobile: bottom-sheet Drawer (native pattern). Desktop: centered Dialog.
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="bg-popover border-border rounded-t-[20px] max-h-[85dvh]">
+          <DrawerTitle className="sr-only">Search and commands</DrawerTitle>
+          <Command className="bg-transparent">
+            {commandBody}
+          </Command>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <CommandDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      className="bg-popover border border-border shadow-2xl text-foreground rounded-[14px]"
+    >
+      {commandBody}
     </CommandDialog>
   );
 }

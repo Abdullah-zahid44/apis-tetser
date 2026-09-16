@@ -23,6 +23,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -256,13 +257,13 @@ export function Sidebar({
                           {catEndpoints.map((ep) => {
                             const isSelected = selectedId === ep.id;
                             return (
+                              <HoverCard key={ep.id}>
+                                <HoverCardTrigger>
                               <button
-                                key={ep.id}
                                 onClick={() => onSelectEndpoint(ep)}
-                                title={`${ep.name}\n${ep.path}\n${ep.description}`}
                                 className={`w-full group/ep text-left px-2 py-2 rounded-md transition-all duration-100 flex items-center gap-2 cursor-pointer ${
                                   isSelected
-                                    ? 'text-slate-100'
+                                    ? 'text-foreground'
                                     : 'text-muted-foreground hover:text-foreground hover:translate-x-[1px]'
                                 }`}
                                 style={isSelected ? {
@@ -286,7 +287,7 @@ export function Sidebar({
                                   <div className="text-[12px] font-medium truncate leading-snug">
                                     {ep.name}
                                   </div>
-                                  <div className="text-[11.5px] font-mono text-slate-600 truncate mt-0.5">
+                                  <div className="text-[11.5px] font-mono text-muted-foreground truncate mt-0.5">
                                     {ep.path}
                                   </div>
                                 </div>
@@ -297,12 +298,44 @@ export function Sidebar({
                                     </span>
                                   )}
                                   {ep.requiresSignature && (
-                                    <span title="HMAC-SHA256 Required" className="text-slate-600 group-hover/ep:text-primary transition-colors">
+                                    <span title="HMAC-SHA256 Required" className="text-muted-foreground group-hover/ep:text-primary transition-colors">
                                       <Lock size={10} />
                                     </span>
                                   )}
                                 </div>
                               </button>
+                                </HoverCardTrigger>
+                                <HoverCardContent
+                                  side="right"
+                                  align="start"
+                                  className="w-72 p-4 bg-popover border-border rounded-[12px] shadow-xl"
+                                >
+                                  <div className="space-y-2.5">
+                                    <div className="flex items-center gap-2">
+                                      <MethodPill method={ep.method} />
+                                      <span className="font-display text-[13px] font-bold text-foreground">{ep.name}</span>
+                                    </div>
+                                    <code className="block text-[11.5px] font-mono text-primary bg-primary/10 border border-primary/20 rounded-md px-2 py-1.5 break-all">
+                                      {ep.path}
+                                    </code>
+                                    {ep.description && (
+                                      <p className="text-[12px] text-muted-foreground leading-relaxed">{ep.description}</p>
+                                    )}
+                                    <div className="flex flex-wrap gap-1.5 pt-1">
+                                      {ep.requiresSignature && (
+                                        <Badge variant="outline" className="text-[11px] gap-1 border-primary/30 text-primary">
+                                          <Lock size={10} /> HMAC Signed
+                                        </Badge>
+                                      )}
+                                      {ep.isMoneyMovement && (
+                                        <Badge variant="outline" className="text-[11px] gap-1 border-amber-500/30 text-amber-400">
+                                          <ShieldAlert size={10} /> Money Movement
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </HoverCardContent>
+                              </HoverCard>
                             );
                           })}
                         </div>

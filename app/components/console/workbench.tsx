@@ -398,8 +398,9 @@ export function Workbench({
           </BreadcrumbList>
         </Breadcrumb>
 
-        {/* Unified Request Bar */}
-        <div className="grid grid-cols-[84px_minmax(0,1fr)_auto] sm:grid-cols-[95px_minmax(0,1fr)_auto_auto] items-center gap-2">
+        {/* Unified Request Bar — stacks on xs, single row on sm+ */}
+        <div className="flex flex-col sm:grid sm:grid-cols-[95px_minmax(0,1fr)_auto_auto] gap-2">
+          <div className="grid grid-cols-[84px_minmax(0,1fr)] sm:contents gap-2">
           {/* Method Selector */}
           <Select
             value={method}
@@ -453,7 +454,9 @@ export function Workbench({
               </span>
             )}
           </div>
+          </div>
 
+          <div className="flex gap-2">
           {/* cURL Copy Button */}
           <Button
             type="button"
@@ -473,16 +476,17 @@ export function Workbench({
             </span>
           </Button>
 
-          {/* Send Button */}
+          {/* Send Button — full width on mobile */}
           <Button
             onClick={onSend}
             disabled={running || !url.trim()}
-            className="btn-glow h-10 px-4 sm:px-5 font-semibold text-sm flex items-center gap-2 shrink-0 cursor-pointer transition-all"
+            className="btn-glow h-10 px-4 sm:px-5 font-semibold text-sm flex-1 sm:flex-none flex items-center justify-center gap-2 shrink-0 cursor-pointer transition-all"
           >
             {running ? <Loader2 size={14} className="spin" /> : <Send size={14} />}
             <span>{running ? 'Sending…' : 'Send'}</span>
             {!running && <kbd className="hidden sm:inline text-[11px] font-mono opacity-60 ml-0.5">Ctrl ↵</kbd>}
           </Button>
+          </div>
         </div>
 
         {/* Security Strip */}
