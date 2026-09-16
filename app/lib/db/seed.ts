@@ -56,6 +56,9 @@ export async function seed() {
       .limit(1);
 
     if (existing.length > 0) {
+      await db.update(apiEndpoints)
+        .set({ defaultBody: ep.defaultBody || '' })
+        .where(eq(apiEndpoints.slug, ep.slug));
       console.log(`✓ Endpoint ${ep.name} (${ep.slug}) already exists.`);
     } else {
       await db.insert(apiEndpoints).values({

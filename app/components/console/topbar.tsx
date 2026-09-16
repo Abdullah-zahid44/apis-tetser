@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
+import { InstallAppButton } from './install-app-button';
 import type { Country, Environment, SafeConfig } from './types';
 
 interface TopbarProps {
@@ -153,9 +154,6 @@ export function Topbar({
               <span className="text-sm font-bold tracking-tight text-foreground">AssanPay</span>
               <span className="text-[11px] text-muted-foreground font-medium">Console</span>
             </div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground/60 mt-1">
-              API Workspace
-            </div>
           </div>
           {/* Catalog sidebar toggle — visible on all breakpoints */}
           {onToggleSidebar && (
@@ -178,13 +176,13 @@ export function Topbar({
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="w-[120px] sm:w-[120px] lg:w-[155px] xl:w-[175px] h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
+              className="w-[148px] min-[390px]:w-[168px] sm:w-[150px] lg:w-[155px] xl:w-[175px] h-9 sm:h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
             >
               <SelectValue>
                 {currentCountryObj ? (
                   <span className="flex items-center gap-1.5 w-full">
                     <span className="text-xs leading-none">{currentCountryObj.flagEmoji}</span>
-                    <span className="hidden min-[400px]:inline font-medium truncate">{currentCountryObj.name}</span>
+                    <span className="font-medium truncate">{currentCountryObj.name}</span>
                     <span className="hidden xl:inline text-[11px] font-mono text-muted-foreground ml-auto">
                       {currentCountryObj.currency}
                     </span>
@@ -240,6 +238,8 @@ export function Topbar({
         <div className="flex items-center justify-end gap-1 shrink-0">
           <LatencyIndicator ms={gatewayLatencyMs} />
 
+          <InstallAppButton />
+
           {/* Status Button */}
           <Button
             variant="ghost"
@@ -267,7 +267,6 @@ export function Topbar({
             <DropdownMenuContent align="end" className="w-72 p-3 rounded-xl shadow-xl animate-fade-in" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
               <div className="mb-3 px-1">
                 <p className="text-sm font-semibold text-foreground">Appearance</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Choose how the console looks.</p>
               </div>
               <ToggleGroup value={[theme]} onValueChange={(value) => value[0] && onThemeChange(value[0] as 'light' | 'dark' | 'system')} className="grid grid-cols-3">
                 <ToggleGroupItem value="light"><Sun size={13} />Light</ToggleGroupItem>

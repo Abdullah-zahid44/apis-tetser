@@ -32,7 +32,11 @@ export async function GET(request: Request) {
         .orderBy(asc(apiEndpoints.displayOrder));
 
       if (endpointsRows.length > 0) {
-        return Response.json({ endpoints: endpointsRows });
+        // Keep catalog templates current even when the DB was seeded by an older release.
+        return Response.json({ endpoints: endpointsRows.map((endpoint) => {
+          const template = INITIAL_ENDPOINTS.find((item) => item.slug === endpoint.slug);
+          return template ? { ...endpoint, defaultBody: template.defaultBody || '' } : endpoint;
+        }) });
       }
     }
   } catch (err) {

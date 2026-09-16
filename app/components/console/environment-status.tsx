@@ -14,7 +14,6 @@ import {
   Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import type { SafeConfig, Country } from './types';
 
 interface EnvironmentStatusProps {
@@ -38,17 +37,8 @@ export function EnvironmentStatusView({
           <div>
             <h2 className="text-sm font-bold text-foreground flex flex-wrap items-center gap-2">
               <ServerCog size={18} className="text-primary" />
-              <span>Environment Readiness & Configuration Matrix</span>
-              <Badge
-                variant="outline"
-                className="h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
-              >
-                Safe Server-Side Audit
-              </Badge>
+              <span>Environment</span>
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Live validation of gateway credentials, HMAC signing engine, and database connectivity. Secrets remain masked and secure.
-            </p>
           </div>
 
           <Button
@@ -66,7 +56,7 @@ export function EnvironmentStatusView({
         <div className="p-4 rounded-lg bg-card border border-border space-y-2.5">
           <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
             <Database size={15} className="text-success" />
-            <span>Core Infrastructure Status</span>
+            <span>Infrastructure</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
@@ -96,7 +86,7 @@ export function EnvironmentStatusView({
         {/* Country & Environment Readiness Matrix */}
         <div className="space-y-3">
           <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.05em]">
-            Country Gateway Readiness
+            Gateways
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

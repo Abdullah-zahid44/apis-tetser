@@ -17,7 +17,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import type { VariableItem } from './types';
 
 interface VariablesWorkspaceProps {
@@ -124,18 +123,8 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
           <div>
             <h2 className="text-sm font-bold text-foreground flex flex-wrap items-center gap-2">
               <Braces size={18} className="text-primary" />
-              <span>Environment Variables Workspace</span>
-              <Badge
-                variant="outline"
-                className="h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
-              >
-                AES-256-GCM Vault
-              </Badge>
+              <span>Variables</span>
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Define scoped variables and interpolate them with{' '}
-              <code className="text-primary font-mono">{'{{variableName}}'}</code> across URL paths, parameters, headers, and payloads.
-            </p>
           </div>
 
           <Button
@@ -156,7 +145,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
         >
           <div className="flex items-center justify-between">
             <strong className="text-xs font-semibold text-foreground">
-              {editingId ? 'Edit Environment Variable' : 'Create New Environment Variable'}
+              {editingId ? 'Edit variable' : 'New variable'}
             </strong>
             {savedMessage && (
               <span className="text-xs text-success flex items-center gap-1">
@@ -270,7 +259,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
 
         {/* Variables Table */}
         <div className="rounded-lg border border-border overflow-x-auto bg-card">
-          <table className="w-full min-w-[720px] text-xs text-left">
+          <table className="mobile-card-table w-full min-w-[720px] text-xs text-left">
             <thead className="bg-muted/60 text-muted-foreground uppercase text-[11px] font-semibold tracking-[0.05em] border-b border-border">
               <tr>
                 <th className="p-3">Variable Key</th>
@@ -290,10 +279,10 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
               ) : (
                 variables.map((item) => (
                   <tr key={item.id} className="hover:bg-accent/50 transition-colors">
-                    <td className="p-3 font-semibold text-primary">
+                    <td data-label="Key" className="p-3 font-semibold text-primary">
                       {'{{'}{item.key}{'}}'}
                     </td>
-                    <td className="p-3 text-foreground">
+                    <td data-label="Value" className="p-3 text-foreground">
                       {item.isSecret ? (
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1 text-warning font-mono">
@@ -312,13 +301,13 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                         <span>{item.value || '(empty)'}</span>
                       )}
                     </td>
-                    <td className="p-3">
+                    <td data-label="Scope" className="p-3">
                       <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-secondary-foreground uppercase">
                         {item.environment}
                       </span>
                     </td>
                     <td className="p-3 text-muted-foreground font-sans text-xs">{item.description || '—'}</td>
-                    <td className="p-3 text-right">
+                    <td data-label="Actions" className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleStartEdit(item)}

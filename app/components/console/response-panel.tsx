@@ -102,13 +102,13 @@ export function ResponsePanel({
   return (
     <section className="h-full flex flex-col min-w-0 select-none" style={{ background: 'var(--response-bg)' }}>
       {/* Response Panel Header */}
-      <div className="min-h-10 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0" style={{ background: 'var(--surface-2)' }}>
-        <div className="flex items-center gap-2">
+      <div className="min-h-10 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0 min-w-0" style={{ background: 'var(--surface-2)' }}>
+        <div className="flex items-center gap-2 min-w-0">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Response
           </span>
           <span className="text-muted-foreground">•</span>
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-sm font-semibold text-foreground truncate">
             {running
               ? 'Sending request'
               : loadedHistoryId
@@ -121,7 +121,7 @@ export function ResponsePanel({
 
         {/* Quick Toolbar Actions */}
         {result && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             <Button
               variant="ghost"
               size="sm"
@@ -147,7 +147,7 @@ export function ResponsePanel({
       <div className="min-h-9 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between font-mono text-xs text-muted-foreground shrink-0 overflow-x-auto" style={{ background: 'var(--surface-1)' }}>
         {result ? (
           <>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 whitespace-nowrap">
               {/* HTTP Status Code Badge */}
               <span
                 className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold border ${getStatusBadgeStyle(
@@ -188,7 +188,7 @@ export function ResponsePanel({
         ) : (
           <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
             <Activity size={11} />
-            <span>Ready — Press Ctrl+Enter to execute request</span>
+            <span>Ready</span>
           </div>
         )}
       </div>
@@ -202,9 +202,6 @@ export function ResponsePanel({
             </div>
             <div>
               <strong className="text-foreground text-sm block mb-1">Transmitting to AssanPay Gateway…</strong>
-              <p className="text-xs text-muted-foreground max-w-xs font-mono">
-                Signing HMAC-SHA256 · Canonicalizing path & timestamp
-              </p>
             </div>
             {/* Shimmer bars to indicate loading */}
             <div className="w-64 space-y-2 mt-2">
@@ -233,8 +230,8 @@ export function ResponsePanel({
               </Alert>
             )}
 
-            <Tabs defaultValue="pretty" className="flex-1 flex flex-col min-h-0">
-              <TabsList variant="line" className="bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
+            <Tabs defaultValue="pretty" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
+              <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
                 <TabsTrigger
                   value="pretty"
                   className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
@@ -268,15 +265,15 @@ export function ResponsePanel({
               </TabsList>
 
               {/* Pretty JSON Tab */}
-              <TabsContent value="pretty" className="flex-1 overflow-y-auto p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-xs font-mono text-foreground whitespace-pre-wrap leading-relaxed select-text">
+              <TabsContent value="pretty" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
+                <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
                   {prettyJson || '// Empty response body.'}
                 </pre>
               </TabsContent>
 
               {/* Raw Response Tab */}
-              <TabsContent value="raw" className="flex-1 overflow-y-auto p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap leading-relaxed select-text">
+              <TabsContent value="raw" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
+                <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
                   {result.upstream.rawBody || '// No raw body'}
                 </pre>
               </TabsContent>
@@ -379,11 +376,6 @@ export function ResponsePanel({
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">No response yet</p>
-              <p className="text-xs text-muted-foreground mt-1 max-w-[220px] leading-relaxed">
-                Configure a request and press{' '}
-                <kbd className="font-mono text-muted-foreground bg-[var(--surface-3)] px-1 py-0.5 rounded text-[11px]">Ctrl+Enter</kbd>{' '}
-                to send.
-              </p>
             </div>
           </div>
         )}

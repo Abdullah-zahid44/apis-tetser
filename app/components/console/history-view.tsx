@@ -6,6 +6,7 @@ import {
   Search,
   Clock,
   ArrowRight,
+  ArrowLeft,
   RotateCcw,
   CheckCircle2,
   AlertCircle,
@@ -18,7 +19,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import type { HistoryItem, Method } from './types';
@@ -37,6 +37,7 @@ export function HistoryView({
   loading,
 }: HistoryViewProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mobileSection, setMobileSection] = useState<'list' | 'detail'>('list');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'success' | 'failed'>('all');
   const [copied, setCopied] = useState<string | null>(null);
@@ -88,19 +89,13 @@ export function HistoryView({
   const selectedItem = history.find((h) => h.id === selectedId) || filtered[0] || null;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-background select-none">
+    <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background select-none">
       {/* Top Header */}
       <div className="min-h-12 px-3 sm:px-4 py-2 bg-card border-b border-border flex items-center justify-between gap-2 shrink-0">
         <div>
           <h2 className="text-xs font-bold text-foreground flex items-center gap-2">
             <History size={16} className="text-primary" />
-            <span>Audit Execution History</span>
-            <Badge
-              variant="outline"
-              className="hidden sm:inline-flex h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
-            >
-              {history.length} Audited Calls
-            </Badge>
+            <span>History</span>
           </h2>
         </div>
 
@@ -121,7 +116,7 @@ export function HistoryView({
       {/* Split Workstation Panes */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* Left Side: History Item List */}
-        <div className="w-full md:w-96 h-[42%] md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex flex-col min-h-0 bg-card">
+        <div className={`${mobileSection === 'detail' ? 'hidden md:flex' : 'flex'} w-full md:w-96 h-full md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex-col min-h-0 bg-card`}>
           {/* Search & Filter Bar */}
           <div className="p-2.5 border-b border-border space-y-2 bg-card">
             <div className="relative flex items-center">
@@ -188,7 +183,7 @@ export function HistoryView({
                   </EmptyMedia>
                   <EmptyTitle className="text-sm">No audit records</EmptyTitle>
                   <EmptyDescription className="text-xs">
-                    No requests match the current filter. Execute a request to build history.
+                    No matching requests.
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>
@@ -205,7 +200,7 @@ export function HistoryView({
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedId(item.id)}
+                    onClick={() => { setSelectedId(item.id); setMobileSection('detail'); }}
                     className={`w-full text-left p-2.5 transition-colors duration-150 flex flex-col gap-1 cursor-pointer ${
                       isSelected
                         ? 'bg-accent border-l-2 border-primary'
@@ -253,17 +248,20 @@ export function HistoryView({
         </div>
 
         {/* Right Side: Detailed Audit Inspector */}
-        <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background p-2.5 sm:p-4">
+        <div className={`${mobileSection === 'detail' ? 'flex' : 'hidden md:flex'} flex-1 flex-col min-h-0 min-w-0 overflow-hidden bg-background p-2.5 sm:p-4`}>
           {selectedItem ? (
-            <div className="flex-1 flex flex-col min-h-0 space-y-3">
+            <div className="flex-1 flex flex-col min-h-0 min-w-0 space-y-3">
+              <Button variant="ghost" size="sm" onClick={() => setMobileSection('list')} className="md:hidden self-start h-8 gap-1 text-muted-foreground">
+                <ArrowLeft size={14} /> Back to history
+              </Button>
               {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-border">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border min-w-0">
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <span className={getMethodBadgeClass(selectedItem.method)}>
                       {selectedItem.method}
                     </span>
-                    <h3 className="text-sm font-bold text-foreground">
+                    <h3 className="text-sm font-bold text-foreground break-words min-w-0">
                       {selectedItem.requestName}
                     </h3>
                   </div>
@@ -272,11 +270,11 @@ export function HistoryView({
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
                   <Button
                     size="sm"
                     onClick={() => onLoadIntoWorkbench(selectedItem)}
-                    className="h-8 text-xs bg-primary hover:bg-primary text-primary-foreground gap-1.5 font-semibold cursor-pointer shadow-xs"
+                    className="h-8 text-xs bg-primary hover:bg-primary text-primary-foreground gap-1.5 font-semibold cursor-pointer shadow-xs w-full sm:w-auto"
                   >
                     <RotateCcw size={13} />
                     <span>Load into Workbench</span>
@@ -309,8 +307,8 @@ export function HistoryView({
               </div>
 
               {/* Inspector Tabs */}
-              <Tabs defaultValue="response" className="flex-1 flex flex-col min-h-0 pt-1">
-                <TabsList className="bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
+              <Tabs defaultValue="response" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden pt-1">
+                <TabsList className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="response"
                     className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
@@ -338,8 +336,8 @@ export function HistoryView({
                 </TabsList>
 
                 {/* Response Body Tab */}
-                <TabsContent value="response" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
-                  <pre className="text-xs font-mono text-primary/90 whitespace-pre-wrap leading-relaxed select-text">
+                <TabsContent value="response" className="flex-1 min-w-0 overflow-auto p-3 m-0 bg-background">
+                  <pre className="text-xs font-mono text-primary/90 whitespace-pre-wrap break-all leading-relaxed select-text">
                     {selectedItem.responseBody || '// No response body'}
                   </pre>
                 </TabsContent>
@@ -350,7 +348,7 @@ export function HistoryView({
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                       Request Body
                     </span>
-                    <pre className="p-2.5 rounded bg-card border border-border font-mono text-xs text-secondary-foreground whitespace-pre-wrap">
+                    <pre className="p-2.5 rounded bg-card border border-border font-mono text-xs text-secondary-foreground whitespace-pre-wrap break-all">
                       {selectedItem.requestBody || '// (Empty request body)'}
                     </pre>
                   </div>

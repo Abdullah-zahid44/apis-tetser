@@ -73,7 +73,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
       {
         orderId: 'ORD1999',
         amount: 10,
-        branchCode: 'BR-002',
+        branchCode: 'APTEST01',
         paymentMethodName: 'JazzCash',
         customerContact: '03273595453',
         customerName: 'Bilal',
@@ -115,7 +115,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
       {
         orderId: 'ORD1999',
         amount: 10,
-        branchCode: 'BR-002',
+        branchCode: 'APTEST01',
         paymentMethodName: 'JazzCash',
         customerContact: '03273595453',
         customerName: 'Bilal',
@@ -138,7 +138,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         orderId: 'ORD1137a9970163',
-        branchCode: '123000',
+        branchCode: 'APTEST01',
         amount: 1,
         paymentMethodName: 'jazzcash',
         customerContact: '03409583505',
@@ -182,7 +182,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         amount: 1000,
-        branchCode: 'BR-002',
+        branchCode: 'APTEST01',
         orderId: 'ORDPAYOUT1001',
         bankCode: '59',
         accountNo: '03273595453',
@@ -239,7 +239,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         amount: 500,
         currency: 'BDT',
         orderId: 'ORD-12345',
-        branchCode: '123456',
+        branchCode: 'APTEST01',
         customerName: 'Rahim Uddin',
         customerEmail: 'rahim@example.com',
         customerContact: '01700000000',
@@ -268,7 +268,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         amount: 500,
         currency: 'BDT',
         orderId: 'ORD-12345',
-        branchCode: '123456',
+        branchCode: 'APTEST01',
         customerContact: '01700000000',
         customerName: 'Rahim Uddin',
         customerEmail: 'rahim@example.com',
@@ -327,7 +327,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         mode: 'P2P',
         amount: 1000,
         accountNo: '01711111111',
-        branchCode: '123456',
+        branchCode: 'APTEST01',
         orderId: 'PO-98765',
         beneficiaryName: 'Karim',
         callbackUrl: 'https://merchant.com/webhooks/assanpay-payout',
@@ -378,7 +378,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         orderId: 'ORD-100001',
         amount: 50000,
         currency: 'IDR',
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         customerName: 'Budi Santoso',
         customerEmail: 'budi@example.com',
         customerContact: '081234567890',
@@ -425,7 +425,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     isMoneyMovement: true,
     defaultBody: JSON.stringify(
       {
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         paymentMethodName: 'QRIS',
         amount: 50000,
         currency: 'IDR',
@@ -489,7 +489,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
       {
         amount: 75000,
         orderId: 'PO-200045',
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         bankName: 'Bank Central Asia',
         bankCode: '1007',
         accountNo: '1234567890',
@@ -564,7 +564,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         orderId: 'ORD-100001',
         amount: 1500.0,
         currency: 'PHP',
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         customerName: 'Juan Dela Cruz',
         customerEmail: 'juan@example.com',
         customerContact: '09151037551',
@@ -611,7 +611,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     isMoneyMovement: true,
     defaultBody: JSON.stringify(
       {
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         paymentMethodName: 'QRPH',
         amount: 1500.0,
         currency: 'PHP',
@@ -675,7 +675,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
       {
         amount: 2500.0,
         orderId: 'PO-200045',
-        branchCode: 'BR001',
+        branchCode: 'APTEST01',
         bankName: 'AllBank',
         bankCode: 'ALLBPHM1',
         accountNo: '1234567890',

@@ -38,14 +38,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import type { Method, ParamRow, HeaderRow, SafeConfig } from './types';
 
 interface WorkbenchProps {
@@ -365,29 +357,6 @@ export function Workbench({
       {/* Main Request Work Area */}
       <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-3 sm:px-4 lg:px-5 py-4 space-y-3.5">
 
-        {/* Context Breadcrumb — country / environment / request */}
-        <Breadcrumb className="shrink-0">
-          <BreadcrumbList className="text-xs">
-            <BreadcrumbItem>
-              <BreadcrumbLink className="text-muted-foreground hover:text-foreground capitalize cursor-default">
-                {countrySlug}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbLink className="text-muted-foreground hover:text-foreground cursor-default">
-                Sandbox
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage className="text-foreground font-medium truncate max-w-[200px] sm:max-w-xs">
-                {name || 'Untitled Request'}
-              </BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-
         {/* Unified Request Bar — single cohesive instrument */}
         <div
           className="flex flex-col sm:flex-row sm:items-stretch gap-2 sm:gap-0 rounded-xl border overflow-hidden transition-colors duration-150 focus-within:border-[var(--primary)]/60 focus-within:ring-2 focus-within:ring-[var(--primary)]/20"
@@ -491,14 +460,11 @@ export function Workbench({
             <span className="text-muted-foreground">·</span>
             <span>Plaintext JSON</span>
           </div>
-          <span className="text-xs">
-            Press <kbd className="text-muted-foreground font-mono bg-[var(--surface-4)] px-1 py-0.5 rounded text-[11px]">Ctrl+Enter</kbd> to send
-          </span>
         </div>
 
         {/* Postman-Grade Request Tabs */}
-        <Tabs defaultValue="body" className="flex-1 flex flex-col min-h-0 pt-1">
-          <TabsList variant="line" className="bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0 scrollbar-none">
+        <Tabs defaultValue="body" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden pt-1">
+          <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0">
             <TabsTrigger
               value="params"
               className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
@@ -569,7 +535,7 @@ export function Workbench({
             </div>
 
             <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
-              <table className="w-full min-w-[640px] text-xs text-left">
+              <table className="request-kv-table w-full min-w-[640px] text-xs text-left">
                 <thead className="text-muted-foreground border-b border-border">
                   <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
                     <th className="w-8 p-2.5 text-center font-medium">✓</th>
@@ -705,7 +671,7 @@ export function Workbench({
               </div>
 
               <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
-                <table className="w-full min-w-[640px] text-xs text-left">
+                <table className="request-kv-table w-full min-w-[640px] text-xs text-left">
                   <thead className="text-muted-foreground border-b border-border">
                     <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
                       <th className="w-8 p-2.5 text-center font-medium">✓</th>
@@ -883,9 +849,6 @@ export function Workbench({
                 <span>HMAC-SHA256 Request Signing Pipeline</span>
               </div>
 
-              <p className="text-secondary-foreground leading-relaxed">
-                AssanPay uses canonical request signatures to prevent tampering, replay attacks, and unauthorized transactions.
-              </p>
 
               <div className="p-3 rounded bg-background border border-border font-mono text-[11px] text-primary space-y-1">
                 <div className="text-muted-foreground">// Canonical String Format</div>

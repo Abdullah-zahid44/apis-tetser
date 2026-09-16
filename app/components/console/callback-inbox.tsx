@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Webhook,
+  ArrowLeft,
   RefreshCw,
   Copy,
   CheckCircle2,
@@ -34,6 +35,7 @@ interface CallbackInboxProps {
 export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) {
   const [callbacks, setCallbacks] = useState<WebhookEventItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mobileSection, setMobileSection] = useState<'list' | 'detail'>('list');
   const [loading, setLoading] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [search, setSearch] = useState('');
@@ -113,18 +115,15 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
   const selectedItem = callbacks.find((c) => c.id === selectedId) || filtered[0] || null;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-background select-none">
+    <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background select-none">
       {/* Top Banner with Webhook URL */}
       <div className="px-3 sm:px-4 py-2 bg-card border-b border-border flex flex-wrap items-center justify-between gap-2 sm:gap-3 shrink-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2 min-w-0 w-full lg:w-auto">
           <Webhook className="text-primary" size={17} />
-          <div>
+          <div className="min-w-0">
             <h2 className="text-xs font-bold text-foreground leading-tight">
-              AssanPay Webhook Receiver
+              Callbacks
             </h2>
-            <p className="text-xs text-muted-foreground font-mono -mt-0.5">
-              Sandbox listener with cryptographic HMAC verification & deduplication
-            </p>
           </div>
         </div>
 
@@ -133,12 +132,12 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
           <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
             Inbound:
           </span>
-          <span className="text-[11px] font-mono text-secondary-foreground truncate select-all">
+          <span className="min-w-0 flex-1 text-[11px] font-mono text-secondary-foreground truncate select-all" title={callbackUrl}>
             {callbackUrl}
           </span>
           <button
             onClick={() => copyToClipboard(callbackUrl, 'url')}
-            className="text-xs text-primary hover:text-primary ml-1 flex items-center gap-1 cursor-pointer"
+            className="text-xs text-primary hover:text-primary ml-1 flex items-center gap-1 cursor-pointer shrink-0"
           >
             {copied === 'url' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
             <span>{copied === 'url' ? 'Copied' : 'Copy'}</span>
@@ -173,7 +172,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
       {/* Main Split Panels */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* Left Side: Events List */}
-        <div className="w-full md:w-96 h-[42%] md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex flex-col min-h-0 bg-card">
+        <div className={`${mobileSection === 'detail' ? 'hidden md:flex' : 'flex'} w-full md:w-96 h-full md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex-col min-h-0 bg-card`}>
           {/* Search & Filter Bar */}
           <div className="p-2.5 border-b border-border space-y-2 bg-card">
             <div className="relative flex items-center">
@@ -239,7 +238,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                   </EmptyMedia>
                   <EmptyTitle className="text-sm">No callbacks yet</EmptyTitle>
                   <EmptyDescription className="text-xs">
-                    No webhook callbacks received yet. Post a callback payload to the inbound URL above.
+                    No callbacks received.
                   </EmptyDescription>
                 </EmptyHeader>
               </Empty>
@@ -255,7 +254,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedId(item.id)}
+                    onClick={() => { setSelectedId(item.id); setMobileSection('detail'); }}
                     className={`w-full text-left p-2.5 transition-colors duration-150 flex flex-col gap-1 cursor-pointer ${
                       isSelected
                         ? 'bg-accent border-l-2 border-primary'
@@ -301,14 +300,17 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
         </div>
 
         {/* Right Side: Event Details & Cryptography */}
-        <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background p-2.5 sm:p-4">
+        <div className={`${mobileSection === 'detail' ? 'flex' : 'hidden md:flex'} flex-1 flex-col min-h-0 min-w-0 overflow-hidden bg-background p-2.5 sm:p-4`}>
           {selectedItem ? (
-            <div className="flex-1 flex flex-col min-h-0 space-y-3">
+            <div className="flex-1 flex flex-col min-h-0 min-w-0 space-y-3">
+              <Button variant="ghost" size="sm" onClick={() => setMobileSection('list')} className="md:hidden self-start h-8 gap-1 text-muted-foreground">
+                <ArrowLeft size={14} /> Back to callbacks
+              </Button>
               {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-border">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-border min-w-0">
+                <div className="min-w-0">
                   <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Event ID</span>
-                  <h3 className="text-base font-mono font-bold text-foreground">
+                  <h3 className="text-base font-mono font-bold text-foreground break-all">
                     {selectedItem.eventId}
                   </h3>
                 </div>
@@ -365,8 +367,8 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
               </div>
 
               {/* Inspector Tabs */}
-              <Tabs defaultValue="payload" className="flex-1 flex flex-col min-h-0 pt-1">
-                <TabsList className="bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
+              <Tabs defaultValue="payload" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden pt-1">
+                <TabsList className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="payload"
                     className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
@@ -395,14 +397,14 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
 
                 {/* Parsed Payload Tab */}
                 <TabsContent value="payload" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
-                  <pre className="text-xs font-mono text-primary/90 whitespace-pre-wrap leading-relaxed select-text">
+                  <pre className="text-xs font-mono text-primary/90 whitespace-pre-wrap break-all leading-relaxed select-text">
                     {JSON.stringify(selectedItem.payload, null, 2)}
                   </pre>
                 </TabsContent>
 
                 {/* Raw Body Tab */}
                 <TabsContent value="raw" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
-                  <pre className="text-xs font-mono text-secondary-foreground whitespace-pre-wrap leading-relaxed select-text">
+                  <pre className="text-xs font-mono text-secondary-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
                     {selectedItem.rawBody}
                   </pre>
                 </TabsContent>

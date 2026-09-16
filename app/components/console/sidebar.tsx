@@ -122,13 +122,6 @@ export function Sidebar({
       {/* Header */}
       <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center justify-between shrink-0">
         <div>
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
-              {countryCode.toUpperCase()}
-            </span>
-            <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Gateway</span>
-          </div>
           <h2 className="text-sm font-semibold text-foreground tracking-tight">
             Collections
           </h2>

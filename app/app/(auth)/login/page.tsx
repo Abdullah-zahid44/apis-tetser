@@ -1,5 +1,5 @@
 import { signIn } from '@/lib/auth/config';
-import { ShieldCheck, Lock, AlertCircle, ArrowRight, Zap } from 'lucide-react';
+import { ShieldCheck, AlertCircle, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default async function LoginPage(props: {
@@ -34,9 +34,6 @@ export default async function LoginPage(props: {
             <h1 className="font-display text-2xl font-bold tracking-tight text-foreground mb-2">
               AssanPay Console
             </h1>
-            <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-primary">
-              API Testing Workspace
-            </p>
           </div>
 
           {/* Error Alert */}
@@ -51,17 +48,6 @@ export default async function LoginPage(props: {
               </div>
             </div>
           )}
-
-          {/* Info Banner */}
-          <div className="mb-5 p-4 rounded-md flex items-start gap-3 bg-muted/60 border border-border">
-            <Lock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-foreground">Authorized Personnel Only</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Sandbox gateway access for API testing. All actions are audited.
-              </p>
-            </div>
-          </div>
 
           {/* Google Sign In */}
           <form
@@ -93,15 +79,6 @@ export default async function LoginPage(props: {
           </p>
         </div>
 
-        {/* Below-card security badge */}
-        <div className="mt-5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Zap size={11} className="text-primary" />
-            Zero Client Secrets
-          </span>
-          <span className="opacity-40">·</span>
-          <span>AssanPay Enterprise Security</span>
-        </div>
       </div>
     </div>
   );
