@@ -1,6 +1,8 @@
 import { verifyCallbackSignature } from '../lib/assanpay/callbacks';
 import crypto from 'node:crypto';
 import { getAssanPayCallbackSecret, getAssanPayCredentials } from '../lib/assanpay/credentials';
+import { callbackOrigin, withCallbackUrl } from '../lib/assanpay/callback-template';
+import { INITIAL_ENDPOINTS } from '../lib/assanpay/endpoint-registry';
 
 export function runCallbackTests(): { passed: boolean; message: string }[] {
   const results = [];
@@ -53,6 +55,23 @@ export function runCallbackTests(): { passed: boolean; message: string }[] {
   results.push({
     passed: missingRes.valid === false,
     message: `Rejects callback missing required headers`,
+  });
+
+  const publicOrigin = 'https://assanpay-apis-testing.vercel.app';
+  for (const country of ['pkr', 'bdt', 'idr', 'php']) {
+    const templates = INITIAL_ENDPOINTS.filter((endpoint) => endpoint.countrySlug === country && endpoint.defaultBody?.includes('"callbackUrl"'));
+    results.push({
+      passed: templates.length > 0 && templates.every((endpoint) => {
+        const filled = JSON.parse(withCallbackUrl(endpoint.defaultBody || '', country, publicOrigin));
+        return filled.callbackUrl === `${publicOrigin}/api/callbacks/assanpay/${country}/sandbox`;
+      }),
+      message: `Prefills ${country.toUpperCase()} callback URLs in request templates`,
+    });
+  }
+  results.push({
+    passed: withCallbackUrl('{"orderId":"A1"}', 'pkr', publicOrigin) === '{"orderId":"A1"}' &&
+      callbackOrigin('http://localhost:3000/api/endpoints', publicOrigin) === publicOrigin,
+    message: 'Leaves templates without callbackUrl untouched and prefers the configured public origin',
   });
 
   // Outgoing branch signing and incoming main-merchant verification are isolated.

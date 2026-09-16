@@ -2,6 +2,7 @@ import { requireAuth } from '@/lib/auth/session';
 import { getDb } from '@/lib/db';
 import { countries, apiEndpoints } from '@/lib/db/schema';
 import { INITIAL_ENDPOINTS } from '@/lib/assanpay/endpoint-registry';
+import { callbackOrigin, withCallbackUrl } from '@/lib/assanpay/callback-template';
 import { eq, asc } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
@@ -14,6 +15,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const countrySlug = (url.searchParams.get('country') || 'pkr').toLowerCase();
+  const publicOrigin = callbackOrigin(request.url, process.env.APP_URL);
 
   try {
     const db = getDb();
@@ -35,7 +37,9 @@ export async function GET(request: Request) {
         // Keep catalog templates current even when the DB was seeded by an older release.
         return Response.json({ endpoints: endpointsRows.map((endpoint) => {
           const template = INITIAL_ENDPOINTS.find((item) => item.slug === endpoint.slug);
-          return template ? { ...endpoint, defaultBody: template.defaultBody || '' } : endpoint;
+          return template
+            ? { ...endpoint, defaultBody: withCallbackUrl(template.defaultBody || '', template.countrySlug, publicOrigin) }
+            : endpoint;
         }) });
       }
     }
@@ -56,7 +60,7 @@ export async function GET(request: Request) {
       path: ep.path,
       defaultQuery: ep.defaultQuery || {},
       defaultHeaders: ep.defaultHeaders || {},
-      defaultBody: ep.defaultBody || '',
+      defaultBody: withCallbackUrl(ep.defaultBody || '', ep.countrySlug, publicOrigin),
       requiresSignature: ep.requiresSignature,
       signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
       isMoneyMovement: ep.isMoneyMovement || false,
