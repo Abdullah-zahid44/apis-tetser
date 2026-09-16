@@ -20,32 +20,32 @@ export default async function LoginPage(props: {
 
       <div className="w-full max-w-[420px] relative z-10 animate-fade-in">
         {/* Main Card */}
-        <div className="rounded-[18px] p-6 sm:p-8 relative overflow-hidden bg-card border border-border shadow-[var(--shadow-lift)]">
+        <div className="rounded-xl p-6 sm:p-8 relative overflow-hidden bg-card border border-border shadow-[var(--shadow-overlay)]">
           {/* Top edge highlight */}
           <div className="absolute top-0 left-10 right-10 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
           {/* Brand Header */}
-          <div className="text-center mb-7 relative z-10">
+          <div className="text-center mb-6 relative z-10">
             {/* Logo */}
-            <div className="brand-mark inline-flex items-center justify-center w-14 h-14 rounded-[16px] mb-5">
+            <div className="brand-mark inline-flex items-center justify-center w-14 h-14 rounded-xl mb-5">
               <ShieldCheck className="w-7 h-7 text-white" strokeWidth={2.2} />
             </div>
 
-            <h1 className="font-display text-[24px] font-bold tracking-tight text-foreground mb-2">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground mb-2">
               AssanPay Console
             </h1>
-            <p className="text-[11px] uppercase tracking-[0.14em] font-mono font-semibold text-primary">
+            <p className="text-[11px] uppercase tracking-[0.14em] font-semibold text-primary">
               API Testing Workspace
             </p>
           </div>
 
           {/* Error Alert */}
           {isDenied && (
-            <div className="mb-5 p-4 rounded-[12px] flex items-start gap-3 animate-fade-in bg-destructive/10 border border-destructive/25">
+            <div className="mb-5 p-4 rounded-md flex items-start gap-3 animate-fade-in bg-destructive/10 border border-destructive/25">
               <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
               <div>
-                <strong className="font-semibold text-destructive text-[13px] block mb-0.5">Authentication Rejected</strong>
-                <span className="text-[12px] leading-relaxed text-muted-foreground">
+                <strong className="font-semibold text-destructive text-sm block mb-0.5">Authentication Rejected</strong>
+                <span className="text-xs leading-relaxed text-muted-foreground">
                   Access restricted to authorized AssanPay employees only.
                 </span>
               </div>
@@ -53,12 +53,12 @@ export default async function LoginPage(props: {
           )}
 
           {/* Info Banner */}
-          <div className="mb-5 p-4 rounded-[12px] flex items-start gap-3 bg-muted/60 border border-border">
+          <div className="mb-5 p-4 rounded-md flex items-start gap-3 bg-muted/60 border border-border">
             <Lock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="text-[13px] font-semibold text-foreground">Authorized Personnel Only</p>
-              <p className="text-[12px] text-muted-foreground leading-relaxed">
-                Direct access to live &amp; sandbox payment gateways. All actions are audited.
+              <p className="text-sm font-semibold text-foreground">Authorized Personnel Only</p>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Sandbox gateway access for API testing. All actions are audited.
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default async function LoginPage(props: {
             <Button
               type="submit"
               size="lg"
-              className="w-full h-12 text-[14px] rounded-[12px] flex items-center justify-center gap-3 group bg-foreground text-background hover:bg-foreground/90"
+              className="w-full h-12 text-sm rounded-md flex items-center justify-center gap-3 bg-foreground text-background hover:bg-foreground/90"
             >
               {/* Google Logo */}
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -83,18 +83,18 @@ export default async function LoginPage(props: {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
               <span>Continue with Google</span>
-              <ArrowRight className="w-4 h-4 opacity-60 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 opacity-60" />
             </Button>
           </form>
 
           {/* Footer notice */}
-          <p className="mt-6 text-center text-[12px] font-mono text-muted-foreground">
+          <p className="mt-6 text-center text-xs text-muted-foreground">
             Restricted to <span className="text-primary font-semibold">@assanpay.com</span> accounts only
           </p>
         </div>
 
         {/* Below-card security badge */}
-        <div className="mt-5 flex items-center justify-center gap-3 text-[11.5px] font-mono text-muted-foreground">
+        <div className="mt-5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Zap size={11} className="text-primary" />
             Zero Client Secrets

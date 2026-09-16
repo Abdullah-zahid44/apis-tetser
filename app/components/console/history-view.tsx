@@ -92,7 +92,7 @@ export function HistoryView({
       {/* Top Header */}
       <div className="min-h-12 px-3 sm:px-4 py-2 bg-card border-b border-border flex items-center justify-between gap-2 shrink-0">
         <div>
-          <h2 className="text-xs font-bold text-white flex items-center gap-2">
+          <h2 className="text-xs font-bold text-foreground flex items-center gap-2">
             <History size={16} className="text-primary" />
             <span>Audit Execution History</span>
             <Badge
@@ -110,7 +110,7 @@ export function HistoryView({
             size="sm"
             onClick={onRefresh}
             disabled={loading}
-            className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer font-mono"
+            className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer"
           >
             <RefreshCw size={12} className={loading ? 'spin text-primary' : ''} />
             <span>Refresh</span>
@@ -143,7 +143,7 @@ export function HistoryView({
             </div>
 
             {/* Quick Status Filter Tabs */}
-            <div className="flex items-center gap-1 text-[11px] font-mono">
+            <div className="flex items-center gap-1 text-[11px]">
               <button
                 onClick={() => setStatusFilter('all')}
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
@@ -158,7 +158,7 @@ export function HistoryView({
                 onClick={() => setStatusFilter('success')}
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   statusFilter === 'success'
-                    ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 font-semibold'
+                    ? 'bg-success/10 text-success border border-success/25 font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -168,7 +168,7 @@ export function HistoryView({
                 onClick={() => setStatusFilter('failed')}
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   statusFilter === 'failed'
-                    ? 'bg-rose-950/60 text-rose-400 border border-rose-800/40 font-semibold'
+                    ? 'bg-destructive/10 text-destructive border border-destructive/25 font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -206,7 +206,7 @@ export function HistoryView({
                   <button
                     key={item.id}
                     onClick={() => setSelectedId(item.id)}
-                    className={`w-full text-left p-2.5 transition-all duration-150 flex flex-col gap-1 cursor-pointer ${
+                    className={`w-full text-left p-2.5 transition-colors duration-150 flex flex-col gap-1 cursor-pointer ${
                       isSelected
                         ? 'bg-accent border-l-2 border-primary'
                         : 'hover:bg-muted'
@@ -217,30 +217,30 @@ export function HistoryView({
                         <span className={getMethodBadgeClass(item.method)}>
                           {item.method}
                         </span>
-                        <span className="text-[11.5px] font-mono px-1 py-0.2 rounded bg-muted text-secondary-foreground uppercase">
+                        <span className="text-xs font-mono px-1 py-0.5 rounded bg-muted text-secondary-foreground uppercase">
                           {item.environment}
                         </span>
                       </div>
                       <span
-                        className={`px-1.5 py-0.5 rounded font-mono text-[11.5px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded font-mono text-xs font-bold ${
                           isSuccess
-                            ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/30'
-                            : 'bg-rose-950/60 text-rose-400 border border-rose-800/30'
+                            ? 'bg-success/10 text-success border border-success/25'
+                            : 'bg-destructive/10 text-destructive border border-destructive/25'
                         }`}
                       >
                         {item.responseStatus}
                       </span>
                     </div>
 
-                    <strong className="text-[12px] font-semibold text-foreground truncate block mt-0.5">
+                    <strong className="text-xs font-semibold text-foreground truncate block mt-0.5">
                       {item.requestName}
                     </strong>
 
-                    <div className="text-[11.5px] font-mono text-muted-foreground truncate">
+                    <div className="text-xs font-mono text-muted-foreground truncate">
                       {item.url}
                     </div>
 
-                    <div className="flex items-center justify-between text-[11.5px] text-muted-foreground font-mono mt-0.5">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground font-mono mt-0.5">
                       <span>{timeStr}</span>
                       <span>{item.durationMs} ms</span>
                     </div>
@@ -263,7 +263,7 @@ export function HistoryView({
                     <span className={getMethodBadgeClass(selectedItem.method)}>
                       {selectedItem.method}
                     </span>
-                    <h3 className="text-sm font-bold text-white">
+                    <h3 className="text-sm font-bold text-foreground">
                       {selectedItem.requestName}
                     </h3>
                   </div>
@@ -276,7 +276,7 @@ export function HistoryView({
                   <Button
                     size="sm"
                     onClick={() => onLoadIntoWorkbench(selectedItem)}
-                    className="h-8 text-xs bg-primary hover:bg-primary text-white gap-1.5 font-semibold cursor-pointer shadow-xs"
+                    className="h-8 text-xs bg-primary hover:bg-primary text-primary-foreground gap-1.5 font-semibold cursor-pointer shadow-xs"
                   >
                     <RotateCcw size={13} />
                     <span>Load into Workbench</span>
@@ -289,8 +289,8 @@ export function HistoryView({
                 <span
                   className={`px-2 py-0.5 rounded font-bold border ${
                     selectedItem.responseStatus >= 200 && selectedItem.responseStatus < 300
-                      ? 'bg-emerald-950/60 text-emerald-300 border-emerald-700/40'
-                      : 'bg-rose-950/60 text-rose-300 border-rose-700/40'
+                      ? 'bg-success/10 text-success border-success/25'
+                      : 'bg-destructive/10 text-destructive border-destructive/25'
                   }`}
                 >
                   HTTP {selectedItem.responseStatus} {selectedItem.responseStatusText}
@@ -313,25 +313,25 @@ export function HistoryView({
                 <TabsList className="bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="response"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Response Body
                   </TabsTrigger>
                   <TabsTrigger
                     value="request"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Request Sent
                   </TabsTrigger>
                   <TabsTrigger
                     value="headers"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Headers
                   </TabsTrigger>
                   <TabsTrigger
                     value="meta"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Security & Metadata
                   </TabsTrigger>
@@ -347,7 +347,7 @@ export function HistoryView({
                 {/* Request Sent Tab */}
                 <TabsContent value="request" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 bg-background">
                   <div>
-                    <span className="text-[11.5px] font-mono text-muted-foreground uppercase block mb-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                       Request Body
                     </span>
                     <pre className="p-2.5 rounded bg-card border border-border font-mono text-xs text-secondary-foreground whitespace-pre-wrap">
@@ -359,14 +359,14 @@ export function HistoryView({
                 {/* Headers Tab */}
                 <TabsContent value="headers" className="flex-1 overflow-y-auto p-3 m-0 space-y-4 bg-background">
                   <div>
-                    <span className="text-[11.5px] font-mono text-muted-foreground uppercase block mb-1">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                       Response Headers
                     </span>
-                    <div className="border border-border rounded overflow-x-auto">
+                    <div className="border border-border rounded-lg overflow-x-auto">
                       <table className="w-full min-w-[520px] text-xs font-mono">
                         <tbody className="divide-y divide-border">
                           {Object.entries(selectedItem.responseHeaders || {}).map(([k, v]) => (
-                            <tr key={k}>
+                            <tr key={k} className="hover:bg-accent/50 transition-colors">
                               <td className="p-2 text-muted-foreground font-semibold w-1/3 border-r border-border">
                                 {k}
                               </td>
@@ -383,19 +383,19 @@ export function HistoryView({
                 <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Audit ID</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Audit ID</span>
                       <strong className="font-mono text-primary text-[11px] break-all">{selectedItem.requestId}</strong>
                     </div>
                     <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Environment</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Environment</span>
                       <strong className="text-foreground">{selectedItem.environment.toUpperCase()}</strong>
                     </div>
                     <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Signing Status</span>
-                      <strong className="text-emerald-400">{selectedItem.signingStatus}</strong>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Signing Status</span>
+                      <strong className="text-success">{selectedItem.signingStatus}</strong>
                     </div>
                     <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Execution Latency</span>
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Execution Latency</span>
                       <strong className="text-foreground">{selectedItem.durationMs} ms</strong>
                     </div>
                   </div>

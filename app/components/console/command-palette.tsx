@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Command,
   CommandDialog,
@@ -53,17 +53,6 @@ export function CommandPalette({
   onViewChange,
   onSelectEndpoint,
 }: CommandPaletteProps) {
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        onOpenChange(!open);
-      }
-    };
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
-  }, [open, onOpenChange]);
-
   const handleSelect = (callback: () => void) => {
     callback();
     onOpenChange(false);
@@ -71,24 +60,26 @@ export function CommandPalette({
 
   const isMobile = useIsMobile();
 
+  const groupHeadingClass = 'text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground';
+
   const commandBody = (
     <>
       <CommandInput
         placeholder="Search APIs, endpoints, country, or jump to view..."
-        className="text-xs font-mono"
+        className="text-sm"
       />
-      <CommandList className="max-h-80 overflow-y-auto font-mono text-xs">
+      <CommandList className="max-h-80 overflow-y-auto text-sm">
         <CommandEmpty>No matching commands or endpoints found.</CommandEmpty>
 
         {/* Navigation Group */}
-        <CommandGroup heading="Navigation">
+        <CommandGroup heading={<span className={groupHeadingClass}>Navigation</span>}>
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('workbench'))}
             className="cursor-pointer hover:bg-accent"
           >
             <Code2 className="mr-2 h-4 w-4 text-primary" />
             <span>API Workbench</span>
-            <CommandShortcut>Alt+1</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+1</CommandShortcut>
           </CommandItem>
 
           <CommandItem
@@ -97,41 +88,41 @@ export function CommandPalette({
           >
             <History className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Execution History</span>
-            <CommandShortcut>Alt+2</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+2</CommandShortcut>
           </CommandItem>
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('callbacks'))}
             className="cursor-pointer hover:bg-accent"
           >
-            <Webhook className="mr-2 h-4 w-4 text-emerald-400" />
+            <Webhook className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Callback & Webhook Inbox</span>
-            <CommandShortcut>Alt+3</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+3</CommandShortcut>
           </CommandItem>
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('variables'))}
             className="cursor-pointer hover:bg-accent"
           >
-            <Braces className="mr-2 h-4 w-4 text-amber-400" />
+            <Braces className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Environment Variables</span>
-            <CommandShortcut>Alt+4</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+4</CommandShortcut>
           </CommandItem>
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('status'))}
             className="cursor-pointer hover:bg-accent"
           >
-            <ServerCog className="mr-2 h-4 w-4 text-purple-400" />
+            <ServerCog className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Environment Readiness Status</span>
-            <CommandShortcut>Alt+5</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+5</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 
         <CommandSeparator className="bg-border" />
 
         {/* Country & Environment Switcher */}
-        <CommandGroup heading="Markets & Environment">
+        <CommandGroup heading={<span className={groupHeadingClass}>Markets & Environment</span>}>
           {countries.map((c) => (
             <CommandItem
               key={c.slug}
@@ -143,7 +134,7 @@ export function CommandPalette({
                 Switch to {c.name} ({c.currency})
               </span>
               {selectedCountry === c.slug && (
-                <span className="ml-auto text-[11.5px] text-primary font-bold">ACTIVE</span>
+                <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">Active</span>
               )}
             </CommandItem>
           ))}
@@ -152,7 +143,7 @@ export function CommandPalette({
         <CommandSeparator className="bg-border" />
 
         {/* Endpoints in active country */}
-        <CommandGroup heading={`Endpoints (${selectedCountry.toUpperCase()})`}>
+        <CommandGroup heading={<span className={groupHeadingClass}>Endpoints ({selectedCountry.toUpperCase()})</span>}>
           {endpoints.map((ep) => (
             <CommandItem
               key={ep.id}
@@ -181,7 +172,7 @@ export function CommandPalette({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="bg-popover border-border rounded-t-[20px] max-h-[85dvh]">
+        <DrawerContent className="bg-popover border-border rounded-t-2xl max-h-[85dvh]">
           <DrawerTitle className="sr-only">Search and commands</DrawerTitle>
           <Command className="bg-transparent">
             {commandBody}
@@ -195,7 +186,7 @@ export function CommandPalette({
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      className="bg-popover border border-border shadow-2xl text-foreground rounded-[20px] overflow-hidden"
+      className="bg-popover border border-border shadow-2xl text-foreground rounded-2xl overflow-hidden"
     >
       {commandBody}
     </CommandDialog>

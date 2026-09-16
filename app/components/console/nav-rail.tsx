@@ -1,6 +1,7 @@
 'use client';
 
 import { Braces, Code2, Command, History, ServerCog, ShieldCheck, Webhook } from 'lucide-react';
+import { Kbd } from '@/components/ui/kbd';
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuBadge,
@@ -45,17 +46,17 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
               size="lg"
               onClick={() => onViewChange('workbench')}
               tooltip="AssanPay Developer Console"
-              className="group transition-all duration-150"
+              className="transition-colors duration-150"
             >
-              {/* Logo with gradient */}
+              {/* Logo */}
               <span
-                className="brand-mark flex size-9 items-center justify-center rounded-[11px] text-white shrink-0 transition-all duration-200 group-hover:scale-105"
+                className="brand-mark flex size-9 items-center justify-center rounded-md text-white shrink-0"
               >
                 <ShieldCheck size={16} strokeWidth={2.4} />
               </span>
               <span className="flex min-w-0 flex-col">
-                <span className="font-display text-[13.5px] font-bold tracking-tight text-foreground">AssanPay</span>
-                <span className="text-[11.5px] text-muted-foreground font-mono tracking-wider">Console</span>
+                <span className="text-sm font-bold tracking-tight text-foreground">AssanPay</span>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Console</span>
               </span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -67,7 +68,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
       <SidebarContent>
         {groups.map((group) => (
           <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[11px] tracking-widest uppercase text-muted-foreground font-semibold px-3 mb-0.5">
+            <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground px-3 mb-0.5">
               {group.label}
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -81,7 +82,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                         isActive={isActive}
                         tooltip={`${item.label} (${item.shortcut})`}
                         onClick={() => onViewChange(item.id)}
-                        className={`relative transition-all duration-150 group/nav-item rounded-xl ${
+                        className={`relative transition-colors duration-150 group/nav-item rounded-xl ${
                           isActive
                             ? 'font-semibold shadow-sm'
                             : 'text-foreground/70 hover:text-foreground hover:bg-accent'
@@ -102,7 +103,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
 
                       {item.badge !== undefined && item.badge > 0 ? (
                         <SidebarMenuBadge
-                          className="text-[11px] font-bold bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/20 rounded-full px-1.5"
+                          className="text-xs font-semibold tabular-nums bg-primary/10 text-primary border border-primary/20 rounded-full px-1.5"
                         >
                           {item.badge > 99 ? '99+' : item.badge}
                         </SidebarMenuBadge>
@@ -127,7 +128,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
               >
                 <Command size={14} className="text-muted-foreground" />
                 <span className="text-xs">Quick search</span>
-                <SidebarMenuBadge className="text-[11px] font-mono text-muted-foreground">⌘K</SidebarMenuBadge>
+                <Kbd className="ml-auto">⌘K</Kbd>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

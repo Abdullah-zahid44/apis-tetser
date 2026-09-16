@@ -122,12 +122,12 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
           <div>
-            <h2 className="text-sm font-bold text-white flex flex-wrap items-center gap-2">
+            <h2 className="text-sm font-bold text-foreground flex flex-wrap items-center gap-2">
               <Braces size={18} className="text-primary" />
               <span>Environment Variables Workspace</span>
               <Badge
                 variant="outline"
-                className="h-4 px-1.5 text-[11px] font-mono border-slate-700 text-muted-foreground"
+                className="h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
               >
                 AES-256-GCM Vault
               </Badge>
@@ -142,7 +142,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
             variant="outline"
             size="sm"
             onClick={() => void fetchVariables()}
-            className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer font-mono"
+            className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer"
           >
             <RefreshCw size={12} className={loading ? 'spin text-primary' : ''} />
             <span>Refresh</span>
@@ -159,7 +159,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
               {editingId ? 'Edit Environment Variable' : 'Create New Environment Variable'}
             </strong>
             {savedMessage && (
-              <span className="text-xs text-emerald-400 flex items-center gap-1 font-mono">
+              <span className="text-xs text-success flex items-center gap-1">
                 <CheckCircle2 size={13} />
                 {savedMessage}
               </span>
@@ -168,20 +168,20 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
-              <label className="text-[11.5px] font-mono uppercase text-muted-foreground block mb-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Variable Key
               </label>
               <Input
                 value={key}
                 onChange={(e) => setKey(e.target.value)}
                 placeholder="orderId"
-                className="h-8 text-xs font-mono bg-card border-border text-slate-100 placeholder:text-muted-foreground"
+                className="h-8 text-xs font-mono bg-card border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
 
             <div className="md:col-span-2">
-              <label className="text-[11.5px] font-mono uppercase text-muted-foreground block mb-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Value
               </label>
               <Input
@@ -192,12 +192,12 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                     ? 'Leave blank to preserve encrypted secret'
                     : 'ORD-12345 or 500'
                 }
-                className="h-8 text-xs font-mono bg-card border-border text-slate-100 placeholder:text-muted-foreground"
+                className="h-8 text-xs font-mono bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
             <div>
-              <label className="text-[11.5px] font-mono uppercase text-muted-foreground block mb-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Scope
               </label>
               <select
@@ -213,14 +213,14 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
             <div className="md:col-span-3">
-              <label className="text-[11.5px] font-mono uppercase text-muted-foreground block mb-1">
+              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Description (Optional)
               </label>
               <Input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Merchant transaction ID for checkout test cases"
-                className="h-8 text-xs bg-card border-border text-slate-100 placeholder:text-muted-foreground"
+                className="h-8 text-xs bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
@@ -232,8 +232,8 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                   onChange={(e) => setIsSecret(e.target.checked)}
                   className="rounded bg-card border-border text-primary cursor-pointer"
                 />
-                <span className="flex items-center gap-1.5 font-mono text-[11px]">
-                  <Lock size={12} className="text-amber-400" />
+                <span className="flex items-center gap-1.5 text-[11px]">
+                  <Lock size={12} className="text-warning" />
                   <span>Mask / Encrypt Secret</span>
                 </span>
               </label>
@@ -261,7 +261,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
             <Button
               type="submit"
               size="sm"
-              className="h-7 text-xs bg-primary hover:bg-primary text-white font-semibold px-4 cursor-pointer shadow-xs"
+              className="h-7 text-xs bg-primary hover:bg-primary text-primary-foreground font-semibold px-4 cursor-pointer shadow-xs"
             >
               {editingId ? 'Update Variable' : 'Save Variable'}
             </Button>
@@ -271,7 +271,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
         {/* Variables Table */}
         <div className="rounded-lg border border-border overflow-x-auto bg-card">
           <table className="w-full min-w-[720px] text-xs text-left">
-            <thead className="bg-muted text-muted-foreground font-mono uppercase text-[11.5px] border-b border-border">
+            <thead className="bg-muted/60 text-muted-foreground uppercase text-[11px] font-semibold tracking-[0.05em] border-b border-border">
               <tr>
                 <th className="p-3">Variable Key</th>
                 <th className="p-3">Value</th>
@@ -289,14 +289,14 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                 </tr>
               ) : (
                 variables.map((item) => (
-                  <tr key={item.id} className="hover:bg-muted/60">
+                  <tr key={item.id} className="hover:bg-accent/50 transition-colors">
                     <td className="p-3 font-semibold text-primary">
                       {'{{'}{item.key}{'}}'}
                     </td>
                     <td className="p-3 text-foreground">
                       {item.isSecret ? (
                         <div className="flex items-center gap-2">
-                          <span className="flex items-center gap-1 text-amber-400 font-mono">
+                          <span className="flex items-center gap-1 text-warning font-mono">
                             <Lock size={12} />
                             <span>{revealedIds[item.id] ? item.value : '••••••••'}</span>
                           </span>
@@ -329,7 +329,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                         </button>
                         <button
                           onClick={() => void handleDeleteVariable(item.id)}
-                          className="p-1.5 text-muted-foreground hover:text-rose-400 cursor-pointer rounded hover:bg-muted"
+                          className="p-1.5 text-muted-foreground hover:text-destructive cursor-pointer rounded hover:bg-muted"
                           title="Delete"
                         >
                           <Trash2 size={13} />

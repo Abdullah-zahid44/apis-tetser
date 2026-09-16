@@ -19,6 +19,14 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-method-get: var(--method-get);
+  --color-method-post: var(--method-post);
+  --color-method-put: var(--method-put);
+  --color-method-patch: var(--method-patch);
+  --color-method-delete: var(--method-delete);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -32,10 +40,11 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.75);
+  --radius-sm: 0.625rem;
+  --radius-md: 0.75rem;
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.3);
+  --radius-xl: 1.125rem;
+  --radius-2xl: 1.375rem;
 
   /* Surface layer tokens */
   --color-surface-0: var(--surface-0);
@@ -68,16 +77,24 @@
   --primary-foreground: #ffffff;
   --secondary: #f3eee4;
   --secondary-foreground: #44403c;
-  --muted: #f3eee4;
+  --muted: #f3ede2;
   --muted-foreground: #78716c;
   --accent: #fcefd8;
   --accent-foreground: #92400e;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #e9e0d0;
-  --input: #e9e0d0;
+  --success: #16a34a;
+  --warning: #d97706;
+  --info: #2563eb;
+  --method-get: #059669;
+  --method-post: #d97706;
+  --method-put: #2563eb;
+  --method-patch: #7c3aed;
+  --method-delete: #dc2626;
+  --border: #e7ddcd;
+  --input: #e7ddcd;
   --ring: #d97706;
-  --radius: 1.25rem;
+  --radius: 0.875rem;
 
   --sidebar: #ffffff;
   --sidebar-foreground: #1c1917;
@@ -106,7 +123,7 @@
   --glow-warning: rgba(217, 119, 6, 0.14);
   --glow-danger: rgba(220, 38, 38, 0.12);
 
-  --shadow-card: 0 1px 2px rgba(28, 25, 23, 0.05), 0 4px 16px -4px rgba(28, 25, 23, 0.08);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
   --shadow-lift: 0 2px 4px rgba(28, 25, 23, 0.06), 0 12px 32px -8px rgba(28, 25, 23, 0.14);
 }
 
@@ -123,19 +140,27 @@
   --popover: #221d16;
   --popover-foreground: #f5efe4;
   --primary: #f59e0b;
-  --primary-foreground: #1d1408;
+  --primary-foreground: #1c1917;
   --secondary: #2a231b;
   --secondary-foreground: #d6cdbe;
-  --muted: #2a231b;
+  --muted: #292420;
   --muted-foreground: #a8a094;
   --accent: #2e2415;
   --accent-foreground: #fcd9a0;
   --destructive: #f87171;
   --destructive-foreground: #450a0a;
-  --border: #2e2720;
-  --input: #2e2720;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+  --method-get: #34d399;
+  --method-post: #fbbf24;
+  --method-put: #60a5fa;
+  --method-patch: #a78bfa;
+  --method-delete: #f87171;
+  --border: #3a332b;
+  --input: #3a332b;
   --ring: #f59e0b;
-  --radius: 1.25rem;
+  --radius: 0.875rem;
 
   --sidebar: #171310;
   --sidebar-foreground: #f5efe4;
@@ -164,56 +189,9 @@
   --glow-warning: rgba(251, 191, 36, 0.12);
   --glow-danger: rgba(248, 113, 113, 0.12);
 
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  /* Dark: elevation via background tone step, not stronger shadows */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.25), 0 8px 24px -12px rgb(0 0 0 / 0.3);
   --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.45), 0 16px 40px -12px rgba(0, 0, 0, 0.6);
-}
-
-/* ==============================================================================
-   LEGACY HARDCODED-COLOR BRIDGE
-   Maps old hardcoded dark hex utilities to theme variables so light mode works.
-   ============================================================================== */
-html:not(.dark) [class*="bg-[#080b11]"],
-html:not(.dark) [class*="bg-[#070a0f]"],
-html:not(.dark) [class*="bg-[#0a0e17]"],
-html:not(.dark) [class*="bg-[#0d121c]"],
-html:not(.dark) [class*="bg-[#0c111c]"],
-html:not(.dark) [class*="bg-[#0b0f19]"],
-html:not(.dark) [class*="bg-[#111724]"] {
-  background-color: var(--card) !important;
-}
-
-html:not(.dark) [class*="border-[#1a2336]"],
-html:not(.dark) [class*="border-[#1f2a3e]"] {
-  border-color: var(--border) !important;
-}
-
-html:not(.dark) [class*="text-slate-100"],
-html:not(.dark) [class*="text-slate-200"],
-html:not(.dark) [class*="text-slate-300"] {
-  color: var(--foreground) !important;
-}
-
-html:not(.dark) [class*="text-slate-400"],
-html:not(.dark) [class*="text-slate-500"] {
-  color: var(--muted-foreground) !important;
-}
-
-html:not(.dark) [class*="placeholder:text-slate"]::placeholder {
-  color: var(--muted-foreground) !important;
-}
-
-html:not(.dark) textarea,
-html:not(.dark) input {
-  color: var(--foreground) !important;
-}
-
-html:not(.dark) [data-slot="dropdown-menu-content"],
-html:not(.dark) [data-slot="select-content"],
-html:not(.dark) [role="listbox"] {
-  background: var(--popover) !important;
-  color: var(--popover-foreground) !important;
-  border-color: var(--border) !important;
-  box-shadow: var(--shadow-lift) !important;
 }
 
 * {
@@ -276,7 +254,7 @@ code, pre, kbd,
   font-variant-ligatures: none;
 }
 
-/* HTTP method badges — refined with new palette */
+/* HTTP method badges — theme-aware method colors, soft tint */
 .method-badge {
   display: inline-flex;
   align-items: center;
@@ -286,16 +264,16 @@ code, pre, kbd,
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  padding: 4px 8px;
-  border-radius: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
   line-height: 1.2;
 }
 
-.method-badge.get { color: #2dd4bf; background: rgba(45, 212, 191, 0.1); border: 1px solid rgba(45, 212, 191, 0.22); }
-.method-badge.post { color: #fbbf24; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.25); }
-.method-badge.put { color: #a78bfa; background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.22); }
-.method-badge.patch { color: #f0abfc; background: rgba(240, 171, 252, 0.08); border: 1px solid rgba(240, 171, 252, 0.2); }
-.method-badge.delete { color: #fca5a5; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.22); }
+.method-badge.get { color: var(--method-get); background: color-mix(in srgb, var(--method-get) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-get) 28%, transparent); }
+.method-badge.post { color: var(--method-post); background: color-mix(in srgb, var(--method-post) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-post) 28%, transparent); }
+.method-badge.put { color: var(--method-put); background: color-mix(in srgb, var(--method-put) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-put) 28%, transparent); }
+.method-badge.patch { color: var(--method-patch); background: color-mix(in srgb, var(--method-patch) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-patch) 28%, transparent); }
+.method-badge.delete { color: var(--method-delete); background: color-mix(in srgb, var(--method-delete) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-delete) 28%, transparent); }
 
 .method-mini {
   display: inline-flex;
@@ -306,14 +284,14 @@ code, pre, kbd,
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.03em;
-  padding: 3px 7px;
-  border-radius: 7px;
+  padding: 3px 8px;
+  border-radius: 999px;
 }
-.method-mini.get { color: #2dd4bf; background: rgba(45, 212, 191, 0.1); border: 1px solid rgba(45, 212, 191, 0.22); }
-.method-mini.post { color: #fbbf24; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.25); }
-.method-mini.put { color: #a78bfa; background: rgba(167, 139, 250, 0.1); border: 1px solid rgba(167, 139, 250, 0.22); }
-.method-mini.patch { color: #f0abfc; background: rgba(240, 171, 252, 0.08); border: 1px solid rgba(240, 171, 252, 0.2); }
-.method-mini.delete { color: #fca5a5; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.22); }
+.method-mini.get { color: var(--method-get); background: color-mix(in srgb, var(--method-get) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-get) 28%, transparent); }
+.method-mini.post { color: var(--method-post); background: color-mix(in srgb, var(--method-post) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-post) 28%, transparent); }
+.method-mini.put { color: var(--method-put); background: color-mix(in srgb, var(--method-put) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-put) 28%, transparent); }
+.method-mini.patch { color: var(--method-patch); background: color-mix(in srgb, var(--method-patch) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-patch) 28%, transparent); }
+.method-mini.delete { color: var(--method-delete); background: color-mix(in srgb, var(--method-delete) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-delete) 28%, transparent); }
 
 .spin {
   animation: spin 0.85s linear infinite;
@@ -350,14 +328,7 @@ code, pre, kbd,
   border-radius: 8px;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--glow-primary); }
-  50%       { opacity: 0.75; box-shadow: 0 0 0 5px transparent; }
-}
-.pulse-glow {
-  animation: pulse-glow 2.4s ease-in-out infinite;
-}
-
+/* Pulse — single subtle pattern (dot pulse). No glow pulses. */
 @keyframes status-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50%       { opacity: 0.55; transform: scale(0.82); }
@@ -384,10 +355,6 @@ code, pre, kbd,
   border-color: color-mix(in srgb, var(--border) 60%, var(--primary) 40%);
 }
 
-.inset-shadow {
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--foreground) 6%, transparent), inset 0 -1px 0 rgba(0,0,0,0.18);
-}
-
 .active-indicator {
   position: relative;
 }
@@ -398,18 +365,9 @@ code, pre, kbd,
   top: 18%;
   height: 64%;
   width: 3px;
-  background: linear-gradient(180deg, var(--primary), color-mix(in srgb, var(--primary) 55%, transparent));
+  background: var(--primary);
   border-radius: 0 3px 3px 0;
-  box-shadow: 0 0 10px var(--glow-primary);
   transition: opacity 0.2s;
-}
-
-.btn-glow:not(:disabled):hover {
-  box-shadow: 0 0 18px var(--glow-primary), 0 3px 10px rgba(0,0,0,0.35);
-  transform: translateY(-1px);
-}
-.btn-glow:not(:disabled):active {
-  transform: translateY(0);
 }
 
 /* Brand mark */

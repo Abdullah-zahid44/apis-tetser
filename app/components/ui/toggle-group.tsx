@@ -42,7 +42,7 @@ function ToggleGroup({
       data-orientation={orientation}
       style={{ '--gap': spacing } as React.CSSProperties}
       className={cn(
-        'rounded-lg data-[size=sm]:rounded-[min(var(--radius-md),10px)] group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] data-vertical:flex-col data-vertical:items-stretch',
+        'rounded-lg data-[size=sm]:rounded-sm group/toggle-group flex w-fit flex-row items-center gap-[--spacing(var(--gap))] data-vertical:flex-col data-vertical:items-stretch',
         className,
       )}
       {...props}
@@ -77,6 +77,9 @@ function ToggleGroupItem({
           variant: context.variant || variant,
           size: context.size || size,
         }),
+        // Design-system overrides (toggle.tsx is shared): colors-only motion,
+        // visible focus ring, no fractional type at sm size.
+        'transition-colors duration-150 focus-visible:ring-3 focus-visible:ring-primary/40 data-[size=sm]:text-xs',
         className,
       )}
       {...props}

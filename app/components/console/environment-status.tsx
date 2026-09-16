@@ -36,7 +36,7 @@ export function EnvironmentStatusView({
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
           <div>
-            <h2 className="text-sm font-bold text-white flex flex-wrap items-center gap-2">
+            <h2 className="text-sm font-bold text-foreground flex flex-wrap items-center gap-2">
               <ServerCog size={18} className="text-primary" />
               <span>Environment Readiness & Configuration Matrix</span>
               <Badge
@@ -55,7 +55,7 @@ export function EnvironmentStatusView({
             variant="ghost"
             size="sm"
             onClick={onBackToWorkbench}
-            className="h-7 text-xs text-primary hover:text-primary gap-1 font-mono cursor-pointer"
+            className="h-7 text-xs text-primary hover:text-primary gap-1 cursor-pointer"
           >
             <ArrowLeft size={13} />
             <span>Workbench</span>
@@ -63,16 +63,16 @@ export function EnvironmentStatusView({
         </div>
 
         {/* Global Infrastructure Health Bar */}
-        <div className="p-3.5 rounded-lg bg-card border border-border space-y-2.5">
+        <div className="p-4 rounded-lg bg-card border border-border space-y-2.5">
           <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-            <Database size={15} className="text-emerald-400" />
+            <Database size={15} className="text-success" />
             <span>Core Infrastructure Status</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
             <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
               <span className="text-muted-foreground">Database (Neon Postgres)</span>
-              <span className="text-emerald-400 flex items-center gap-1 font-bold">
+              <span className="text-success flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 CONNECTED
               </span>
@@ -80,7 +80,7 @@ export function EnvironmentStatusView({
 
             <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
               <span className="text-muted-foreground">HMAC-SHA256 Signer</span>
-              <span className="text-emerald-400 flex items-center gap-1 font-bold">
+              <span className="text-success flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 READY
               </span>
@@ -95,7 +95,7 @@ export function EnvironmentStatusView({
 
         {/* Country & Environment Readiness Matrix */}
         <div className="space-y-3">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider font-mono">
+          <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.05em]">
             Country Gateway Readiness
           </h3>
 
@@ -114,7 +114,7 @@ export function EnvironmentStatusView({
                       {country.currency}
                     </span>
                   </span>
-                  <span className="text-[11.5px] font-mono text-muted-foreground uppercase">
+                  <span className="text-xs font-mono text-muted-foreground uppercase">
                     {country.code}
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function EnvironmentStatusView({
                         className={`p-2.5 rounded border text-xs space-y-2 ${
                           isConfigured
                             ? 'bg-card border-border'
-                            : 'bg-amber-950/20 border-amber-900/30'
+                            : 'bg-warning/10 border-warning/25'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -143,8 +143,8 @@ export function EnvironmentStatusView({
                           </span>
 
                           <span
-                            className={`font-mono text-[11.5px] font-bold flex items-center gap-1 ${
-                              isConfigured ? 'text-emerald-400' : 'text-amber-400'
+                            className={`font-mono text-xs font-bold flex items-center gap-1 ${
+                              isConfigured ? 'text-success' : 'text-warning'
                             }`}
                           >
                             {isConfigured ? (
@@ -161,7 +161,7 @@ export function EnvironmentStatusView({
                           </span>
                         </div>
 
-                        <div className="space-y-1 font-mono text-[12px] text-muted-foreground pt-0.5">
+                        <div className="space-y-1 font-mono text-xs text-muted-foreground pt-0.5">
                           <div className="flex justify-between">
                             <span>Base URL:</span>
                             <span className="text-foreground">
@@ -172,7 +172,7 @@ export function EnvironmentStatusView({
                           <div className="flex justify-between">
                             <span>API Key:</span>
                             <span
-                              className={status?.apiKeyConfigured ? 'text-emerald-400' : 'text-amber-400'}
+                              className={status?.apiKeyConfigured ? 'text-success' : 'text-warning'}
                             >
                               {status?.apiKeyConfigured ? '✓ Configured' : '✗ Missing in .env'}
                             </span>
@@ -181,7 +181,7 @@ export function EnvironmentStatusView({
                           <div className="flex justify-between">
                             <span>API Secret:</span>
                             <span
-                              className={status?.apiSecretConfigured ? 'text-emerald-400' : 'text-amber-400'}
+                              className={status?.apiSecretConfigured ? 'text-success' : 'text-warning'}
                             >
                               {status?.apiSecretConfigured ? '✓ Configured' : '✗ Missing in .env'}
                             </span>

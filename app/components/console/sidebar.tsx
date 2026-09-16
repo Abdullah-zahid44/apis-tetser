@@ -126,13 +126,13 @@ export function Sidebar({
       <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center justify-between shrink-0">
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-[11px] font-mono text-slate-600 uppercase tracking-widest">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
               {countryCode.toUpperCase()}
             </span>
-            <span className="w-1 h-1 rounded-full bg-slate-700" />
-            <span className="text-[11px] font-mono text-slate-600 uppercase tracking-widest">Gateway</span>
+            <span className="w-1 h-1 rounded-full bg-muted-foreground/50" />
+            <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Gateway</span>
           </div>
-          <h2 className="text-[13px] font-semibold text-slate-100 tracking-tight">
+          <h2 className="text-sm font-semibold text-foreground tracking-tight">
             Collections
           </h2>
         </div>
@@ -142,7 +142,7 @@ export function Sidebar({
             variant="outline"
             size="sm"
             onClick={onNewRequest}
-            className="h-7 px-2.5 text-xs gap-1.5 border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] text-secondary-foreground hover:text-slate-100 transition-all"
+            className="h-7 px-2.5 text-xs gap-1.5 border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] text-secondary-foreground hover:text-foreground transition-colors"
             title="Create new request"
           >
             <Plus size={12} />
@@ -191,13 +191,13 @@ export function Sidebar({
       <div className="px-3 py-2 border-b border-[var(--border)] shrink-0">
         <InputGroup>
           <InputGroupAddon>
-            <Search size={13} className="text-slate-600" />
+            <Search size={13} className="text-muted-foreground/60" />
           </InputGroupAddon>
           <InputGroupInput
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={activeTab === 'catalog' ? `Filter ${countryName} APIs…` : 'Filter saved…'}
-            className="text-xs placeholder:text-slate-600"
+            className="text-xs placeholder:text-muted-foreground/60"
           />
           {search && (
             <InputGroupAddon align="inline-end">
@@ -228,7 +228,7 @@ export function Sidebar({
                 )}
               </Empty>
             ) : (
-              <div className="space-y-1 animate-fade-in">
+              <div className="space-y-1">
                 {categories.map((category) => {
                   const catEndpoints = filteredEndpoints.filter((ep) => ep.category === category);
                   const isOpen = openCategories[category] ?? true;
@@ -238,15 +238,15 @@ export function Sidebar({
                       {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category)}
-                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-4)] transition-all duration-100 cursor-pointer group/cat"
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-100 cursor-pointer group/cat"
                       >
-                        <span className="text-slate-600 group-hover/cat:text-muted-foreground transition-colors">
+                        <span className="text-muted-foreground/60 group-hover/cat:text-muted-foreground transition-colors">
                           {isOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                         </span>
-                        <span className="text-[11.5px] font-semibold uppercase tracking-wider flex-1 text-left">
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.05em] flex-1 text-left">
                           {category}
                         </span>
-                        <span className="text-[11px] font-mono text-slate-600 bg-[var(--surface-4)] px-1.5 py-0.5 rounded">
+                        <span className="text-[11px] font-mono tabular-nums text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                           {catEndpoints.length}
                         </span>
                       </button>
@@ -261,44 +261,29 @@ export function Sidebar({
                                 <HoverCardTrigger>
                               <button
                                 onClick={() => onSelectEndpoint(ep)}
-                                className={`w-full group/ep text-left px-2 py-2 rounded-md transition-all duration-100 flex items-center gap-2 cursor-pointer ${
+                                className={`w-full group/ep text-left px-2 py-2 rounded-md transition-colors duration-100 flex items-center gap-2 cursor-pointer ${
                                   isSelected
-                                    ? 'text-foreground'
-                                    : 'text-muted-foreground hover:text-foreground hover:translate-x-[1px]'
+                                    ? 'bg-foreground text-background font-medium shadow-sm'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                                 }`}
-                                style={isSelected ? {
-                                  background: 'linear-gradient(90deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, color-mix(in srgb, var(--primary) 4%, transparent) 100%)',
-                                  boxShadow: 'inset 2px 0 0 var(--primary)',
-                                  color: 'var(--foreground)',
-                                } : { background: 'transparent' }}
-                                onMouseEnter={(e) => {
-                                  if (!isSelected) {
-                                    (e.currentTarget as HTMLElement).style.background = 'var(--surface-4)';
-                                  }
-                                }}
-                                onMouseLeave={(e) => {
-                                  if (!isSelected) {
-                                    (e.currentTarget as HTMLElement).style.background = 'transparent';
-                                  }
-                                }}
                               >
                                 <MethodPill method={ep.method} />
                                 <div className="flex-1 min-w-0">
-                                  <div className="text-[12px] font-medium truncate leading-snug">
+                                  <div className="text-xs font-medium truncate leading-snug">
                                     {ep.name}
                                   </div>
-                                  <div className="text-[11.5px] font-mono text-muted-foreground truncate mt-0.5">
+                                  <div className={`text-[11px] font-mono truncate mt-0.5 ${isSelected ? 'text-background/60' : 'text-muted-foreground/60'}`}>
                                     {ep.path}
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-1 shrink-0">
                                   {ep.isMoneyMovement && (
-                                    <span title="Money Movement" className="text-amber-400 opacity-70 group-hover/ep:opacity-100 transition-opacity">
+                                    <span title="Money Movement" className={isSelected ? 'text-background/60' : 'text-muted-foreground/60'}>
                                       <ShieldAlert size={11} />
                                     </span>
                                   )}
                                   {ep.requiresSignature && (
-                                    <span title="HMAC-SHA256 Required" className="text-muted-foreground group-hover/ep:text-primary transition-colors">
+                                    <span title="HMAC-SHA256 Required" className={isSelected ? 'text-background/60' : 'text-muted-foreground/60'}>
                                       <Lock size={10} />
                                     </span>
                                   )}
@@ -308,18 +293,18 @@ export function Sidebar({
                                 <HoverCardContent
                                   side="right"
                                   align="start"
-                                  className="w-72 p-4 bg-popover border-border rounded-[12px] shadow-xl"
+                                  className="w-72 p-4 bg-popover border-border rounded-lg shadow-xl"
                                 >
                                   <div className="space-y-2.5">
                                     <div className="flex items-center gap-2">
                                       <MethodPill method={ep.method} />
-                                      <span className="font-display text-[13px] font-bold text-foreground">{ep.name}</span>
+                                      <span className="text-sm font-bold text-foreground">{ep.name}</span>
                                     </div>
-                                    <code className="block text-[11.5px] font-mono text-primary bg-primary/10 border border-primary/20 rounded-md px-2 py-1.5 break-all">
+                                    <code className="block text-[11px] font-mono text-primary bg-primary/10 border border-primary/20 rounded-md px-2 py-1.5 break-all">
                                       {ep.path}
                                     </code>
                                     {ep.description && (
-                                      <p className="text-[12px] text-muted-foreground leading-relaxed">{ep.description}</p>
+                                      <p className="text-xs text-muted-foreground leading-relaxed">{ep.description}</p>
                                     )}
                                     <div className="flex flex-wrap gap-1.5 pt-1">
                                       {ep.requiresSignature && (
@@ -328,7 +313,7 @@ export function Sidebar({
                                         </Badge>
                                       )}
                                       {ep.isMoneyMovement && (
-                                        <Badge variant="outline" className="text-[11px] gap-1 border-amber-500/30 text-amber-400">
+                                        <Badge variant="outline" className="text-[11px] gap-1 border-warning/30 text-warning">
                                           <ShieldAlert size={10} /> Money Movement
                                         </Badge>
                                       )}
@@ -356,20 +341,17 @@ export function Sidebar({
                 </EmptyHeader>
               </Empty>
             ) : (
-              <div className="space-y-0.5 animate-fade-in">
+              <div className="space-y-0.5">
                 {filteredSaved.map((saved) => {
                   const isSelected = selectedId === `saved-${saved.id}`;
                   return (
                     <div
                       key={saved.id}
-                      className={`group/saved flex items-center rounded-md border transition-all duration-100 px-2 py-1.5 ${
+                      className={`group/saved flex items-center rounded-md border transition-colors duration-100 px-2 py-1.5 ${
                         isSelected
-                          ? 'border-[var(--primary)]/20 text-slate-100'
-                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-[var(--border)]'
+                          ? 'bg-foreground text-background border-transparent font-medium shadow-sm'
+                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border hover:bg-accent/50'
                       }`}
-                      style={isSelected ? {
-                        background: 'linear-gradient(90deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, color-mix(in srgb, var(--primary) 4%, transparent) 100%)',
-                      } : undefined}
                     >
                       <button
                         onClick={() => onSelectSaved(saved)}
@@ -377,10 +359,10 @@ export function Sidebar({
                       >
                         <MethodPill method={saved.method} />
                         <div className="flex-1 min-w-0">
-                          <div className="text-[11.5px] font-medium truncate leading-snug">
+                          <div className="text-xs font-medium truncate leading-snug">
                             {saved.name}
                           </div>
-                          <div className="text-[11px] font-mono text-slate-600 truncate mt-0.5">
+                          <div className={`text-[11px] font-mono truncate mt-0.5 ${isSelected ? 'text-background/60' : 'text-muted-foreground/60'}`}>
                             {saved.relativeUrl}
                           </div>
                         </div>
@@ -392,7 +374,7 @@ export function Sidebar({
                             <Button
                               variant="ghost"
                               size="icon-xs"
-                              className="opacity-0 group-hover/saved:opacity-100 text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-5)] transition-all w-6 h-6"
+                              className="opacity-0 group-hover/saved:opacity-100 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors w-6 h-6"
                             />
                           }
                           title="Options"
@@ -427,8 +409,8 @@ export function Sidebar({
 
       {/* Footer — Security info strip */}
       <div className="px-3 py-2 border-t border-[var(--border)] flex items-center gap-1.5 shrink-0">
-        <ShieldCheck size={11} className="text-emerald-500 shrink-0" />
-        <span className="text-[11px] font-mono text-slate-600 truncate">
+        <ShieldCheck size={11} className="text-success shrink-0" />
+        <span className="text-[11px] font-mono text-muted-foreground/60 truncate">
           HMAC-SHA256 · Nonce · Timestamp
         </span>
       </div>

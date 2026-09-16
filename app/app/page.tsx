@@ -592,10 +592,10 @@ export default function ConsoleDashboard() {
 
   if (status === 'loading') {
     return (
-      <div className="h-screen flex items-center justify-center bg-background text-muted-foreground font-mono text-xs">
+      <div className="h-screen flex items-center justify-center bg-background text-muted-foreground text-xs">
         <div className="flex items-center gap-2.5">
-          <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
-          <span className="font-display text-[13px] font-medium tracking-tight">Verifying AssanPay Session...</span>
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span className="text-sm font-medium tracking-tight text-foreground">Verifying AssanPay Session...</span>
         </div>
       </div>
     );
@@ -646,14 +646,14 @@ export default function ConsoleDashboard() {
               onValueChange={(value) => value && setMobilePane(value as 'catalog' | 'workbench' | 'response')}
               className="lg:hidden mx-2 mt-2 shrink-0"
             >
-              <TabsList className="grid w-full grid-cols-3 h-10 bg-card border border-border rounded-full p-1 shadow-[var(--shadow-card)]">
-                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+              <TabsList className="grid w-full grid-cols-3 h-10 bg-muted border border-border rounded-full p-1">
+                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Layers size={14} />Collections
                 </TabsTrigger>
-                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Code2 size={14} />Request
                 </TabsTrigger>
-                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Activity size={14} />Response{result ? ` (${result.upstream.status})` : ''}
                 </TabsTrigger>
               </TabsList>
@@ -663,7 +663,7 @@ export default function ConsoleDashboard() {
             <div className="hidden lg:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-background">
               {/* Collapsible Left Catalog Sidebar - Fixed 280px width so it never squishes */}
               {!sidebarCollapsed && (
-                <div className="w-[296px] shrink-0 h-full min-h-0 border border-border bg-card rounded-[14px] overflow-hidden shadow-[var(--shadow-card)]">
+                <div className="w-[296px] shrink-0 h-full min-h-0 border border-border bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
                   <Sidebar
                     countryCode={selectedCountry}
                     countryName={currentCountryObj?.name || 'Pakistan'}
@@ -683,7 +683,7 @@ export default function ConsoleDashboard() {
               )}
 
               {/* Postman-style vertical flow: compose above, inspect below */}
-              <div className="flex-1 h-full min-h-0 min-w-0 border border-border bg-card rounded-[14px] overflow-hidden shadow-[var(--shadow-card)]">
+              <div className="flex-1 h-full min-h-0 min-w-0 border border-border bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
                 <ResizablePanelGroup orientation="vertical" className="w-full h-full">
                   {/* Panel: Request Workbench */}
                   <ResizablePanel defaultSize={62} minSize={36} id="workbench-panel">
