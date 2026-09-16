@@ -23,7 +23,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Layers,
   Code2,
@@ -599,10 +599,10 @@ export default function ConsoleDashboard() {
 
   if (status === 'loading') {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#080b11] text-slate-400 font-mono text-xs">
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-sky-400 animate-ping" />
-          <span>Verifying AssanPay Session...</span>
+      <div className="h-screen flex items-center justify-center bg-background text-muted-foreground font-mono text-xs">
+        <div className="flex items-center gap-2.5">
+          <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+          <span className="font-display text-[13px] font-medium tracking-tight">Verifying AssanPay Session...</span>
         </div>
       </div>
     );
@@ -648,22 +648,30 @@ export default function ConsoleDashboard() {
                 <CardAction><Button onClick={handleNewRequest}><Plus data-icon="inline-start" />New request</Button></CardAction>
               </CardHeader>
             </Card>
-            {/* Mobile / Tablet Segmented Pane Switcher (< 1024px) */}
-            <ToggleGroup
-              value={[mobilePane]}
-              onValueChange={(value) => value[0] && setMobilePane(value[0] as 'catalog' | 'workbench' | 'response')}
-              className="lg:hidden mx-2 mt-2 grid grid-cols-3 shrink-0 overflow-x-auto"
+            {/* Mobile / Tablet Segmented Pane Switcher (< 1024px) — shadcn Tabs */}
+            <Tabs
+              value={mobilePane}
+              onValueChange={(value) => value && setMobilePane(value as 'catalog' | 'workbench' | 'response')}
+              className="lg:hidden mx-2 mt-2 shrink-0"
             >
-              <ToggleGroupItem value="catalog" className="px-1 text-xs sm:text-sm"><Layers />Collections</ToggleGroupItem>
-              <ToggleGroupItem value="workbench" className="px-1 text-xs sm:text-sm"><Code2 />Request</ToggleGroupItem>
-              <ToggleGroupItem value="response" className="px-1 text-xs sm:text-sm"><Activity />Response {result ? `(${result.upstream.status})` : ''}</ToggleGroupItem>
-            </ToggleGroup>
+              <TabsList className="grid w-full grid-cols-3 h-10 bg-card border border-border rounded-[12px] p-1 shadow-[var(--shadow-card)]">
+                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                  <Layers size={14} />Collections
+                </TabsTrigger>
+                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                  <Code2 size={14} />Request
+                </TabsTrigger>
+                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                  <Activity size={14} />Response{result ? ` (${result.upstream.status})` : ''}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
 
             {/* Desktop: collections + vertically split request/response workspace */}
-            <div className="hidden lg:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-[#080b11]">
+            <div className="hidden lg:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-background">
               {/* Collapsible Left Catalog Sidebar - Fixed 280px width so it never squishes */}
               {!sidebarCollapsed && (
-                <div className="w-[296px] shrink-0 h-full min-h-0 border border-[#1a2336] bg-[#0b0f19] rounded-xl overflow-hidden shadow-sm">
+                <div className="w-[296px] shrink-0 h-full min-h-0 border border-border bg-card rounded-[14px] overflow-hidden shadow-[var(--shadow-card)]">
                   <Sidebar
                     countryCode={selectedCountry}
                     countryName={currentCountryObj?.name || 'Pakistan'}
@@ -683,7 +691,7 @@ export default function ConsoleDashboard() {
               )}
 
               {/* Postman-style vertical flow: compose above, inspect below */}
-              <div className="flex-1 h-full min-h-0 min-w-0 border border-[#1a2336] rounded-xl overflow-hidden shadow-sm">
+              <div className="flex-1 h-full min-h-0 min-w-0 border border-border bg-card rounded-[14px] overflow-hidden shadow-[var(--shadow-card)]">
                 <ResizablePanelGroup orientation="vertical" className="w-full h-full">
                   {/* Panel: Request Workbench */}
                   <ResizablePanel defaultSize={62} minSize={36} id="workbench-panel">

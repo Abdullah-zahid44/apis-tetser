@@ -49,7 +49,7 @@ interface SidebarProps {
 }
 
 const METHOD_STYLES: Record<string, { text: string; bg: string; border: string }> = {
-  GET:    { text: '#38bdf8', bg: 'rgba(56,189,248,0.08)',  border: 'rgba(56,189,248,0.2)' },
+  GET:    { text: 'var(--primary)', bg: 'color-mix(in srgb, var(--primary) 10%, transparent)', border: 'color-mix(in srgb, var(--primary) 25%, transparent)' },
   POST:   { text: '#fb923c', bg: 'rgba(251,146,60,0.08)',  border: 'rgba(251,146,60,0.2)' },
   PUT:    { text: '#818cf8', bg: 'rgba(129,140,248,0.08)', border: 'rgba(129,140,248,0.2)' },
   PATCH:  { text: '#c084fc', bg: 'rgba(192,132,252,0.08)', border: 'rgba(192,132,252,0.2)' },
@@ -60,7 +60,7 @@ function MethodPill({ method }: { method: Method }) {
   const s = METHOD_STYLES[method] ?? METHOD_STYLES.POST;
   return (
     <span
-      className="inline-flex items-center justify-center text-[9.5px] font-bold font-mono tracking-wider px-1.5 py-0.5 rounded shrink-0"
+      className="inline-flex items-center justify-center text-[11px] font-bold font-mono tracking-wider px-1.5 py-0.5 rounded shrink-0"
       style={{ color: s.text, background: s.bg, border: `1px solid ${s.border}` }}
     >
       {method}
@@ -125,11 +125,11 @@ export function Sidebar({
       <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center justify-between shrink-0">
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-[9.5px] font-mono text-slate-600 uppercase tracking-widest">
+            <span className="text-[11px] font-mono text-slate-600 uppercase tracking-widest">
               {countryCode.toUpperCase()}
             </span>
             <span className="w-1 h-1 rounded-full bg-slate-700" />
-            <span className="text-[9.5px] font-mono text-slate-600 uppercase tracking-widest">Gateway</span>
+            <span className="text-[11px] font-mono text-slate-600 uppercase tracking-widest">Gateway</span>
           </div>
           <h2 className="text-[13px] font-semibold text-slate-100 tracking-tight">
             Collections
@@ -141,7 +141,7 @@ export function Sidebar({
             variant="outline"
             size="sm"
             onClick={onNewRequest}
-            className="h-7 px-2.5 text-xs gap-1.5 border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] text-slate-300 hover:text-slate-100 transition-all"
+            className="h-7 px-2.5 text-xs gap-1.5 border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] text-secondary-foreground hover:text-slate-100 transition-all"
             title="Create new request"
           >
             <Plus size={12} />
@@ -153,7 +153,7 @@ export function Sidebar({
               variant="ghost"
               size="icon"
               onClick={onToggleCollapse}
-              className="w-7 h-7 text-slate-500 hover:text-slate-300 hover:bg-[var(--surface-5)] transition-colors"
+              className="w-7 h-7 text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-5)] transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose size={14} />
@@ -172,14 +172,14 @@ export function Sidebar({
           <ToggleGroupItem value="catalog" className="text-xs gap-1.5">
             <Layers size={12} />
             Catalog
-            <Badge variant="secondary" className="text-[9px] font-mono h-4 px-1 ml-0.5">
+            <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">
               {filteredEndpoints.length}
             </Badge>
           </ToggleGroupItem>
           <ToggleGroupItem value="saved" className="text-xs gap-1.5">
             <BookmarkCheck size={12} />
             Saved
-            <Badge variant="secondary" className="text-[9px] font-mono h-4 px-1 ml-0.5">
+            <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">
               {filteredSaved.length}
             </Badge>
           </ToggleGroupItem>
@@ -237,15 +237,15 @@ export function Sidebar({
                       {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category)}
-                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-slate-500 hover:text-slate-300 hover:bg-[var(--surface-4)] transition-all duration-100 cursor-pointer group/cat"
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-4)] transition-all duration-100 cursor-pointer group/cat"
                       >
-                        <span className="text-slate-600 group-hover/cat:text-slate-400 transition-colors">
+                        <span className="text-slate-600 group-hover/cat:text-muted-foreground transition-colors">
                           {isOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                         </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider flex-1 text-left">
+                        <span className="text-[11.5px] font-semibold uppercase tracking-wider flex-1 text-left">
                           {category}
                         </span>
-                        <span className="text-[9px] font-mono text-slate-600 bg-[var(--surface-4)] px-1.5 py-0.5 rounded">
+                        <span className="text-[11px] font-mono text-slate-600 bg-[var(--surface-4)] px-1.5 py-0.5 rounded">
                           {catEndpoints.length}
                         </span>
                       </button>
@@ -263,12 +263,12 @@ export function Sidebar({
                                 className={`w-full group/ep text-left px-2 py-2 rounded-md transition-all duration-100 flex items-center gap-2 cursor-pointer ${
                                   isSelected
                                     ? 'text-slate-100'
-                                    : 'text-slate-400 hover:text-slate-200 hover:translate-x-[1px]'
+                                    : 'text-muted-foreground hover:text-foreground hover:translate-x-[1px]'
                                 }`}
                                 style={isSelected ? {
-                                  background: 'linear-gradient(90deg, rgba(91,141,239,0.1) 0%, rgba(91,141,239,0.03) 100%)',
+                                  background: 'linear-gradient(90deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, color-mix(in srgb, var(--primary) 4%, transparent) 100%)',
                                   boxShadow: 'inset 2px 0 0 var(--primary)',
-                                  color: '#f1f5f9',
+                                  color: 'var(--foreground)',
                                 } : { background: 'transparent' }}
                                 onMouseEnter={(e) => {
                                   if (!isSelected) {
@@ -286,7 +286,7 @@ export function Sidebar({
                                   <div className="text-[12px] font-medium truncate leading-snug">
                                     {ep.name}
                                   </div>
-                                  <div className="text-[10px] font-mono text-slate-600 truncate mt-0.5">
+                                  <div className="text-[11.5px] font-mono text-slate-600 truncate mt-0.5">
                                     {ep.path}
                                   </div>
                                 </div>
@@ -297,7 +297,7 @@ export function Sidebar({
                                     </span>
                                   )}
                                   {ep.requiresSignature && (
-                                    <span title="HMAC-SHA256 Required" className="text-slate-600 group-hover/ep:text-sky-400 transition-colors">
+                                    <span title="HMAC-SHA256 Required" className="text-slate-600 group-hover/ep:text-primary transition-colors">
                                       <Lock size={10} />
                                     </span>
                                   )}
@@ -332,10 +332,10 @@ export function Sidebar({
                       className={`group/saved flex items-center rounded-md border transition-all duration-100 px-2 py-1.5 ${
                         isSelected
                           ? 'border-[var(--primary)]/20 text-slate-100'
-                          : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-[var(--border)]'
+                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-[var(--border)]'
                       }`}
                       style={isSelected ? {
-                        background: 'linear-gradient(90deg, rgba(91,141,239,0.1) 0%, rgba(91,141,239,0.03) 100%)',
+                        background: 'linear-gradient(90deg, color-mix(in srgb, var(--primary) 12%, transparent) 0%, color-mix(in srgb, var(--primary) 4%, transparent) 100%)',
                       } : undefined}
                     >
                       <button
@@ -347,7 +347,7 @@ export function Sidebar({
                           <div className="text-[11.5px] font-medium truncate leading-snug">
                             {saved.name}
                           </div>
-                          <div className="text-[9.5px] font-mono text-slate-600 truncate mt-0.5">
+                          <div className="text-[11px] font-mono text-slate-600 truncate mt-0.5">
                             {saved.relativeUrl}
                           </div>
                         </div>
@@ -359,7 +359,7 @@ export function Sidebar({
                             <Button
                               variant="ghost"
                               size="icon-xs"
-                              className="opacity-0 group-hover/saved:opacity-100 text-slate-500 hover:text-slate-300 hover:bg-[var(--surface-5)] transition-all w-6 h-6"
+                              className="opacity-0 group-hover/saved:opacity-100 text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-5)] transition-all w-6 h-6"
                             />
                           }
                           title="Options"
@@ -395,7 +395,7 @@ export function Sidebar({
       {/* Footer — Security info strip */}
       <div className="px-3 py-2 border-t border-[var(--border)] flex items-center gap-1.5 shrink-0">
         <ShieldCheck size={11} className="text-emerald-500 shrink-0" />
-        <span className="text-[9.5px] font-mono text-slate-600 truncate">
+        <span className="text-[11px] font-mono text-slate-600 truncate">
           HMAC-SHA256 · Nonce · Timestamp
         </span>
       </div>

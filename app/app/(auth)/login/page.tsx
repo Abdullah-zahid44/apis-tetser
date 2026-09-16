@@ -9,69 +9,43 @@ export default async function LoginPage(props: {
   const isDenied = searchParams.error === 'AccessDenied' || searchParams.error === 'OAuthSignin' || searchParams.error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden selection:bg-cyan-500/20"
-      style={{ background: 'radial-gradient(ellipse at 60% 30%, #0d1829 0%, #080b10 60%, #050709 100%)' }}>
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
 
-      {/* Background ambient glows */}
+      {/* Background ambient glows — pine/emerald */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-20"
-          style={{ background: 'radial-gradient(circle, #3b6fd4, transparent)' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-15"
-          style={{ background: 'radial-gradient(circle, #0e9d6b, transparent)' }} />
-        {/* Dot grid overlay */}
-        <div className="absolute inset-0 bg-dot-grid opacity-30" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-25 bg-primary" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-15 bg-primary" />
+        <div className="absolute inset-0 bg-dot-grid opacity-40" />
       </div>
 
-      <div className="w-full max-w-[400px] relative z-10 animate-fade-in">
+      <div className="w-full max-w-[420px] relative z-10 animate-fade-in">
         {/* Main Card */}
-        <div
-          className="rounded-2xl p-6 sm:p-8 relative overflow-hidden"
-          style={{
-            background: 'rgba(14, 16, 22, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 24px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)',
-          }}
-        >
+        <div className="rounded-[18px] p-6 sm:p-8 relative overflow-hidden bg-card border border-border shadow-[var(--shadow-lift)]">
           {/* Top edge highlight */}
-          <div className="absolute top-0 left-8 right-8 h-px"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(91,141,239,0.4), transparent)' }} />
+          <div className="absolute top-0 left-10 right-10 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
           {/* Brand Header */}
           <div className="text-center mb-7 relative z-10">
             {/* Logo */}
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 relative"
-              style={{
-                background: 'linear-gradient(135deg, #1a3460 0%, #1e3d7a 50%, #234795 100%)',
-                boxShadow: '0 8px 24px rgba(91,141,239,0.25), inset 0 1px 0 rgba(255,255,255,0.1)',
-                border: '1px solid rgba(91,141,239,0.3)',
-              }}>
-              <ShieldCheck className="w-7 h-7" style={{ color: '#93b4f5' }} strokeWidth={2} />
+            <div className="brand-mark inline-flex items-center justify-center w-14 h-14 rounded-[16px] mb-5">
+              <ShieldCheck className="w-7 h-7 text-white" strokeWidth={2.2} />
             </div>
 
-            <h1 className="text-[22px] font-bold tracking-tight text-white mb-1.5">
-              AssanPay API Console
+            <h1 className="font-display text-[24px] font-bold tracking-tight text-foreground mb-2">
+              AssanPay Console
             </h1>
-            <p className="text-[10.5px] uppercase tracking-[0.15em] font-mono font-semibold"
-              style={{ color: '#5b8def', opacity: 0.85 }}>
-              Technical Support &amp; Debugging Workspace
+            <p className="text-[11px] uppercase tracking-[0.14em] font-mono font-semibold text-primary">
+              API Testing Workspace
             </p>
           </div>
 
           {/* Error Alert */}
           {isDenied && (
-            <div
-              className="mb-5 p-3.5 rounded-xl flex items-start gap-2.5 animate-fade-in"
-              style={{
-                background: 'rgba(127,29,29,0.3)',
-                border: '1px solid rgba(239,68,68,0.3)',
-                color: '#fca5a5',
-              }}
-            >
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <div className="mb-5 p-4 rounded-[12px] flex items-start gap-3 animate-fade-in bg-destructive/10 border border-destructive/25">
+              <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
               <div>
-                <strong className="font-semibold text-rose-300 text-xs block mb-0.5">Authentication Rejected</strong>
-                <span className="text-xs leading-relaxed text-rose-400/80">
+                <strong className="font-semibold text-destructive text-[13px] block mb-0.5">Authentication Rejected</strong>
+                <span className="text-[12px] leading-relaxed text-muted-foreground">
                   Access restricted to authorized AssanPay employees only.
                 </span>
               </div>
@@ -79,18 +53,12 @@ export default async function LoginPage(props: {
           )}
 
           {/* Info Banner */}
-          <div
-            className="mb-5 p-3.5 rounded-xl flex items-start gap-3"
-            style={{
-              background: 'rgba(8, 16, 32, 0.6)',
-              border: '1px solid rgba(255,255,255,0.05)',
-            }}
-          >
-            <Lock className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="mb-5 p-4 rounded-[12px] flex items-start gap-3 bg-muted/60 border border-border">
+            <Lock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="text-[12px] font-semibold text-slate-200">Authorized Personnel Only</p>
-              <p className="text-[11px] text-slate-500 leading-relaxed">
-                Direct access to live & sandbox payment gateways. All actions are audited.
+              <p className="text-[13px] font-semibold text-foreground">Authorized Personnel Only</p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed">
+                Direct access to live &amp; sandbox payment gateways. All actions are audited.
               </p>
             </div>
           </div>
@@ -104,11 +72,8 @@ export default async function LoginPage(props: {
           >
             <Button
               type="submit"
-              className="w-full h-11 text-slate-900 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-3 cursor-pointer group"
-              style={{
-                background: 'linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%)',
-                boxShadow: '0 2px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.2)',
-              }}
+              size="lg"
+              className="w-full h-12 text-[14px] rounded-[12px] flex items-center justify-center gap-3 group bg-foreground text-background hover:bg-foreground/90"
             >
               {/* Google Logo */}
               <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -118,26 +83,23 @@ export default async function LoginPage(props: {
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
               <span>Continue with Google</span>
-              <ArrowRight className="w-4 h-4 text-slate-500 group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 opacity-60 group-hover:translate-x-0.5 transition-transform" />
             </Button>
           </form>
 
           {/* Footer notice */}
-          <p className="mt-5 text-center text-[10.5px] font-mono"
-            style={{ color: 'rgba(100,116,139,0.7)' }}>
-            Restricted to{' '}
-            <span style={{ color: '#5b8def', opacity: 0.9 }}>@assanpay.com</span>{' '}
-            accounts only
+          <p className="mt-6 text-center text-[12px] font-mono text-muted-foreground">
+            Restricted to <span className="text-primary font-semibold">@assanpay.com</span> accounts only
           </p>
         </div>
 
         {/* Below-card security badge */}
-        <div className="mt-4 flex items-center justify-center gap-3 text-[10px] font-mono" style={{ color: 'rgba(71,85,105,0.6)' }}>
+        <div className="mt-5 flex items-center justify-center gap-3 text-[11.5px] font-mono text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <Zap size={10} className="text-emerald-700" />
+            <Zap size={11} className="text-primary" />
             Zero Client Secrets
           </span>
-          <span>·</span>
+          <span className="opacity-40">·</span>
           <span>AssanPay Enterprise Security</span>
         </div>
       </div>

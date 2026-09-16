@@ -87,11 +87,11 @@ export function ResponsePanel({
       {/* Response Panel Header */}
       <div className="min-h-10 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0 inset-shadow" style={{ background: 'var(--surface-2)' }}>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium uppercase tracking-wider text-slate-500">
+          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Response
           </span>
-          <span className="text-slate-600">•</span>
-          <span className="text-sm font-semibold text-slate-200">
+          <span className="text-muted-foreground">•</span>
+          <span className="text-sm font-semibold text-foreground">
             {running
               ? 'Sending request'
               : loadedHistoryId
@@ -109,7 +109,7 @@ export function ResponsePanel({
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(prettyJson, 'json')}
-              className="h-8 text-xs text-slate-300 hover:text-white hover:bg-[#141a27] px-2.5 gap-1.5 cursor-pointer rounded-lg"
+              className="h-8 text-xs text-secondary-foreground hover:text-white hover:bg-card px-2.5 gap-1.5 cursor-pointer rounded-lg"
               title="Copy JSON Response"
             >
               {copiedType === 'json' ? (
@@ -120,20 +120,20 @@ export function ResponsePanel({
               <span className="hidden sm:inline">{copiedType === 'json' ? 'Copied' : 'JSON'}</span>
             </Button>
 
-            <Button variant="ghost" size="sm" onClick={downloadExample} className="h-8 text-xs text-slate-300 hover:text-white hover:bg-[#141a27] px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Save response as JSON example"><Download size={12} /><span className="hidden sm:inline">Save example</span></Button>
-            {onClear && <Button variant="ghost" size="sm" onClick={onClear} className="h-8 text-xs text-slate-400 hover:text-rose-300 hover:bg-rose-950/20 px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Clear response"><Trash2 size={12} /><span className="hidden sm:inline">Clear</span></Button>}
+            <Button variant="ghost" size="sm" onClick={downloadExample} className="h-8 text-xs text-secondary-foreground hover:text-white hover:bg-card px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Save response as JSON example"><Download size={12} /><span className="hidden sm:inline">Save example</span></Button>
+            {onClear && <Button variant="ghost" size="sm" onClick={onClear} className="h-8 text-xs text-muted-foreground hover:text-rose-300 hover:bg-rose-950/20 px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Clear response"><Trash2 size={12} /><span className="hidden sm:inline">Clear</span></Button>}
           </div>
         )}
       </div>
 
       {/* Developer Telemetry Bar */}
-      <div className="min-h-9 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between font-mono text-xs text-slate-500 shrink-0 overflow-x-auto" style={{ background: 'var(--surface-1)' }}>
+      <div className="min-h-9 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between font-mono text-xs text-muted-foreground shrink-0 overflow-x-auto" style={{ background: 'var(--surface-1)' }}>
         {result ? (
           <>
             <div className="flex items-center gap-3">
               {/* HTTP Status Code Badge */}
               <span
-                className={`flex items-center gap-1.5 px-2 py-0.2 rounded text-[10.5px] font-bold border ${getStatusBadgeStyle(
+                className={`flex items-center gap-1.5 px-2 py-0.2 rounded text-[12px] font-bold border ${getStatusBadgeStyle(
                   result.upstream.status
                 )}`}
               >
@@ -144,32 +144,32 @@ export function ResponsePanel({
               </span>
 
               {/* Latency */}
-              <span className="flex items-center gap-1 text-slate-300 text-[10.5px]">
+              <span className="flex items-center gap-1 text-secondary-foreground text-[12px]">
                 <Clock3 size={11} className={result.meta.durationMs < 500 ? 'text-emerald-400' : 'text-amber-400'} />
                 <span>{result.meta.durationMs} ms</span>
               </span>
 
               {/* Payload Size */}
-              <span className="flex items-center gap-1 text-slate-300 text-[10.5px]">
-                <Activity size={11} className="text-slate-500" />
+              <span className="flex items-center gap-1 text-secondary-foreground text-[12px]">
+                <Activity size={11} className="text-muted-foreground" />
                 <span>{(result.meta.responseSize / 1024).toFixed(2)} KB</span>
               </span>
 
               {/* HMAC Signer Tag */}
               {result.meta.signed && (
-                <span className="hidden sm:flex items-center gap-1 text-[10px] text-emerald-400">
+                <span className="hidden sm:flex items-center gap-1 text-[11.5px] text-emerald-400">
                   <ShieldCheck size={11} />
                   <span>Request signed</span>
                 </span>
               )}
             </div>
 
-            <div className="text-[9.5px] text-slate-500 hidden md:block">
+            <div className="text-[11px] text-muted-foreground hidden md:block">
               ID: {result.meta.requestId.slice(0, 8)}
             </div>
           </>
         ) : (
-          <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+          <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
             <Activity size={11} />
             <span>Ready — Press Ctrl+Enter to execute request</span>
           </div>
@@ -184,15 +184,15 @@ export function ResponsePanel({
               className="relative w-14 h-14 rounded-xl flex items-center justify-center"
               style={{
                 background: 'linear-gradient(135deg, rgba(14,26,48,0.8), rgba(20,38,72,0.6))',
-                boxShadow: '0 0 20px rgba(91,141,239,0.2), inset 0 0 20px rgba(91,141,239,0.05)',
-                border: '1px solid rgba(91,141,239,0.25)',
+                boxShadow: '0 0 20px color-mix(in srgb, var(--primary) 22%, transparent), inset 0 0 20px color-mix(in srgb, var(--primary) 6%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--primary) 28%, transparent)',
               }}
             >
               <Send size={22} className="spin" style={{ color: 'var(--primary)' }} />
             </div>
             <div>
-              <strong className="text-slate-200 text-sm block mb-1">Transmitting to AssanPay Gateway…</strong>
-              <p className="text-xs text-slate-600 max-w-xs font-mono">
+              <strong className="text-foreground text-sm block mb-1">Transmitting to AssanPay Gateway…</strong>
+              <p className="text-xs text-muted-foreground max-w-xs font-mono">
                 Signing HMAC-SHA256 · Canonicalizing path & timestamp
               </p>
             </div>
@@ -224,34 +224,34 @@ export function ResponsePanel({
             )}
 
             <Tabs defaultValue="pretty" className="flex-1 flex flex-col min-h-0">
-              <TabsList variant="line" className="bg-[#0c0f16] border-b border-[#1c2436] justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
+              <TabsList variant="line" className="bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
                 <TabsTrigger
                   value="pretty"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-slate-400 font-medium hover:text-slate-200 transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Pretty JSON
                 </TabsTrigger>
                 <TabsTrigger
                   value="raw"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-slate-400 font-medium hover:text-slate-200 transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Raw Response
                 </TabsTrigger>
                 <TabsTrigger
                   value="headers"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-slate-400 font-medium hover:text-slate-200 transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Headers ({Object.keys(result.upstream.headers).length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="details"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-slate-400 font-medium hover:text-slate-200 transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Outbound Request
                 </TabsTrigger>
                 <TabsTrigger
                   value="meta"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-slate-400 font-medium hover:text-slate-200 transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-white data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Audit Meta
                 </TabsTrigger>
@@ -259,14 +259,14 @@ export function ResponsePanel({
 
               {/* Pretty JSON Tab */}
               <TabsContent value="pretty" className="flex-1 overflow-y-auto p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-[12.5px] font-mono text-slate-200 whitespace-pre-wrap leading-relaxed select-text">
+                <pre className="text-[12.5px] font-mono text-foreground whitespace-pre-wrap leading-relaxed select-text">
                   {prettyJson || '// Empty response body.'}
                 </pre>
               </TabsContent>
 
               {/* Raw Response Tab */}
               <TabsContent value="raw" className="flex-1 overflow-y-auto p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-[12px] font-mono text-slate-400 whitespace-pre-wrap leading-relaxed select-text">
+                <pre className="text-[12px] font-mono text-muted-foreground whitespace-pre-wrap leading-relaxed select-text">
                   {result.upstream.rawBody || '// No raw body'}
                 </pre>
               </TabsContent>
@@ -281,8 +281,8 @@ export function ResponsePanel({
                           onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface-3)')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         >
-                          <td className="p-2 text-sky-400 font-semibold w-1/3 border-r border-[var(--border)] select-text">{k}</td>
-                          <td className="p-2 text-slate-300 break-all select-text">{v}</td>
+                          <td className="p-2 text-primary font-semibold w-1/3 border-r border-[var(--border)] select-text">{k}</td>
+                          <td className="p-2 text-secondary-foreground break-all select-text">{v}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -291,36 +291,36 @@ export function ResponsePanel({
               </TabsContent>
 
               {/* Outbound Request Details Tab */}
-              <TabsContent value="details" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 text-xs bg-[#080a10]">
+              <TabsContent value="details" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 text-xs bg-muted">
                 <div>
-                  <span className="text-[9.5px] font-mono text-slate-500 uppercase block mb-1">
+                  <span className="text-[11px] font-mono text-muted-foreground uppercase block mb-1">
                     Executed Method & Final URL
                   </span>
-                  <div className="flex items-center gap-2 p-2 rounded bg-[#0f1420] border border-[#1c2436]">
+                  <div className="flex items-center gap-2 p-2 rounded bg-card border border-border">
                     <span className="font-bold text-amber-400 font-mono">{result.request.method}</span>
-                    <span className="font-mono text-slate-200 break-all">{result.request.url}</span>
+                    <span className="font-mono text-foreground break-all">{result.request.url}</span>
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[9.5px] font-mono text-slate-500 uppercase block mb-1">
+                  <span className="text-[11px] font-mono text-muted-foreground uppercase block mb-1">
                     Outbound Security Headers
                   </span>
-                  <div className="p-2.5 rounded bg-[#0f1420] border border-[#1c2436] font-mono text-[11px] space-y-1">
+                  <div className="p-2.5 rounded bg-card border border-border font-mono text-[11px] space-y-1">
                     {Object.entries(result.request.headers).map(([k, v]) => (
                       <div key={k} className="flex justify-between gap-4">
-                        <span className="text-slate-400">{k}:</span>
-                        <span className="text-slate-200 break-all text-right">{v}</span>
+                        <span className="text-muted-foreground">{k}:</span>
+                        <span className="text-foreground break-all text-right">{v}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[9.5px] font-mono text-slate-500 uppercase block mb-1">
+                  <span className="text-[11px] font-mono text-muted-foreground uppercase block mb-1">
                     Outbound Request Body
                   </span>
-                  <pre className="p-2.5 rounded bg-[#0f1420] border border-[#1c2436] font-mono text-[11px] text-slate-300 whitespace-pre-wrap">
+                  <pre className="p-2.5 rounded bg-card border border-border font-mono text-[11px] text-secondary-foreground whitespace-pre-wrap">
                     {typeof result.request.body === 'object'
                       ? JSON.stringify(result.request.body, null, 2)
                       : String(result.request.body || '(Empty body)')}
@@ -329,33 +329,33 @@ export function ResponsePanel({
               </TabsContent>
 
               {/* Audit Meta Tab */}
-              <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-[#080a10]">
+              <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-muted">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436]">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">Country Gateway</span>
-                    <strong className="text-slate-200">{result.meta.country.toUpperCase()}</strong>
+                  <div className="p-2 rounded bg-card border border-border">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">Country Gateway</span>
+                    <strong className="text-foreground">{result.meta.country.toUpperCase()}</strong>
                   </div>
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436]">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">Environment</span>
-                    <strong className="text-slate-200">{result.meta.environment.toUpperCase()}</strong>
+                  <div className="p-2 rounded bg-card border border-border">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">Environment</span>
+                    <strong className="text-foreground">{result.meta.environment.toUpperCase()}</strong>
                   </div>
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436]">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">HMAC-SHA256 Status</span>
+                  <div className="p-2 rounded bg-card border border-border">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">HMAC-SHA256 Status</span>
                     <strong className="text-emerald-400">
                       {result.meta.signed ? 'Signed by backend' : 'Omitted per spec'}
                     </strong>
                   </div>
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436]">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">Execution Duration</span>
-                    <strong className="text-slate-200">{result.meta.durationMs} ms</strong>
+                  <div className="p-2 rounded bg-card border border-border">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">Execution Duration</span>
+                    <strong className="text-foreground">{result.meta.durationMs} ms</strong>
                   </div>
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436] sm:col-span-2">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">Request UUID / Nonce</span>
-                    <strong className="font-mono text-sky-400 break-all">{result.meta.requestId}</strong>
+                  <div className="p-2 rounded bg-card border border-border sm:col-span-2">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">Request UUID / Nonce</span>
+                    <strong className="font-mono text-primary break-all">{result.meta.requestId}</strong>
                   </div>
-                  <div className="p-2 rounded bg-[#0f1420] border border-[#1c2436] sm:col-span-2">
-                    <span className="text-[9.5px] font-mono text-slate-500 uppercase block">Audited Operator</span>
-                    <strong className="text-slate-300">{result.meta.executedBy || 'AssanPay Support'}</strong>
+                  <div className="p-2 rounded bg-card border border-border sm:col-span-2">
+                    <span className="text-[11px] font-mono text-muted-foreground uppercase block">Audited Operator</span>
+                    <strong className="text-secondary-foreground">{result.meta.executedBy || 'AssanPay Support'}</strong>
                   </div>
                 </div>
               </TabsContent>
@@ -368,13 +368,13 @@ export function ResponsePanel({
               className="w-12 h-12 rounded-xl flex items-center justify-center mb-1"
               style={{ background: 'var(--surface-3)', border: '1px solid var(--border)' }}
             >
-              <Code2 size={20} className="text-slate-600" />
+              <Code2 size={20} className="text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-400">No response yet</p>
-              <p className="text-xs text-slate-600 mt-1 max-w-[220px] leading-relaxed">
+              <p className="text-sm font-medium text-muted-foreground">No response yet</p>
+              <p className="text-xs text-muted-foreground mt-1 max-w-[220px] leading-relaxed">
                 Configure a request and press{' '}
-                <kbd className="font-mono text-slate-500 bg-[var(--surface-3)] px-1 py-0.5 rounded text-[9px]">Ctrl+Enter</kbd>{' '}
+                <kbd className="font-mono text-muted-foreground bg-[var(--surface-3)] px-1 py-0.5 rounded text-[11px]">Ctrl+Enter</kbd>{' '}
                 to send.
               </p>
             </div>

@@ -69,7 +69,7 @@ export function CommandPalette({
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      className="bg-[#0b1018] border border-[#1a2336] shadow-2xl text-slate-200"
+      className="bg-popover border border-border shadow-2xl text-foreground rounded-[14px]"
     >
       <CommandInput
         placeholder="Search APIs, endpoints, country, or jump to view..."
@@ -82,25 +82,25 @@ export function CommandPalette({
         <CommandGroup heading="Navigation">
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('workbench'))}
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
-            <Code2 className="mr-2 h-4 w-4 text-sky-400" />
+            <Code2 className="mr-2 h-4 w-4 text-primary" />
             <span>API Workbench</span>
             <CommandShortcut>Alt+1</CommandShortcut>
           </CommandItem>
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('history'))}
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
-            <History className="mr-2 h-4 w-4 text-slate-400" />
+            <History className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Execution History</span>
             <CommandShortcut>Alt+2</CommandShortcut>
           </CommandItem>
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('callbacks'))}
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
             <Webhook className="mr-2 h-4 w-4 text-emerald-400" />
             <span>Callback & Webhook Inbox</span>
@@ -109,7 +109,7 @@ export function CommandPalette({
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('variables'))}
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
             <Braces className="mr-2 h-4 w-4 text-amber-400" />
             <span>Environment Variables</span>
@@ -118,7 +118,7 @@ export function CommandPalette({
 
           <CommandItem
             onSelect={() => handleSelect(() => onViewChange('status'))}
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
             <ServerCog className="mr-2 h-4 w-4 text-purple-400" />
             <span>Environment Readiness Status</span>
@@ -126,7 +126,7 @@ export function CommandPalette({
           </CommandItem>
         </CommandGroup>
 
-        <CommandSeparator className="bg-[#1a2336]" />
+        <CommandSeparator className="bg-border" />
 
         {/* Country & Environment Switcher */}
         <CommandGroup heading="Markets & Environment">
@@ -134,14 +134,14 @@ export function CommandPalette({
             <CommandItem
               key={c.slug}
               onSelect={() => handleSelect(() => onCountryChange(c.slug))}
-              className="cursor-pointer hover:bg-[#152033]"
+              className="cursor-pointer hover:bg-accent"
             >
               <span className="mr-2 text-sm">{c.flagEmoji}</span>
               <span>
                 Switch to {c.name} ({c.currency})
               </span>
               {selectedCountry === c.slug && (
-                <span className="ml-auto text-[10px] text-sky-400 font-bold">ACTIVE</span>
+                <span className="ml-auto text-[11.5px] text-primary font-bold">ACTIVE</span>
               )}
             </CommandItem>
           ))}
@@ -152,9 +152,9 @@ export function CommandPalette({
                 onEnvironmentChange(environment === 'sandbox' ? 'production' : 'sandbox')
               )
             }
-            className="cursor-pointer hover:bg-[#152033]"
+            className="cursor-pointer hover:bg-accent"
           >
-            <Layers className="mr-2 h-4 w-4 text-slate-400" />
+            <Layers className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>
               Toggle Environment: Currently {environment.toUpperCase()}
             </span>
@@ -164,7 +164,7 @@ export function CommandPalette({
           </CommandItem>
         </CommandGroup>
 
-        <CommandSeparator className="bg-[#1a2336]" />
+        <CommandSeparator className="bg-border" />
 
         {/* Endpoints in active country */}
         <CommandGroup heading={`Endpoints (${selectedCountry.toUpperCase()})`}>
@@ -177,14 +177,14 @@ export function CommandPalette({
                   onViewChange('workbench');
                 })
               }
-              className="cursor-pointer hover:bg-[#152033] flex items-center justify-between"
+              className="cursor-pointer hover:bg-accent flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
                 <span className={`method-badge ${ep.method.toLowerCase()}`}>{ep.method}</span>
-                <span className="font-semibold text-slate-100">{ep.name}</span>
-                <span className="text-[11px] text-slate-400 font-mono">({ep.path})</span>
+                <span className="font-semibold text-foreground">{ep.name}</span>
+                <span className="text-[11px] text-muted-foreground font-mono">({ep.path})</span>
               </div>
-              <ArrowRight className="h-3 w-3 text-slate-400" />
+              <ArrowRight className="h-3 w-3 text-muted-foreground" />
             </CommandItem>
           ))}
         </CommandGroup>

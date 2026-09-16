@@ -19,6 +19,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import type { HistoryItem, Method } from './types';
 
 interface HistoryViewProps {
@@ -86,16 +88,16 @@ export function HistoryView({
   const selectedItem = history.find((h) => h.id === selectedId) || filtered[0] || null;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#080b11] select-none">
+    <div className="flex-1 flex flex-col min-h-0 bg-background select-none">
       {/* Top Header */}
-      <div className="min-h-12 px-3 sm:px-4 py-2 bg-[#0d121c] border-b border-[#1a2336] flex items-center justify-between gap-2 shrink-0">
+      <div className="min-h-12 px-3 sm:px-4 py-2 bg-card border-b border-border flex items-center justify-between gap-2 shrink-0">
         <div>
           <h2 className="text-xs font-bold text-white flex items-center gap-2">
-            <History size={16} className="text-sky-400" />
+            <History size={16} className="text-primary" />
             <span>Audit Execution History</span>
             <Badge
               variant="outline"
-              className="hidden sm:inline-flex h-4 px-1.5 text-[9px] font-mono border-slate-700 text-slate-400"
+              className="hidden sm:inline-flex h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
             >
               {history.length} Audited Calls
             </Badge>
@@ -108,9 +110,9 @@ export function HistoryView({
             size="sm"
             onClick={onRefresh}
             disabled={loading}
-            className="h-7 text-xs bg-[#111724] border-[#1f2a3e] hover:bg-[#182236] text-slate-300 gap-1.5 cursor-pointer font-mono"
+            className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer font-mono"
           >
-            <RefreshCw size={12} className={loading ? 'spin text-sky-400' : ''} />
+            <RefreshCw size={12} className={loading ? 'spin text-primary' : ''} />
             <span>Refresh</span>
           </Button>
         </div>
@@ -119,21 +121,21 @@ export function HistoryView({
       {/* Split Workstation Panes */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* Left Side: History Item List */}
-        <div className="w-full md:w-96 h-[42%] md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-[#1a2336] flex flex-col min-h-0 bg-[#0a0e17]">
+        <div className="w-full md:w-96 h-[42%] md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex flex-col min-h-0 bg-card">
           {/* Search & Filter Bar */}
-          <div className="p-2.5 border-b border-[#1a2336] space-y-2 bg-[#0d121c]">
+          <div className="p-2.5 border-b border-border space-y-2 bg-card">
             <div className="relative flex items-center">
-              <Search size={13} className="absolute left-2.5 text-slate-500 pointer-events-none" />
+              <Search size={13} className="absolute left-2.5 text-muted-foreground pointer-events-none" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search history by name, path, ID..."
-                className="w-full h-7 pl-8 pr-7 bg-[#111724] border border-[#1f2a3e] rounded text-xs text-slate-200 placeholder:text-slate-500 font-mono outline-none focus:border-sky-500/50 transition-colors"
+                className="w-full h-7 pl-8 pr-7 bg-card border border-border rounded text-xs text-foreground placeholder:text-muted-foreground font-mono outline-none focus:border-primary/50 transition-colors"
               />
               {search && (
                 <button
                   onClick={() => setSearch('')}
-                  className="absolute right-2 text-slate-500 hover:text-slate-200 p-0.5"
+                  className="absolute right-2 text-muted-foreground hover:text-foreground p-0.5"
                 >
                   <X size={12} />
                 </button>
@@ -146,8 +148,8 @@ export function HistoryView({
                 onClick={() => setStatusFilter('all')}
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   statusFilter === 'all'
-                    ? 'bg-[#1a253a] text-sky-400 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-accent text-primary font-semibold'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 All ({history.length})
@@ -157,7 +159,7 @@ export function HistoryView({
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   statusFilter === 'success'
                     ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 2xx OK
@@ -167,7 +169,7 @@ export function HistoryView({
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   statusFilter === 'failed'
                     ? 'bg-rose-950/60 text-rose-400 border border-rose-800/40 font-semibold'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 Errors
@@ -176,11 +178,20 @@ export function HistoryView({
           </div>
 
           {/* List Scroll */}
-          <div className="flex-1 overflow-y-auto divide-y divide-[#162032]">
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="divide-y divide-border">
             {filtered.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-500 font-mono">
-                No audit records match the current filter.
-              </div>
+              <Empty className="py-12">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <History size={20} />
+                  </EmptyMedia>
+                  <EmptyTitle className="text-sm">No audit records</EmptyTitle>
+                  <EmptyDescription className="text-xs">
+                    No requests match the current filter. Execute a request to build history.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
             ) : (
               filtered.map((item) => {
                 const isSelected = selectedItem?.id === item.id;
@@ -197,8 +208,8 @@ export function HistoryView({
                     onClick={() => setSelectedId(item.id)}
                     className={`w-full text-left p-2.5 transition-all duration-150 flex flex-col gap-1 cursor-pointer ${
                       isSelected
-                        ? 'bg-[#152033] border-l-2 border-sky-400'
-                        : 'hover:bg-[#101726]'
+                        ? 'bg-accent border-l-2 border-primary'
+                        : 'hover:bg-muted'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -206,12 +217,12 @@ export function HistoryView({
                         <span className={getMethodBadgeClass(item.method)}>
                           {item.method}
                         </span>
-                        <span className="text-[10px] font-mono px-1 py-0.2 rounded bg-[#162032] text-slate-300 uppercase">
+                        <span className="text-[11.5px] font-mono px-1 py-0.2 rounded bg-muted text-secondary-foreground uppercase">
                           {item.environment}
                         </span>
                       </div>
                       <span
-                        className={`px-1.5 py-0.5 rounded font-mono text-[10px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded font-mono text-[11.5px] font-bold ${
                           isSuccess
                             ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/30'
                             : 'bg-rose-950/60 text-rose-400 border border-rose-800/30'
@@ -221,15 +232,15 @@ export function HistoryView({
                       </span>
                     </div>
 
-                    <strong className="text-[12px] font-semibold text-slate-200 truncate block mt-0.5">
+                    <strong className="text-[12px] font-semibold text-foreground truncate block mt-0.5">
                       {item.requestName}
                     </strong>
 
-                    <div className="text-[10px] font-mono text-slate-400 truncate">
+                    <div className="text-[11.5px] font-mono text-muted-foreground truncate">
                       {item.url}
                     </div>
 
-                    <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono mt-0.5">
+                    <div className="flex items-center justify-between text-[11.5px] text-muted-foreground font-mono mt-0.5">
                       <span>{timeStr}</span>
                       <span>{item.durationMs} ms</span>
                     </div>
@@ -237,15 +248,16 @@ export function HistoryView({
                 );
               })
             )}
-          </div>
+            </div>
+          </ScrollArea>
         </div>
 
         {/* Right Side: Detailed Audit Inspector */}
-        <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-[#070a0f] p-2.5 sm:p-4">
+        <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background p-2.5 sm:p-4">
           {selectedItem ? (
             <div className="flex-1 flex flex-col min-h-0 space-y-3">
               {/* Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#1a2336]">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div>
                   <div className="flex items-center gap-2">
                     <span className={getMethodBadgeClass(selectedItem.method)}>
@@ -255,7 +267,7 @@ export function HistoryView({
                       {selectedItem.requestName}
                     </h3>
                   </div>
-                  <span className="text-xs font-mono text-sky-400 break-all block mt-0.5">
+                  <span className="text-xs font-mono text-primary break-all block mt-0.5">
                     {selectedItem.url}
                   </span>
                 </div>
@@ -264,7 +276,7 @@ export function HistoryView({
                   <Button
                     size="sm"
                     onClick={() => onLoadIntoWorkbench(selectedItem)}
-                    className="h-8 text-xs bg-sky-600 hover:bg-sky-500 text-white gap-1.5 font-semibold cursor-pointer shadow-xs"
+                    className="h-8 text-xs bg-primary hover:bg-primary text-white gap-1.5 font-semibold cursor-pointer shadow-xs"
                   >
                     <RotateCcw size={13} />
                     <span>Load into Workbench</span>
@@ -283,82 +295,82 @@ export function HistoryView({
                 >
                   HTTP {selectedItem.responseStatus} {selectedItem.responseStatusText}
                 </span>
-                <span className="text-slate-400 flex items-center gap-1 text-[11px]">
-                  <Clock size={12} className="text-slate-500" />
+                <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+                  <Clock size={12} className="text-muted-foreground" />
                   <span>{selectedItem.durationMs} ms</span>
                 </span>
-                <span className="text-slate-400 flex items-center gap-1 text-[11px]">
-                  <Activity size={12} className="text-slate-500" />
+                <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+                  <Activity size={12} className="text-muted-foreground" />
                   <span>{(selectedItem.payloadSize / 1024).toFixed(2)} KB</span>
                 </span>
-                <span className="text-slate-500 text-[11px] ml-auto">
+                <span className="text-muted-foreground text-[11px] ml-auto">
                   {new Date(selectedItem.createdAt).toLocaleString()}
                 </span>
               </div>
 
               {/* Inspector Tabs */}
               <Tabs defaultValue="response" className="flex-1 flex flex-col min-h-0 pt-1">
-                <TabsList className="bg-[#0c111c] border-b border-[#1a2336] justify-start rounded-none p-0 h-auto gap-4 px-3">
+                <TabsList className="bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="response"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-sky-400 data-[state=active]:bg-transparent data-[state=active]:text-sky-300 text-xs py-2 px-1 text-slate-400 font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Response Body
                   </TabsTrigger>
                   <TabsTrigger
                     value="request"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-sky-400 data-[state=active]:bg-transparent data-[state=active]:text-sky-300 text-xs py-2 px-1 text-slate-400 font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Request Sent
                   </TabsTrigger>
                   <TabsTrigger
                     value="headers"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-sky-400 data-[state=active]:bg-transparent data-[state=active]:text-sky-300 text-xs py-2 px-1 text-slate-400 font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Headers
                   </TabsTrigger>
                   <TabsTrigger
                     value="meta"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-sky-400 data-[state=active]:bg-transparent data-[state=active]:text-sky-300 text-xs py-2 px-1 text-slate-400 font-medium cursor-pointer"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Security & Metadata
                   </TabsTrigger>
                 </TabsList>
 
                 {/* Response Body Tab */}
-                <TabsContent value="response" className="flex-1 overflow-y-auto p-3 m-0 bg-[#070a0f]">
-                  <pre className="text-xs font-mono text-sky-200/95 whitespace-pre-wrap leading-relaxed select-text">
+                <TabsContent value="response" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
+                  <pre className="text-xs font-mono text-primary/90 whitespace-pre-wrap leading-relaxed select-text">
                     {selectedItem.responseBody || '// No response body'}
                   </pre>
                 </TabsContent>
 
                 {/* Request Sent Tab */}
-                <TabsContent value="request" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 bg-[#070a0f]">
+                <TabsContent value="request" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 bg-background">
                   <div>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block mb-1">
+                    <span className="text-[11.5px] font-mono text-muted-foreground uppercase block mb-1">
                       Request Body
                     </span>
-                    <pre className="p-2.5 rounded bg-[#0d121c] border border-[#1a2336] font-mono text-xs text-slate-300 whitespace-pre-wrap">
+                    <pre className="p-2.5 rounded bg-card border border-border font-mono text-xs text-secondary-foreground whitespace-pre-wrap">
                       {selectedItem.requestBody || '// (Empty request body)'}
                     </pre>
                   </div>
                 </TabsContent>
 
                 {/* Headers Tab */}
-                <TabsContent value="headers" className="flex-1 overflow-y-auto p-3 m-0 space-y-4 bg-[#070a0f]">
+                <TabsContent value="headers" className="flex-1 overflow-y-auto p-3 m-0 space-y-4 bg-background">
                   <div>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block mb-1">
+                    <span className="text-[11.5px] font-mono text-muted-foreground uppercase block mb-1">
                       Response Headers
                     </span>
-                    <div className="border border-[#1a2336] rounded overflow-x-auto">
+                    <div className="border border-border rounded overflow-x-auto">
                       <table className="w-full min-w-[520px] text-xs font-mono">
-                        <tbody className="divide-y divide-[#1a2336]">
+                        <tbody className="divide-y divide-border">
                           {Object.entries(selectedItem.responseHeaders || {}).map(([k, v]) => (
                             <tr key={k}>
-                              <td className="p-2 text-slate-400 font-semibold w-1/3 border-r border-[#1a2336]">
+                              <td className="p-2 text-muted-foreground font-semibold w-1/3 border-r border-border">
                                 {k}
                               </td>
-                              <td className="p-2 text-slate-200 break-all">{v}</td>
+                              <td className="p-2 text-foreground break-all">{v}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -368,31 +380,31 @@ export function HistoryView({
                 </TabsContent>
 
                 {/* Metadata Tab */}
-                <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-[#070a0f]">
+                <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-background">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded bg-[#0d121c] border border-[#1a2336]">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Audit ID</span>
-                      <strong className="font-mono text-sky-300 text-[11px] break-all">{selectedItem.requestId}</strong>
+                    <div className="p-2.5 rounded bg-card border border-border">
+                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Audit ID</span>
+                      <strong className="font-mono text-primary text-[11px] break-all">{selectedItem.requestId}</strong>
                     </div>
-                    <div className="p-2.5 rounded bg-[#0d121c] border border-[#1a2336]">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Environment</span>
-                      <strong className="text-slate-200">{selectedItem.environment.toUpperCase()}</strong>
+                    <div className="p-2.5 rounded bg-card border border-border">
+                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Environment</span>
+                      <strong className="text-foreground">{selectedItem.environment.toUpperCase()}</strong>
                     </div>
-                    <div className="p-2.5 rounded bg-[#0d121c] border border-[#1a2336]">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Signing Status</span>
+                    <div className="p-2.5 rounded bg-card border border-border">
+                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Signing Status</span>
                       <strong className="text-emerald-400">{selectedItem.signingStatus}</strong>
                     </div>
-                    <div className="p-2.5 rounded bg-[#0d121c] border border-[#1a2336]">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Execution Latency</span>
-                      <strong className="text-slate-200">{selectedItem.durationMs} ms</strong>
+                    <div className="p-2.5 rounded bg-card border border-border">
+                      <span className="text-[11.5px] font-mono text-muted-foreground uppercase block">Execution Latency</span>
+                      <strong className="text-foreground">{selectedItem.durationMs} ms</strong>
                     </div>
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500">
-              <History size={24} className="mb-2 text-slate-600" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground">
+              <History size={24} className="mb-2 text-muted-foreground" />
               <p className="text-xs font-mono">Select a history entry from the list to inspect details.</p>
             </div>
           )}

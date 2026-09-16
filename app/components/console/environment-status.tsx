@@ -31,22 +31,22 @@ export function EnvironmentStatusView({
   const environments = ['sandbox', 'production'] as const;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#080b11] p-3 sm:p-4 lg:p-6 overflow-y-auto select-none">
+    <div className="flex-1 flex flex-col min-h-0 bg-background p-3 sm:p-4 lg:p-6 overflow-y-auto select-none">
       <div className="max-w-5xl mx-auto w-full space-y-5">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1a2336]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border">
           <div>
             <h2 className="text-sm font-bold text-white flex flex-wrap items-center gap-2">
-              <ServerCog size={18} className="text-sky-400" />
+              <ServerCog size={18} className="text-primary" />
               <span>Environment Readiness & Configuration Matrix</span>
               <Badge
                 variant="outline"
-                className="h-4 px-1.5 text-[9.5px] font-mono border-slate-700 text-slate-400"
+                className="h-4 px-1.5 text-[11px] font-mono border-border text-muted-foreground"
               >
                 Safe Server-Side Audit
               </Badge>
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Live validation of gateway credentials, HMAC signing engine, and database connectivity. Secrets remain masked and secure.
             </p>
           </div>
@@ -55,7 +55,7 @@ export function EnvironmentStatusView({
             variant="ghost"
             size="sm"
             onClick={onBackToWorkbench}
-            className="h-7 text-xs text-sky-400 hover:text-sky-300 gap-1 font-mono cursor-pointer"
+            className="h-7 text-xs text-primary hover:text-primary gap-1 font-mono cursor-pointer"
           >
             <ArrowLeft size={13} />
             <span>Workbench</span>
@@ -63,39 +63,39 @@ export function EnvironmentStatusView({
         </div>
 
         {/* Global Infrastructure Health Bar */}
-        <div className="p-3.5 rounded-lg bg-[#0d121c] border border-[#1a2336] space-y-2.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-200">
+        <div className="p-3.5 rounded-lg bg-card border border-border space-y-2.5">
+          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
             <Database size={15} className="text-emerald-400" />
             <span>Core Infrastructure Status</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
-            <div className="p-2.5 rounded bg-[#111724] border border-[#1a2336] flex items-center justify-between">
-              <span className="text-slate-400">Database (Neon Postgres)</span>
+            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+              <span className="text-muted-foreground">Database (Neon Postgres)</span>
               <span className="text-emerald-400 flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 CONNECTED
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-[#111724] border border-[#1a2336] flex items-center justify-between">
-              <span className="text-slate-400">HMAC-SHA256 Signer</span>
+            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+              <span className="text-muted-foreground">HMAC-SHA256 Signer</span>
               <span className="text-emerald-400 flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 READY
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-[#111724] border border-[#1a2336] flex items-center justify-between">
-              <span className="text-slate-400">Payload Encryption</span>
-              <span className="text-sky-300 font-medium">OFF (Plaintext)</span>
+            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+              <span className="text-muted-foreground">Payload Encryption</span>
+              <span className="text-primary font-medium">OFF (Plaintext)</span>
             </div>
           </div>
         </div>
 
         {/* Country & Environment Readiness Matrix */}
         <div className="space-y-3">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider font-mono">
             Country Gateway Readiness
           </h3>
 
@@ -103,18 +103,18 @@ export function EnvironmentStatusView({
             {countries.map((country) => (
               <div
                 key={country.slug}
-                className="rounded-lg bg-[#0d121c] border border-[#1a2336] overflow-hidden"
+                className="rounded-lg bg-card border border-border overflow-hidden"
               >
                 {/* Country Card Heading */}
-                <div className="p-3 bg-[#101624] border-b border-[#1a2336] flex items-center justify-between">
-                  <span className="flex items-center gap-2 font-bold text-slate-100 text-xs">
+                <div className="p-3 bg-muted border-b border-border flex items-center justify-between">
+                  <span className="flex items-center gap-2 font-bold text-foreground text-xs">
                     <span className="text-base">{country.flagEmoji}</span>
                     <span>{country.name}</span>
-                    <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-[#162032] text-sky-400 border border-sky-900/40">
+                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-muted text-primary border border-primary/25">
                       {country.currency}
                     </span>
                   </span>
-                  <span className="text-[10px] font-mono text-slate-500 uppercase">
+                  <span className="text-[11.5px] font-mono text-muted-foreground uppercase">
                     {country.code}
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export function EnvironmentStatusView({
                         key={env}
                         className={`p-2.5 rounded border text-xs space-y-2 ${
                           isConfigured
-                            ? 'bg-[#111724] border-[#1a2336]'
+                            ? 'bg-card border-border'
                             : 'bg-amber-950/20 border-amber-900/30'
                         }`}
                       >
@@ -139,16 +139,16 @@ export function EnvironmentStatusView({
                           <span className="font-mono font-bold uppercase flex items-center gap-2 text-xs">
                             <span
                               className={`w-2 h-2 rounded-full ${
-                                isProd ? 'bg-rose-500' : 'bg-sky-400'
+                                isProd ? 'bg-rose-500' : 'bg-primary'
                               }`}
                             />
-                            <span className={isProd ? 'text-rose-300' : 'text-sky-300'}>
+                            <span className={isProd ? 'text-rose-300' : 'text-primary'}>
                               {env}
                             </span>
                           </span>
 
                           <span
-                            className={`font-mono text-[10px] font-bold flex items-center gap-1 ${
+                            className={`font-mono text-[11.5px] font-bold flex items-center gap-1 ${
                               isConfigured ? 'text-emerald-400' : 'text-amber-400'
                             }`}
                           >
@@ -166,10 +166,10 @@ export function EnvironmentStatusView({
                           </span>
                         </div>
 
-                        <div className="space-y-1 font-mono text-[10.5px] text-slate-400 pt-0.5">
+                        <div className="space-y-1 font-mono text-[12px] text-muted-foreground pt-0.5">
                           <div className="flex justify-between">
                             <span>Base URL:</span>
-                            <span className="text-slate-200">
+                            <span className="text-foreground">
                               {status?.hostname ? `https://${status.hostname}` : 'Missing'}
                             </span>
                           </div>
@@ -194,7 +194,7 @@ export function EnvironmentStatusView({
 
                           <div className="flex justify-between">
                             <span>Callback Route:</span>
-                            <span className="text-slate-300 truncate max-w-[200px]">
+                            <span className="text-secondary-foreground truncate max-w-[200px]">
                               /api/callbacks/assanpay/{country.slug}/{env}
                             </span>
                           </div>
