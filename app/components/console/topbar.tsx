@@ -13,6 +13,8 @@ import {
   Wifi,
   WifiOff,
   Loader2,
+  PanelLeftOpen,
+  PanelLeftClose,
 } from 'lucide-react';
 import {
   Select,
@@ -51,6 +53,8 @@ interface TopbarProps {
   gatewayLatencyMs?: number | null;
   theme: 'dark' | 'light' | 'system';
   onThemeChange: (theme: 'dark' | 'light' | 'system') => void;
+  sidebarCollapsed?: boolean;
+  onToggleSidebar?: () => void;
 }
 
 function LatencyIndicator({ ms }: { ms: number | null | undefined }) {
@@ -93,7 +97,7 @@ function UserAvatar({ name, email, role }: { name?: string | null; email?: strin
   const initials = name ? name.substring(0, 2).toUpperCase() : 'AP';
   return (
     <div className="hidden sm:flex items-center gap-2.5 pl-2.5 border-l border-border">
-      <div className="text-right hidden md:block leading-tight">
+      <div className="text-right hidden lg:block leading-tight">
         <p className="text-xs font-semibold text-foreground leading-tight">
           {name || 'AssanPay Support'}
         </p>
@@ -123,6 +127,8 @@ export function Topbar({
   gatewayLatencyMs,
   theme,
   onThemeChange,
+  sidebarCollapsed,
+  onToggleSidebar,
 }: TopbarProps) {
   const currentCountryObj = countries.find((c) => c.slug === selectedCountry);
   const currentEnvConfig = config?.[selectedCountry]?.[environment];
@@ -142,7 +148,7 @@ export function Topbar({
           >
             <ShieldCheck size={16} strokeWidth={2.4} />
           </div>
-          <div className="hidden sm:block">
+          <div className="hidden lg:block">
             <div className="flex items-baseline gap-1.5 leading-none">
               <span className="text-sm font-bold tracking-tight text-foreground">AssanPay</span>
               <span className="text-[11px] text-muted-foreground font-medium">Console</span>
@@ -151,6 +157,17 @@ export function Topbar({
               API Workspace
             </div>
           </div>
+          {/* Catalog sidebar toggle — visible on all breakpoints */}
+          {onToggleSidebar && (
+            <button
+              onClick={onToggleSidebar}
+              className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-[var(--surface-4)] border border-transparent hover:border-[var(--border)] transition-colors cursor-pointer ml-1"
+              title={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
+              aria-label={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
+            >
+              {sidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+            </button>
+          )}
         </div>
 
         {/* Center: Selectors */}
@@ -161,13 +178,13 @@ export function Topbar({
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="w-[104px] sm:w-[155px] xl:w-[175px] h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
+              className="w-[92px] sm:w-[120px] lg:w-[155px] xl:w-[175px] h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
             >
               <SelectValue>
                 {currentCountryObj ? (
                   <span className="flex items-center gap-1.5 w-full">
                     <span className="text-xs leading-none">{currentCountryObj.flagEmoji}</span>
-                    <span className="font-medium truncate">{currentCountryObj.name}</span>
+                    <span className="hidden min-[400px]:inline font-medium truncate">{currentCountryObj.name}</span>
                     <span className="hidden xl:inline text-[11px] font-mono text-muted-foreground ml-auto">
                       {currentCountryObj.currency}
                     </span>
@@ -209,12 +226,12 @@ export function Topbar({
               variant="outline"
               size="sm"
               onClick={onOpenCommandPalette}
-              className="hidden md:flex h-8 gap-1.5 text-muted-foreground hover:text-foreground border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] transition-colors rounded-md"
+              className="hidden md:flex h-8 gap-1.5 text-muted-foreground hover:text-foreground border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] transition-colors rounded-md px-2 lg:px-3"
               title="Search API Catalog & Commands (Ctrl+K)"
             >
               <Search size={13} />
-              <span className="text-xs">Search</span>
-              <Kbd className="text-[11px]">Ctrl K</Kbd>
+              <span className="hidden lg:inline text-xs">Search</span>
+              <Kbd className="hidden lg:inline-flex text-[11px]">Ctrl K</Kbd>
             </Button>
           )}
         </div>
@@ -232,7 +249,7 @@ export function Topbar({
             title="Environment Readiness Matrix"
           >
             <ServerCog size={13} className="text-primary" />
-            <span className="hidden sm:inline text-xs font-medium">Status</span>
+            <span className="hidden lg:inline text-xs font-medium">Status</span>
             {isConfigured && (
               <span className="w-1.5 h-1.5 rounded-full bg-success" />
             )}

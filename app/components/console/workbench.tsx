@@ -508,10 +508,10 @@ export function Workbench({
 
         {/* Postman-Grade Request Tabs */}
         <Tabs defaultValue="body" className="flex-1 flex flex-col min-h-0 pt-1">
-          <TabsList variant="line" className="bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0">
+          <TabsList variant="line" className="bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0 scrollbar-none">
             <TabsTrigger
               value="params"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Params</span>
               {paramRows.filter((p) => p.enabled && p.key).length > 0 && (
@@ -523,7 +523,7 @@ export function Workbench({
 
             <TabsTrigger
               value="headers"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Headers</span>
               <span className="font-mono text-xs text-muted-foreground ml-1">
@@ -533,7 +533,7 @@ export function Workbench({
 
             <TabsTrigger
               value="body"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Body</span>
               {method !== 'GET' && (
@@ -543,14 +543,14 @@ export function Workbench({
 
             <TabsTrigger
               value="signing"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Signing Details</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="variables"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Variables</span>
               {detectedVariables.length > 0 && (
@@ -779,18 +779,18 @@ export function Workbench({
           <TabsContent value="body" className="mt-2.5 flex-1 flex flex-col min-h-0">
             <div className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
               {/* Code Editor Toolbar — subtle, integrated */}
-              <div className="h-9 px-3 border-b border-border/70 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none" style={{ background: 'var(--surface-2)' }}>
-                <div className="flex items-center gap-2 font-mono text-[11px]">
-                  <span className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 text-primary">
+              <div className="min-h-[36px] px-3 py-1 border-b border-border/70 flex items-center justify-between gap-2 text-xs text-muted-foreground shrink-0 select-none flex-wrap" style={{ background: 'var(--surface-2)' }}>
+                <div className="flex items-center gap-2 font-mono text-[11px] min-w-0">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 text-primary shrink-0">
                     <Code2 size={11} />
                   </span>
                   <span className="text-foreground font-semibold">JSON</span>
-                  <span className="text-muted-foreground/50">·</span>
-                  <span className="text-muted-foreground">Raw payload</span>
-                  <span className="text-muted-foreground/50">·</span>
-                  <span className="tabular-nums">{body.length} chars</span>
-                  <span className="text-muted-foreground/50">·</span>
-                  <span className="tabular-nums">{new TextEncoder().encode(body).byteLength} B</span>
+                  <span className="hidden sm:inline text-muted-foreground/50">·</span>
+                  <span className="hidden sm:inline text-muted-foreground">Raw payload</span>
+                  <span className="hidden md:inline text-muted-foreground/50">·</span>
+                  <span className="hidden md:inline tabular-nums">{body.length} chars</span>
+                  <span className="hidden md:inline text-muted-foreground/50">·</span>
+                  <span className="hidden md:inline tabular-nums">{new TextEncoder().encode(body).byteLength} B</span>
                 </div>
 
                 {method !== 'GET' && (
