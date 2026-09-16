@@ -511,7 +511,7 @@ export function Workbench({
           <TabsList variant="line" className="bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0">
             <TabsTrigger
               value="params"
-              className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
             >
               <span>Params</span>
               {paramRows.filter((p) => p.enabled && p.key).length > 0 && (
@@ -523,7 +523,7 @@ export function Workbench({
 
             <TabsTrigger
               value="headers"
-              className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
             >
               <span>Headers</span>
               <span className="font-mono text-xs text-muted-foreground ml-1">
@@ -533,7 +533,7 @@ export function Workbench({
 
             <TabsTrigger
               value="body"
-              className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
             >
               <span>Body</span>
               {method !== 'GET' && (
@@ -543,14 +543,14 @@ export function Workbench({
 
             <TabsTrigger
               value="signing"
-              className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
             >
               <span>Signing Details</span>
             </TabsTrigger>
 
             <TabsTrigger
               value="variables"
-              className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
             >
               <span>Variables</span>
               {detectedVariables.length > 0 && (

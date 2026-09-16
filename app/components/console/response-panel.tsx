@@ -237,31 +237,31 @@ export function ResponsePanel({
               <TabsList variant="line" className="bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
                 <TabsTrigger
                   value="pretty"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Pretty JSON
                 </TabsTrigger>
                 <TabsTrigger
                   value="raw"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Raw Response
                 </TabsTrigger>
                 <TabsTrigger
                   value="headers"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Headers ({Object.keys(result.upstream.headers).length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="details"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Outbound Request
                 </TabsTrigger>
                 <TabsTrigger
                   value="meta"
-                  className="rounded-none border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
+                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
                 >
                   Audit Meta
                 </TabsTrigger>
