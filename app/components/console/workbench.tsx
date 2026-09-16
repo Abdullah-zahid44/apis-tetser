@@ -398,94 +398,94 @@ export function Workbench({
           </BreadcrumbList>
         </Breadcrumb>
 
-        {/* Unified Request Bar — stacks on xs, single row on sm+ */}
-        <div className="flex flex-col sm:grid sm:grid-cols-[95px_minmax(0,1fr)_auto_auto] gap-2">
-          <div className="grid grid-cols-[84px_minmax(0,1fr)] sm:contents gap-2">
-          {/* Method Selector */}
-          <Select
-            value={method}
-            onValueChange={(val) => {
-              if (val) onMethodChange(val as Method);
-            }}
-          >
-            <SelectTrigger
-              className={`w-full h-10 font-mono font-bold text-sm shadow-none cursor-pointer border transition-colors focus:ring-1 focus:ring-[var(--primary)] ${getMethodColorClass(method)}`}
-              style={{ background: 'var(--surface-4)', borderColor: 'var(--border)' }}
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="text-xs font-mono font-bold" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
-              <SelectItem value="GET" className="text-primary">GET</SelectItem>
-              <SelectItem value="POST" className="text-[var(--color-method-post)]">POST</SelectItem>
-              <SelectItem value="PUT" className="text-[var(--color-method-put)]">PUT</SelectItem>
-              <SelectItem value="PATCH" className="text-[var(--color-method-patch)]">PATCH</SelectItem>
-              <SelectItem value="DELETE" className="text-[var(--color-method-delete)]">DELETE</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* URL Composer */}
-          <div
-            className="flex-1 flex items-center h-10 border rounded overflow-hidden transition-colors duration-150 focus-within:ring-1 focus-within:ring-[var(--primary)]/60 focus-within:border-[var(--primary)]/60"
-            style={{ background: 'var(--surface-1)', borderColor: 'var(--border)' }}
-          >
-            <div
-              className="hidden lg:flex items-center gap-1.5 px-2.5 h-full border-r text-muted-foreground font-mono text-[11px] select-none shrink-0"
-              style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}
-            >
-              <Lock size={10} className="text-success" />
-              <span className="text-muted-foreground">{baseUrl}</span>
-            </div>
-            <input
-              value={url}
-              onChange={(e) => onUrlChange(e.target.value)}
-              onKeyDown={(e) => {
-                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                  e.preventDefault();
-                  onSend();
-                }
+        {/* Unified Request Bar — single cohesive instrument */}
+        <div
+          className="flex flex-col sm:flex-row sm:items-stretch gap-2 sm:gap-0 rounded-xl border overflow-hidden transition-colors duration-150 focus-within:border-[var(--primary)]/60 focus-within:ring-2 focus-within:ring-[var(--primary)]/20"
+          style={{ background: 'var(--surface-1)', borderColor: 'var(--border)', boxShadow: 'var(--shadow-card)' }}
+        >
+          {/* Method + URL — one seamless unit */}
+          <div className="flex flex-1 items-stretch min-w-0">
+            {/* Method Selector — integrated, borderless */}
+            <Select
+              value={method}
+              onValueChange={(val) => {
+                if (val) onMethodChange(val as Method);
               }}
-              placeholder="/api/payments/p2p/submit"
-              className="flex-1 h-full px-3 bg-transparent text-sm font-mono text-foreground outline-none placeholder:text-muted-foreground"
-              spellCheck={false}
-            />
-            {detectedVariables.length > 0 && (
-              <span className="mr-2 text-[11px] font-mono px-1.5 py-0.5 rounded bg-warning/10 text-warning border border-warning/25 shrink-0">
-                {detectedVariables.length} var{detectedVariables.length > 1 ? 's' : ''}
-              </span>
-            )}
-          </div>
+            >
+              <SelectTrigger
+                className={`w-[92px] sm:w-[104px] shrink-0 h-11 sm:h-auto font-mono font-bold text-[13px] shadow-none cursor-pointer border-0 rounded-none bg-transparent px-3 transition-colors focus:ring-0 ${getMethodColorClass(method)}`}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="text-xs font-mono font-bold" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
+                <SelectItem value="GET" className="text-primary">GET</SelectItem>
+                <SelectItem value="POST" className="text-[var(--color-method-post)]">POST</SelectItem>
+                <SelectItem value="PUT" className="text-[var(--color-method-put)]">PUT</SelectItem>
+                <SelectItem value="PATCH" className="text-[var(--color-method-patch)]">PATCH</SelectItem>
+                <SelectItem value="DELETE" className="text-[var(--color-method-delete)]">DELETE</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Divider */}
+            <div className="w-px self-stretch my-2 shrink-0" style={{ background: 'var(--border)' }} />
+
+            {/* URL Composer */}
+            <div className="flex-1 flex items-center min-w-0">
+              <div
+                className="hidden lg:flex items-center gap-1.5 pl-3 h-full text-muted-foreground font-mono text-[11px] select-none shrink-0"
+              >
+                <Lock size={10} className="text-success" />
+                <span className="text-muted-foreground">{baseUrl}</span>
+              </div>
+              <input
+                value={url}
+                onChange={(e) => onUrlChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    onSend();
+                  }
+                }}
+                placeholder="/api/payments/p2p/submit"
+                className="flex-1 h-11 sm:h-full px-3 bg-transparent text-sm font-mono text-foreground outline-none placeholder:text-muted-foreground/60 min-w-0"
+                spellCheck={false}
+              />
+              {detectedVariables.length > 0 && (
+                <span className="mr-2 text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/25 shrink-0">
+                  {detectedVariables.length} var{detectedVariables.length > 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-2">
-          {/* cURL Copy Button */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleCopyCurl}
-            className="hidden sm:inline-flex h-10 px-3 text-muted-foreground text-sm gap-1.5 shrink-0 cursor-pointer shadow-none transition-colors hover:text-foreground border-[var(--border)] hover:border-[var(--border)]"
-            style={{ background: 'var(--surface-4)' }}
-            title="Copy as cURL"
-          >
-            {copiedCurl ? (
-              <Check size={13} className="text-success" />
-            ) : (
-              <Terminal size={13} />
-            )}
-            <span className="hidden sm:inline text-[11px]">
-              {copiedCurl ? 'Copied!' : 'cURL'}
-            </span>
-          </Button>
+          {/* Actions — attached to the bar */}
+          <div className="flex items-stretch shrink-0 border-t sm:border-t-0 sm:border-l" style={{ borderColor: 'var(--border)' }}>
+            {/* cURL Copy Button */}
+            <button
+              type="button"
+              onClick={handleCopyCurl}
+              className="hidden sm:flex items-center gap-1.5 px-3 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] transition-colors cursor-pointer text-[12px] font-medium"
+              title="Copy as cURL"
+            >
+              {copiedCurl ? (
+                <Check size={13} className="text-success" />
+              ) : (
+                <Terminal size={13} />
+              )}
+              <span>{copiedCurl ? 'Copied!' : 'cURL'}</span>
+            </button>
+            <div className="hidden sm:block w-px self-stretch my-2" style={{ background: 'var(--border)' }} />
 
-          {/* Send Button — full width on mobile */}
-          <Button
-            onClick={onSend}
-            disabled={running || !url.trim()}
-            className="h-10 px-4 sm:px-5 font-semibold text-sm flex-1 sm:flex-none flex items-center justify-center gap-2 shrink-0 cursor-pointer transition-colors active:scale-[0.99]"
-          >
-            {running ? <Loader2 size={14} className="spin" /> : <Send size={14} />}
-            <span>{running ? 'Sending…' : 'Send'}</span>
-            {!running && <kbd className="hidden sm:inline text-[11px] font-mono opacity-60 ml-0.5">Ctrl ↵</kbd>}
-          </Button>
+            {/* Send Button — integrated */}
+            <button
+              onClick={onSend}
+              disabled={running || !url.trim()}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-6 h-11 sm:h-auto bg-primary text-primary-foreground font-semibold text-sm cursor-pointer transition-all duration-150 hover:brightness-[1.08] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100"
+            >
+              {running ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              <span>{running ? 'Sending…' : 'Send'}</span>
+              {!running && <kbd className="hidden lg:inline text-[10px] font-mono opacity-70 bg-black/15 px-1.5 py-0.5 rounded">Ctrl ↵</kbd>}
+            </button>
           </div>
         </div>
 
@@ -578,17 +578,17 @@ export function Workbench({
               </Button>
             </div>
 
-            <div className="border border-border rounded-md overflow-x-auto bg-muted">
+            <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
               <table className="w-full min-w-[640px] text-xs text-left">
-                <thead className="bg-muted/60 text-muted-foreground font-mono uppercase text-xs border-b border-border">
-                  <tr>
-                    <th className="w-8 p-2 text-center">✓</th>
-                    <th className="p-2 w-1/3">Key</th>
-                    <th className="p-2 w-1/2">Value</th>
-                    <th className="w-9 p-2"></th>
+                <thead className="text-muted-foreground border-b border-border">
+                  <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
+                    <th className="w-8 p-2.5 text-center font-medium">✓</th>
+                    <th className="p-2.5 w-1/3 font-medium">Key</th>
+                    <th className="p-2.5 w-1/2 font-medium">Value</th>
+                    <th className="w-9 p-2.5"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border font-mono">
+                <tbody className="divide-y divide-border/60 font-mono">
                   {paramRows.length === 0 ? (
                     <tr>
                       <td colSpan={4} className="p-6 text-center text-muted-foreground font-sans text-xs">
@@ -597,7 +597,7 @@ export function Workbench({
                     </tr>
                   ) : (
                     paramRows.map((row) => (
-                      <tr key={row.id} className="hover:bg-card/60">
+                      <tr key={row.id} className="hover:bg-muted/50 transition-colors">
                         <td className="p-2 text-center">
                           <input
                             type="checkbox"
@@ -714,17 +714,17 @@ export function Workbench({
                 </Button>
               </div>
 
-              <div className="border border-border rounded-md overflow-x-auto bg-muted">
+              <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
                 <table className="w-full min-w-[640px] text-xs text-left">
-                  <thead className="bg-muted/60 text-muted-foreground font-mono uppercase text-xs border-b border-border">
-                    <tr>
-                      <th className="w-8 p-2 text-center">✓</th>
-                      <th className="p-2 w-1/3">Header Name</th>
-                      <th className="p-2 w-1/2">Header Value</th>
-                      <th className="w-9 p-2"></th>
+                  <thead className="text-muted-foreground border-b border-border">
+                    <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
+                      <th className="w-8 p-2.5 text-center font-medium">✓</th>
+                      <th className="p-2.5 w-1/3 font-medium">Header Name</th>
+                      <th className="p-2.5 w-1/2 font-medium">Header Value</th>
+                      <th className="w-9 p-2.5"></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border font-mono">
+                  <tbody className="divide-y divide-border/60 font-mono">
                     {headerRows.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-4 text-center text-muted-foreground font-sans text-xs">
@@ -777,23 +777,27 @@ export function Workbench({
 
           {/* BODY TAB */}
           <TabsContent value="body" className="mt-2.5 flex-1 flex flex-col min-h-0">
-            <div className="flex-1 flex flex-col border border-border rounded bg-muted overflow-hidden">
-              {/* Code Editor Toolbar */}
-              <div className="h-7.5 px-3 bg-muted border-b border-border flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none">
-                <div className="flex items-center gap-2 font-mono text-xs">
-                  <Code2 size={12} className="text-muted-foreground" />
-                  <span className="text-secondary-foreground font-medium">JSON (Raw payload)</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span>{body.length} chars</span>
-                  <span className="text-muted-foreground">•</span>
-                  <span>{new TextEncoder().encode(body).byteLength} B</span>
+            <div className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
+              {/* Code Editor Toolbar — subtle, integrated */}
+              <div className="h-9 px-3 border-b border-border/70 flex items-center justify-between text-xs text-muted-foreground shrink-0 select-none" style={{ background: 'var(--surface-2)' }}>
+                <div className="flex items-center gap-2 font-mono text-[11px]">
+                  <span className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 text-primary">
+                    <Code2 size={11} />
+                  </span>
+                  <span className="text-foreground font-semibold">JSON</span>
+                  <span className="text-muted-foreground/50">·</span>
+                  <span className="text-muted-foreground">Raw payload</span>
+                  <span className="text-muted-foreground/50">·</span>
+                  <span className="tabular-nums">{body.length} chars</span>
+                  <span className="text-muted-foreground/50">·</span>
+                  <span className="tabular-nums">{new TextEncoder().encode(body).byteLength} B</span>
                 </div>
 
                 {method !== 'GET' && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-0.5">
                     <button
                       onClick={handleBeautify}
-                      className="flex items-center gap-1 text-xs font-mono text-primary hover:text-primary px-2 py-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
                       title="Format & indent JSON"
                     >
                       <Sparkles size={11} />
@@ -802,7 +806,7 @@ export function Workbench({
 
                     <button
                       onClick={handleMinify}
-                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-foreground px-2 py-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer"
                       title="Minify JSON payload"
                     >
                       <span>Minify</span>
@@ -810,7 +814,7 @@ export function Workbench({
 
                     <button
                       onClick={handleCopyBody}
-                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-foreground px-2 py-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer"
                       title="Copy Body"
                     >
                       {copiedBody ? <CheckCircle2 size={11} className="text-success" /> : <Copy size={11} />}
@@ -819,10 +823,10 @@ export function Workbench({
 
                     <button
                       onClick={() => onBodyChange('')}
-                      className="flex items-center gap-1 text-xs font-mono text-muted-foreground hover:text-destructive px-1.5 py-0.5 rounded hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center justify-center w-7 h-7 text-muted-foreground hover:text-destructive rounded-md hover:bg-destructive/10 transition-colors cursor-pointer"
                       title="Clear Body"
                     >
-                      <Trash2 size={11} />
+                      <Trash2 size={12} />
                     </button>
                   </div>
                 )}
@@ -846,9 +850,9 @@ export function Workbench({
               )}
 
               {/* Editor Workspace */}
-              <div className="flex-1 flex min-h-[220px] overflow-hidden bg-muted">
+              <div className="flex-1 flex min-h-[220px] overflow-hidden" style={{ background: 'var(--surface-1)' }}>
                 {/* Gutter Line Numbers */}
-                <div className="w-10 bg-muted border-r border-border py-2.5 pr-2 text-right select-none font-mono text-[11px] text-muted-foreground leading-[1.65]">
+                <div className="w-10 border-r border-border/50 py-3 pr-2 text-right select-none font-mono text-[11px] text-muted-foreground/50 leading-[1.65]" style={{ background: 'var(--surface-1)' }}>
                   {lineNumbers.map((num) => (
                     <div key={num}>{num}</div>
                   ))}
@@ -867,7 +871,8 @@ export function Workbench({
                       onSend();
                     }
                   }}
-                  className="flex-1 h-full w-full resize-none rounded-none border-0 font-mono text-xs leading-relaxed shadow-none focus-visible:ring-0 bg-muted text-foreground placeholder:text-muted-foreground focus:bg-muted selection:bg-primary/30 p-2.5"
+                  className="flex-1 h-full w-full resize-none rounded-none border-0 font-mono text-[13px] leading-relaxed shadow-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 selection:bg-primary/25 p-3"
+                  style={{ background: 'transparent' }}
                   placeholder={
                     method === 'GET'
                       ? '// GET requests execute with URL parameters and do not transmit a request body.'

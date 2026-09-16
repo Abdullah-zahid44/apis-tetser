@@ -369,25 +369,25 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                 <TabsList className="bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="payload"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Parsed Payload
                   </TabsTrigger>
                   <TabsTrigger
                     value="raw"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Raw Body
                   </TabsTrigger>
                   <TabsTrigger
                     value="headers"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Headers ({Object.keys(selectedItem.requestHeaders).length})
                   </TabsTrigger>
                   <TabsTrigger
                     value="crypto"
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
                   >
                     Verification Pipeline
                   </TabsTrigger>
