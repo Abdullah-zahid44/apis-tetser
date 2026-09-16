@@ -11,7 +11,7 @@ export default async function LoginPage(props: {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
 
-      {/* Background ambient glows — pine/emerald */}
+      {/* Background ambient glows — warm amber */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-25 bg-primary" />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-15 bg-primary" />

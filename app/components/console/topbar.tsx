@@ -203,7 +203,7 @@ export function Topbar({
             className="h-8 px-2 sm:px-3 flex items-center gap-1.5 rounded-md bg-[var(--surface-4)] border border-[var(--border)] select-none"
             title="Sandbox environment (Mock Rails)"
           >
-            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-400 status-dot-live" />
+            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-primary status-dot-live" />
             <span className="text-xs sm:text-sm font-medium text-foreground">Sandbox</span>
           </div>
 

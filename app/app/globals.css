@@ -52,114 +52,114 @@
 }
 
 /* ==============================================================================
-   LIGHT THEME — "Paper" (warm, distinctive)
+   LIGHT THEME — "Cream" (warm, soft, CRM-inspired)
    ============================================================================== */
 :root,
 .light,
 [data-theme="light"] {
   color-scheme: light;
-  --background: #f2f4f1;
-  --foreground: #101915;
-  --card: #fdfefd;
-  --card-foreground: #101915;
-  --popover: #fdfefd;
-  --popover-foreground: #101915;
-  --primary: #047857;
+  --background: #faf7f1;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+  --primary: #d97706;
   --primary-foreground: #ffffff;
-  --secondary: #e7ece8;
-  --secondary-foreground: #1a2b22;
-  --muted: #e7ece8;
-  --muted-foreground: #55645c;
-  --accent: #e3f0e9;
-  --accent-foreground: #065f46;
+  --secondary: #f3eee4;
+  --secondary-foreground: #44403c;
+  --muted: #f3eee4;
+  --muted-foreground: #78716c;
+  --accent: #fcefd8;
+  --accent-foreground: #92400e;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: #dfe5de;
-  --input: #dfe5de;
-  --ring: #047857;
-  --radius: 0.625rem;
+  --border: #e9e0d0;
+  --input: #e9e0d0;
+  --ring: #d97706;
+  --radius: 1.25rem;
 
-  --sidebar: #fdfefd;
-  --sidebar-foreground: #101915;
-  --sidebar-primary: #047857;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1c1917;
+  --sidebar-primary: #d97706;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e7ece8;
-  --sidebar-accent-foreground: #101915;
-  --sidebar-border: #dfe5de;
-  --sidebar-ring: #047857;
+  --sidebar-accent: #fcefd8;
+  --sidebar-accent-foreground: #92400e;
+  --sidebar-border: #efe8d8;
+  --sidebar-ring: #d97706;
 
-  --surface-0: #e9ede9;
-  --surface-1: #fdfefd;
-  --surface-2: #f2f4f1;
-  --surface-3: #e7ece8;
-  --surface-4: #dfe5de;
-  --surface-5: #cdd6ce;
+  --surface-0: #f0eadb;
+  --surface-1: #ffffff;
+  --surface-2: #faf7f1;
+  --surface-3: #f3eee4;
+  --surface-4: #e9e0d0;
+  --surface-5: #dcd1b8;
 
-  --topbar-bg: #fdfefd;
-  --sidebar-bg: #f2f4f1;
-  --workbench-bg: #fdfefd;
-  --response-bg: #f2f4f1;
-  --code-bg: #eef1ee;
+  --topbar-bg: #ffffff;
+  --sidebar-bg: #faf7f1;
+  --workbench-bg: #ffffff;
+  --response-bg: #faf7f1;
+  --code-bg: #f6f0e4;
 
-  --glow-primary: rgba(4, 120, 87, 0.14);
-  --glow-success: rgba(5, 150, 105, 0.14);
+  --glow-primary: rgba(217, 119, 6, 0.16);
+  --glow-success: rgba(22, 163, 74, 0.14);
   --glow-warning: rgba(217, 119, 6, 0.14);
   --glow-danger: rgba(220, 38, 38, 0.12);
 
-  --shadow-card: 0 1px 2px rgba(16, 25, 21, 0.05), 0 4px 16px -4px rgba(16, 25, 21, 0.08);
-  --shadow-lift: 0 2px 4px rgba(16, 25, 21, 0.06), 0 12px 32px -8px rgba(16, 25, 21, 0.14);
+  --shadow-card: 0 1px 2px rgba(28, 25, 23, 0.05), 0 4px 16px -4px rgba(28, 25, 23, 0.08);
+  --shadow-lift: 0 2px 4px rgba(28, 25, 23, 0.06), 0 12px 32px -8px rgba(28, 25, 23, 0.14);
 }
 
 /* ==============================================================================
-   DARK THEME — "Pine" (deep green-black, distinctive)
+   DARK THEME — "Ember" (warm charcoal, amber glow)
    ============================================================================== */
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: #090d0b;
-  --foreground: #e9eeea;
-  --card: #0e1411;
-  --card-foreground: #e9eeea;
-  --popover: #111814;
-  --popover-foreground: #e9eeea;
-  --primary: #34d399;
-  --primary-foreground: #052e21;
-  --secondary: #15201a;
-  --secondary-foreground: #c2d1c6;
-  --muted: #15201a;
-  --muted-foreground: #93a699;
-  --accent: #182b22;
-  --accent-foreground: #d1fae5;
+  --background: #14110d;
+  --foreground: #f5efe4;
+  --card: #1d1913;
+  --card-foreground: #f5efe4;
+  --popover: #221d16;
+  --popover-foreground: #f5efe4;
+  --primary: #f59e0b;
+  --primary-foreground: #1d1408;
+  --secondary: #2a231b;
+  --secondary-foreground: #d6cdbe;
+  --muted: #2a231b;
+  --muted-foreground: #a8a094;
+  --accent: #2e2415;
+  --accent-foreground: #fcd9a0;
   --destructive: #f87171;
   --destructive-foreground: #450a0a;
-  --border: #1b2a21;
-  --input: #1a2620;
-  --ring: #34d399;
-  --radius: 0.625rem;
+  --border: #2e2720;
+  --input: #2e2720;
+  --ring: #f59e0b;
+  --radius: 1.25rem;
 
-  --sidebar: #0b100d;
-  --sidebar-foreground: #e9eeea;
-  --sidebar-primary: #34d399;
-  --sidebar-primary-foreground: #052e21;
-  --sidebar-accent: #15201a;
-  --sidebar-accent-foreground: #e9eeea;
-  --sidebar-border: #1b2a21;
-  --sidebar-ring: #34d399;
+  --sidebar: #171310;
+  --sidebar-foreground: #f5efe4;
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #1d1408;
+  --sidebar-accent: #2e2415;
+  --sidebar-accent-foreground: #fcd9a0;
+  --sidebar-border: #2e2720;
+  --sidebar-ring: #f59e0b;
 
-  --surface-0: #060908;
-  --surface-1: #090d0b;
-  --surface-2: #0b100d;
-  --surface-3: #0e1411;
-  --surface-4: #15201a;
-  --surface-5: #1e2d24;
+  --surface-0: #0f0c09;
+  --surface-1: #14110d;
+  --surface-2: #171310;
+  --surface-3: #1d1913;
+  --surface-4: #2a231b;
+  --surface-5: #383026;
 
-  --topbar-bg: #0b100d;
-  --sidebar-bg: #090d0b;
-  --workbench-bg: #0b100d;
-  --response-bg: #090d0b;
-  --code-bg: #060908;
+  --topbar-bg: #171310;
+  --sidebar-bg: #14110d;
+  --workbench-bg: #171310;
+  --response-bg: #14110d;
+  --code-bg: #0f0c09;
 
-  --glow-primary: rgba(52, 211, 153, 0.16);
+  --glow-primary: rgba(245, 158, 11, 0.18);
   --glow-success: rgba(52, 211, 153, 0.12);
   --glow-warning: rgba(251, 191, 36, 0.12);
   --glow-danger: rgba(248, 113, 113, 0.12);
@@ -375,7 +375,7 @@ code, pre, kbd,
 .card-elevated {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 20px;
   box-shadow: var(--shadow-card);
   transition: box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
 }
@@ -414,12 +414,12 @@ code, pre, kbd,
 
 /* Brand mark */
 .brand-mark {
-  background: linear-gradient(135deg, #047857 0%, #10b981 55%, #34d399 100%);
-  box-shadow: 0 2px 10px rgba(52, 211, 153, 0.35), inset 0 1px 0 rgba(255,255,255,0.22);
+  background: linear-gradient(135deg, #b45309 0%, #d97706 55%, #f59e0b 100%);
+  box-shadow: 0 2px 10px rgba(217, 119, 6, 0.35), inset 0 1px 0 rgba(255,255,255,0.22);
 }
 .light .brand-mark {
-  background: linear-gradient(135deg, #065f46 0%, #047857 55%, #10b981 100%);
-  box-shadow: 0 2px 10px rgba(4, 120, 87, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  background: linear-gradient(135deg, #92400e 0%, #b45309 55%, #d97706 100%);
+  box-shadow: 0 2px 10px rgba(180, 83, 9, 0.3), inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 /* Readable body text floor — never below 12px for UI copy */

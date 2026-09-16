@@ -537,7 +537,7 @@ export function Workbench({
             >
               <span>Body</span>
               {method !== 'GET' && (
-                <span className="text-[11.5px] text-emerald-400 font-mono ml-1">JSON</span>
+                <span className="text-[11.5px] text-primary font-mono ml-1">JSON</span>
               )}
             </TabsTrigger>
 
