@@ -81,24 +81,21 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                         isActive={isActive}
                         tooltip={`${item.label} (${item.shortcut})`}
                         onClick={() => onViewChange(item.id)}
-                        className={`relative transition-all duration-150 group/nav-item ${
+                        className={`relative transition-all duration-150 group/nav-item rounded-xl ${
                           isActive
-                            ? 'text-foreground font-medium'
-                            : 'text-muted-foreground hover:text-foreground'
+                            ? 'font-semibold shadow-sm'
+                            : 'text-foreground/70 hover:text-foreground hover:bg-accent'
                         }`}
                         style={isActive ? {
-                          background: 'linear-gradient(90deg, color-mix(in srgb, var(--primary) 14%, transparent) 0%, color-mix(in srgb, var(--primary) 4%, transparent) 100%)',
-                          boxShadow: 'inset 2px 0 0 var(--primary)',
+                          background: 'var(--foreground)',
+                          color: 'var(--background)',
                         } : undefined}
                       >
                         <Icon
                           size={16}
-                          className={`transition-all duration-150 ${
-                            isActive
-                              ? 'text-[var(--primary)]'
-                              : 'text-muted-foreground group-hover/nav-item:text-secondary-foreground'
+                          className={`transition-colors duration-150 ${
+                            isActive ? 'text-background' : 'text-primary'
                           }`}
-                          style={isActive ? { filter: 'drop-shadow(0 0 4px color-mix(in srgb, var(--primary) 55%, transparent))' } : undefined}
                         />
                         <span>{item.label}</span>
                       </SidebarMenuButton>

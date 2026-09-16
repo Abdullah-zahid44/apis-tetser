@@ -646,14 +646,14 @@ export default function ConsoleDashboard() {
               onValueChange={(value) => value && setMobilePane(value as 'catalog' | 'workbench' | 'response')}
               className="lg:hidden mx-2 mt-2 shrink-0"
             >
-              <TabsList className="grid w-full grid-cols-3 h-10 bg-card border border-border rounded-[12px] p-1 shadow-[var(--shadow-card)]">
-                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+              <TabsList className="grid w-full grid-cols-3 h-10 bg-card border border-border rounded-full p-1 shadow-[var(--shadow-card)]">
+                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
                   <Layers size={14} />Collections
                 </TabsTrigger>
-                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
                   <Code2 size={14} />Request
                 </TabsTrigger>
-                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-[8px] data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
+                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-md">
                   <Activity size={14} />Response{result ? ` (${result.upstream.status})` : ''}
                 </TabsTrigger>
               </TabsList>

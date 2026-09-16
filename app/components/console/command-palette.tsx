@@ -195,7 +195,7 @@ export function CommandPalette({
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      className="bg-popover border border-border shadow-2xl text-foreground rounded-[14px]"
+      className="bg-popover border border-border shadow-2xl text-foreground rounded-[20px] overflow-hidden"
     >
       {commandBody}
     </CommandDialog>

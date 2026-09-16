@@ -168,16 +168,16 @@ export function Sidebar({
         <ToggleGroup
           value={[activeTab]}
           onValueChange={(value) => value[0] && setActiveTab(value[0] as 'catalog' | 'saved')}
-          className="grid grid-cols-2 h-8"
+          className="grid grid-cols-2 h-9 p-1 rounded-full bg-muted border border-border gap-1"
         >
-          <ToggleGroupItem value="catalog" className="text-xs gap-1.5">
+          <ToggleGroupItem value="catalog" className="text-xs gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm data-active:hover:bg-primary">
             <Layers size={12} />
             Catalog
             <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">
               {filteredEndpoints.length}
             </Badge>
           </ToggleGroupItem>
-          <ToggleGroupItem value="saved" className="text-xs gap-1.5">
+          <ToggleGroupItem value="saved" className="text-xs gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm data-active:hover:bg-primary">
             <BookmarkCheck size={12} />
             Saved
             <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">

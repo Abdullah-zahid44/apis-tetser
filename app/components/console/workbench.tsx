@@ -580,7 +580,7 @@ export function Workbench({
 
             <div className="border border-border rounded-md overflow-x-auto bg-muted">
               <table className="w-full min-w-[640px] text-xs text-left">
-                <thead className="bg-card text-muted-foreground font-mono uppercase text-[11.5px] border-b border-border">
+                <thead className="bg-muted/60 text-muted-foreground font-mono uppercase text-[11.5px] border-b border-border">
                   <tr>
                     <th className="w-8 p-2 text-center">✓</th>
                     <th className="p-2 w-1/3">Key</th>
@@ -716,7 +716,7 @@ export function Workbench({
 
               <div className="border border-border rounded-md overflow-x-auto bg-muted">
                 <table className="w-full min-w-[640px] text-xs text-left">
-                  <thead className="bg-card text-muted-foreground font-mono uppercase text-[11.5px] border-b border-border">
+                  <thead className="bg-muted/60 text-muted-foreground font-mono uppercase text-[11.5px] border-b border-border">
                     <tr>
                       <th className="w-8 p-2 text-center">✓</th>
                       <th className="p-2 w-1/3">Header Name</th>
@@ -938,7 +938,7 @@ export function Workbench({
               ) : (
                 <div className="border border-border rounded overflow-x-auto bg-background">
                   <table className="w-full min-w-[560px] text-xs text-left font-mono">
-                    <thead className="bg-card text-muted-foreground uppercase text-[11.5px] border-b border-border">
+                    <thead className="bg-muted/60 text-muted-foreground uppercase text-[11.5px] border-b border-border">
                       <tr>
                         <th className="p-2">Variable Token</th>
                         <th className="p-2">Resolution Type</th>
