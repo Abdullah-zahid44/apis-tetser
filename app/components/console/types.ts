@@ -154,6 +154,7 @@ export type SafeConfig = Record<
       baseUrlConfigured: boolean;
       apiKeyConfigured: boolean;
       apiSecretConfigured: boolean;
+      callbackSecretConfigured: boolean;
       hostname?: string;
       encryptionMode: string;
     }

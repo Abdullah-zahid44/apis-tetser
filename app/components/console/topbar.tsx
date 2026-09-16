@@ -136,15 +136,15 @@ export function Topbar({
 
   return (
     <>
-      <header className="h-14 shrink-0 border-b border-[var(--border)] flex items-center justify-between px-3 sm:px-4 gap-2 z-30 select-none"
+      <header className="shrink-0 border-b border-[var(--border)] grid grid-cols-[1fr_auto] sm:flex sm:h-14 sm:items-center sm:justify-between px-2.5 sm:px-4 py-2 sm:py-0 gap-x-2 gap-y-2 z-30 select-none"
         style={{ background: 'var(--topbar-bg)' }}>
 
         {/* Brand — always visible on all breakpoints */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 min-w-0 shrink-0">
           {/* Mobile nav trigger — opens the nav rail as a slide-over Sheet */}
           <SidebarTrigger className="md:hidden h-8 w-8 text-muted-foreground hover:text-foreground" />
           <div
-            className="brand-mark w-9 h-9 rounded-md flex items-center justify-center text-white shrink-0"
+            className="brand-mark w-8 h-8 sm:w-9 sm:h-9 rounded-md flex items-center justify-center text-white shrink-0"
           >
             <ShieldCheck size={16} strokeWidth={2.4} />
           </div>
@@ -161,7 +161,7 @@ export function Topbar({
           {onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
-              className="h-8 w-8 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-[var(--surface-4)] border border-transparent hover:border-[var(--border)] transition-colors cursor-pointer ml-1"
+              className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-[var(--surface-4)] border border-transparent hover:border-[var(--border)] transition-colors cursor-pointer ml-1"
               title={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
               aria-label={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
             >
@@ -171,14 +171,14 @@ export function Topbar({
         </div>
 
         {/* Center: Selectors */}
-        <div className="flex items-center gap-2 min-w-0 flex-1 justify-center">
+        <div className="order-3 col-span-2 sm:order-none sm:col-span-1 flex items-center gap-2 min-w-0 sm:flex-1 justify-start sm:justify-center">
           {/* Country Selector */}
           <Select
             value={selectedCountry}
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="w-[92px] sm:w-[120px] lg:w-[155px] xl:w-[175px] h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
+              className="w-[120px] sm:w-[120px] lg:w-[155px] xl:w-[175px] h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
             >
               <SelectValue>
                 {currentCountryObj ? (
@@ -237,7 +237,7 @@ export function Topbar({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center justify-end gap-1 shrink-0">
           <LatencyIndicator ms={gatewayLatencyMs} />
 
           {/* Status Button */}

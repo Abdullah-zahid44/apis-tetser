@@ -179,11 +179,18 @@ export function EnvironmentStatusView({
                           </div>
 
                           <div className="flex justify-between">
-                            <span>API Secret:</span>
+                            <span>Branch API Secret:</span>
                             <span
                               className={status?.apiSecretConfigured ? 'text-success' : 'text-warning'}
                             >
                               {status?.apiSecretConfigured ? '✓ Configured' : '✗ Missing in .env'}
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between gap-2">
+                            <span>Main Callback Secret:</span>
+                            <span className={status?.callbackSecretConfigured ? 'text-success' : 'text-warning'}>
+                              {status?.callbackSecretConfigured ? 'Configured' : 'Missing in .env'}
                             </span>
                           </div>
 

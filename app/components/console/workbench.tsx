@@ -74,8 +74,6 @@ interface WorkbenchProps {
   requiresSignature?: boolean;
   sidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
-  onNewRequest?: () => void;
-  onCloseRequest?: () => void;
 }
 
 export function Workbench({
@@ -104,8 +102,6 @@ export function Workbench({
   requiresSignature = true,
   sidebarCollapsed,
   onToggleSidebar,
-  onNewRequest,
-  onCloseRequest,
 }: WorkbenchProps) {
   const [jsonError, setJsonError] = useState('');
   const [copiedHeaders, setCopiedHeaders] = useState(false);
@@ -332,13 +328,7 @@ export function Workbench({
                 title="Unsaved changes"
               />
             )}
-            {onCloseRequest && (
-              <button type="button" onClick={onCloseRequest} className="w-5 h-5 grid place-items-center rounded text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] transition-colors" title="Close" aria-label="Close request tab"><X size={12} /></button>
-            )}
           </div>
-          {onNewRequest && (
-            <button type="button" onClick={onNewRequest} className="w-6 h-6 grid place-items-center rounded text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] transition-colors" title="New request tab" aria-label="New request tab"><Plus size={13} /></button>
-          )}
         </div>
 
         {/* State Tags & Save Action */}

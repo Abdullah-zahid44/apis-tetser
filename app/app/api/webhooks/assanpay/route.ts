@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import { webhookEvents } from '@/lib/db/schema';
 import { verifyCallbackSignature } from '@/lib/assanpay/callbacks';
-import { getAssanPayCredentials } from '@/lib/assanpay/credentials';
+import { getAssanPayCallbackSecret } from '@/lib/assanpay/credentials';
 
 export const runtime = 'nodejs';
 
@@ -11,9 +11,12 @@ export async function POST(request: Request) {
     const url = new URL(request.url);
     const market = url.searchParams.get('market') || 'bdt';
     const environment = url.searchParams.get('environment') || 'sandbox';
+    if (environment !== 'sandbox') {
+      return Response.json({ error: 'Only sandbox callbacks are supported.' }, { status: 404 });
+    }
 
-    const creds = getAssanPayCredentials(market, environment);
-    const verification = verifyCallbackSignature(rawBody, request.headers, creds.apiSecret || '');
+    const callbackSecret = getAssanPayCallbackSecret(market, environment);
+    const verification = verifyCallbackSignature(rawBody, request.headers, callbackSecret || '');
 
     try {
       const db = getDb();

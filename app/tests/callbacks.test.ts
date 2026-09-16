@@ -1,5 +1,6 @@
 import { verifyCallbackSignature } from '../lib/assanpay/callbacks';
 import crypto from 'node:crypto';
+import { getAssanPayCallbackSecret, getAssanPayCredentials } from '../lib/assanpay/credentials';
 
 export function runCallbackTests(): { passed: boolean; message: string }[] {
   const results = [];
@@ -53,6 +54,53 @@ export function runCallbackTests(): { passed: boolean; message: string }[] {
     passed: missingRes.valid === false,
     message: `Rejects callback missing required headers`,
   });
+
+  // Outgoing branch signing and incoming main-merchant verification are isolated.
+  const branchKey = 'ASSANPAY_PKR_SANDBOX_API_KEY';
+  const branchSecretKey = 'ASSANPAY_PKR_SANDBOX_API_SECRET';
+  const mainSecretKey = 'ASSANPAY_PKR_SANDBOX_MAIN_API_SECRET';
+  const productionKeys = [
+    'ASSANPAY_PKR_PRODUCTION_API_KEY',
+    'ASSANPAY_PKR_PRODUCTION_API_SECRET',
+    'ASSANPAY_PKR_PRODUCTION_MAIN_API_SECRET',
+  ];
+  const testKeys = [branchKey, branchSecretKey, mainSecretKey, ...productionKeys];
+  const previous = testKeys.map((key) => process.env[key]);
+  try {
+    process.env[branchKey] = 'branch_api_key';
+    process.env[branchSecretKey] = 'branch_request_secret';
+    process.env[mainSecretKey] = apiSecret;
+
+    const branch = getAssanPayCredentials('pkr', 'sandbox');
+    const callbackSecret = getAssanPayCallbackSecret('pkr', 'sandbox');
+    results.push({
+      passed: branch.apiKey === 'branch_api_key' && branch.apiSecret === 'branch_request_secret' && callbackSecret === apiSecret,
+      message: 'Keeps branch request credentials separate from main callback secret',
+    });
+    results.push({
+      passed: verifyCallbackSignature(rawBody, validHeaders, callbackSecret || '').valid &&
+        !verifyCallbackSignature(rawBody, validHeaders, branch.apiSecret || '').valid,
+      message: 'Verifies callback with main merchant secret, not branch secret',
+    });
+
+    delete process.env[mainSecretKey];
+    results.push({
+      passed: getAssanPayCallbackSecret('pkr', 'sandbox') === undefined,
+      message: 'Does not fall back to branch secret when main callback secret is missing',
+    });
+
+    productionKeys.forEach((key) => { process.env[key] = 'live_value_must_not_be_used'; });
+    results.push({
+      passed: getAssanPayCredentials('pkr', 'production').apiKey === undefined &&
+        getAssanPayCallbackSecret('pkr', 'production') === undefined,
+      message: 'Never resolves production credentials in sandbox-only mode',
+    });
+  } finally {
+    testKeys.forEach((key, index) => {
+      if (previous[index] === undefined) delete process.env[key];
+      else process.env[key] = previous[index];
+    });
+  }
 
   return results;
 }

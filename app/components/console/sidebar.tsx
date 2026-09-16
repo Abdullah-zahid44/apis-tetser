@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import {
   Search,
-  Plus,
   BookmarkCheck,
   ChevronDown,
   ChevronRight,
@@ -43,7 +42,6 @@ interface SidebarProps {
   onSearchChange: (search: string) => void;
   onSelectEndpoint: (endpoint: Endpoint) => void;
   onSelectSaved: (saved: SavedRequestItem) => void;
-  onNewRequest: () => void;
   onDeleteSaved?: (id: string) => void;
   onDuplicateSaved?: (saved: SavedRequestItem) => void;
   onToggleCollapse?: () => void;
@@ -79,7 +77,6 @@ export function Sidebar({
   onSearchChange,
   onSelectEndpoint,
   onSelectSaved,
-  onNewRequest,
   onDeleteSaved,
   onDuplicateSaved,
   onToggleCollapse,
@@ -138,17 +135,6 @@ export function Sidebar({
         </div>
 
         <div className="flex items-center gap-1">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onNewRequest}
-            className="h-7 px-2.5 text-xs gap-1.5 border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] text-secondary-foreground hover:text-foreground transition-colors"
-            title="Create new request"
-          >
-            <Plus size={12} />
-            <span>New</span>
-          </Button>
-
           {onToggleCollapse && (
             <Button
               variant="ghost"

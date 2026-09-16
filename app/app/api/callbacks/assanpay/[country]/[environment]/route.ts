@@ -1,7 +1,7 @@
 import { getDb } from '@/lib/db';
 import { webhookEvents, countries } from '@/lib/db/schema';
 import { verifyCallbackSignature } from '@/lib/assanpay/callbacks';
-import { getAssanPayCredentials } from '@/lib/assanpay/credentials';
+import { getAssanPayCallbackSecret } from '@/lib/assanpay/credentials';
 import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
@@ -14,6 +14,9 @@ export async function POST(
   const params = await props.params;
   const countrySlug = (params.country || 'pkr').toLowerCase();
   const environment = (params.environment || 'sandbox').toLowerCase();
+  if (environment !== 'sandbox') {
+    return Response.json({ error: 'Only sandbox callbacks are supported.' }, { status: 404 });
+  }
 
   // 1. Read raw request body FIRST before JSON parsing
   const rawBody = await request.text();
@@ -31,9 +34,9 @@ export async function POST(
     headerSnapshot[key] = value;
   });
 
-  // 2. Resolve credentials & verify signature
-  const creds = getAssanPayCredentials(countrySlug, environment);
-  const verification = verifyCallbackSignature(rawBody, request.headers, creds.apiSecret || '');
+  // 2. Callbacks use the main merchant secret, never the branch request secret.
+  const callbackSecret = getAssanPayCallbackSecret(countrySlug, environment);
+  const verification = verifyCallbackSignature(rawBody, request.headers, callbackSecret || '');
 
   // 3. Resolve country id
   let countryId: string | null = null;

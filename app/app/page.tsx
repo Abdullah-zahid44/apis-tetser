@@ -20,16 +20,12 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Card, CardAction, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Layers,
   Code2,
   Activity,
   ShieldAlert,
-  Plus,
 } from 'lucide-react';
 import type {
   Method,
@@ -363,22 +359,6 @@ export default function ConsoleDashboard() {
     }
   };
 
-  // New blank custom request
-  const handleNewRequest = () => {
-    setSelectedId('new-custom');
-    setRequestName('Untitled Custom Request');
-    setMethod('POST');
-    setUrl('/api/');
-    setBody('{}');
-    setParamRows([]);
-    setHeaderRows([]);
-    setResult(null);
-    setDirty(true);
-    setLoadedHistoryId(null);
-    setView('workbench');
-    setMobilePane('workbench');
-  };
-
   // Load from History
   const handleLoadIntoWorkbench = (item: HistoryItem) => {
     setSelectedId(`history-${item.id}`);
@@ -630,16 +610,6 @@ export default function ConsoleDashboard() {
         {/* View Router */}
         {view === 'workbench' && (
           <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
-            <Card className="hidden lg:flex mx-3 mt-3 mb-1 shrink-0" size="sm">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <CardTitle>API Request Workspace</CardTitle>
-                  <Badge variant="secondary">Sandbox ready</Badge>
-                </div>
-                <CardDescription>Build, sign and inspect AssanPay gateway requests.</CardDescription>
-                <CardAction><Button onClick={handleNewRequest}><Plus data-icon="inline-start" />New request</Button></CardAction>
-              </CardHeader>
-            </Card>
             {/* Mobile / Tablet Segmented Pane Switcher (< 1024px) — shadcn Tabs */}
             <Tabs
               value={mobilePane}
@@ -647,14 +617,14 @@ export default function ConsoleDashboard() {
               className="lg:hidden mx-2 mt-2 shrink-0"
             >
               <TabsList className="grid w-full grid-cols-3 h-10 bg-muted border border-border rounded-full p-1">
-                <TabsTrigger value="catalog" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
-                  <Layers size={14} />Collections
+                <TabsTrigger value="catalog" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+                  <Layers size={14} className="hidden sm:block" />Collections
                 </TabsTrigger>
-                <TabsTrigger value="workbench" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
-                  <Code2 size={14} />Request
+                <TabsTrigger value="workbench" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+                  <Code2 size={14} className="hidden sm:block" />Request
                 </TabsTrigger>
-                <TabsTrigger value="response" className="text-xs sm:text-sm gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
-                  <Activity size={14} />Response{result ? ` (${result.upstream.status})` : ''}
+                <TabsTrigger value="response" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+                  <Activity size={14} className="hidden sm:block" />Response{result ? ` (${result.upstream.status})` : ''}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -674,7 +644,6 @@ export default function ConsoleDashboard() {
                     onSearchChange={setSearch}
                     onSelectEndpoint={handleSelectEndpoint}
                     onSelectSaved={handleSelectSaved}
-                    onNewRequest={handleNewRequest}
                     onDeleteSaved={handleDeleteSaved}
                     onDuplicateSaved={handleDuplicateSaved}
                     onToggleCollapse={() => setSidebarCollapsed(true)}
@@ -731,8 +700,6 @@ export default function ConsoleDashboard() {
                       requiresSignature={requiresSignature}
                       sidebarCollapsed={sidebarCollapsed}
                       onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
-                      onNewRequest={handleNewRequest}
-                      onCloseRequest={handleNewRequest}
                     />
                   </ResizablePanel>
 
@@ -768,7 +735,6 @@ export default function ConsoleDashboard() {
                   onSearchChange={setSearch}
                   onSelectEndpoint={handleSelectEndpoint}
                   onSelectSaved={handleSelectSaved}
-                  onNewRequest={handleNewRequest}
                   onDeleteSaved={handleDeleteSaved}
                   onDuplicateSaved={handleDuplicateSaved}
                 />
@@ -817,8 +783,6 @@ export default function ConsoleDashboard() {
                   loadedHistoryId={loadedHistoryId}
                   config={config}
                   requiresSignature={requiresSignature}
-                  onNewRequest={handleNewRequest}
-                  onCloseRequest={handleNewRequest}
                 />
               )}
 

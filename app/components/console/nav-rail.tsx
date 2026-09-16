@@ -1,11 +1,12 @@
 'use client';
 
-import { Braces, Code2, Command, History, ServerCog, ShieldCheck, Webhook } from 'lucide-react';
+import { Braces, Code2, Command, History, PanelLeftClose, ServerCog, ShieldCheck, Webhook, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuBadge,
-  SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator,
+  SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator, useSidebar,
 } from '@/components/ui/sidebar';
 import type { View } from './types';
 
@@ -18,6 +19,11 @@ interface NavRailProps {
 }
 
 export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpenCommandPalette }: NavRailProps) {
+  const { isMobile, state, setOpenMobile, toggleSidebar } = useSidebar();
+  const selectView = (nextView: View) => {
+    onViewChange(nextView);
+    if (isMobile) setOpenMobile(false);
+  };
   const groups = [
     {
       label: 'Workspace',
@@ -39,13 +45,13 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
   return (
     <Sidebar variant="sidebar" collapsible="icon">
       {/* Brand Header */}
-      <SidebarHeader>
+      <SidebarHeader className="flex flex-row items-center gap-1">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              onClick={() => onViewChange('workbench')}
-              tooltip="AssanPay Developer Console"
+              onClick={() => state === 'collapsed' && !isMobile ? toggleSidebar() : selectView('workbench')}
+              tooltip={state === 'collapsed' ? 'Expand sidebar' : 'AssanPay Developer Console'}
               className="transition-colors duration-150"
             >
               {/* Logo */}
@@ -61,6 +67,16 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={toggleSidebar}
+          className="shrink-0 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden"
+          title={isMobile ? 'Close sidebar' : 'Collapse sidebar'}
+          aria-label={isMobile ? 'Close sidebar' : 'Collapse sidebar'}
+        >
+          {isMobile ? <X /> : <PanelLeftClose />}
+        </Button>
       </SidebarHeader>
 
       <SidebarSeparator />
@@ -81,7 +97,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                       <SidebarMenuButton
                         isActive={isActive}
                         tooltip={`${item.label} (${item.shortcut})`}
-                        onClick={() => onViewChange(item.id)}
+                        onClick={() => selectView(item.id)}
                         className={`relative transition-colors duration-150 group/nav-item rounded-xl ${
                           isActive
                             ? 'font-semibold shadow-sm'
@@ -123,7 +139,10 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip="Quick search (Ctrl+K)"
-                onClick={onOpenCommandPalette}
+                onClick={() => {
+                  if (isMobile) setOpenMobile(false);
+                  onOpenCommandPalette();
+                }}
                 className="text-muted-foreground hover:text-secondary-foreground transition-colors"
               >
                 <Command size={14} className="text-muted-foreground" />
