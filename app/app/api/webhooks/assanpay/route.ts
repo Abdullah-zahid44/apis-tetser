@@ -10,7 +10,7 @@ export async function POST(request: Request) {
   try {
     const url = new URL(request.url);
     const market = url.searchParams.get('market') || 'bdt';
-    const environment = url.searchParams.get('environment') || 'production';
+    const environment = url.searchParams.get('environment') || 'sandbox';
 
     const creds = getAssanPayCredentials(market, environment);
     const verification = verifyCallbackSignature(rawBody, request.headers, creds.apiSecret || '');

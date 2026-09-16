@@ -25,7 +25,6 @@ import {
   Braces,
   ServerCog,
   Globe,
-  Layers,
   Send,
   ArrowRight,
 } from 'lucide-react';
@@ -39,7 +38,6 @@ interface CommandPaletteProps {
   selectedCountry: string;
   onCountryChange: (slug: string) => void;
   environment: Environment;
-  onEnvironmentChange: (env: Environment) => void;
   onViewChange: (view: View) => void;
   onSelectEndpoint: (ep: Endpoint) => void;
 }
@@ -52,7 +50,6 @@ export function CommandPalette({
   selectedCountry,
   onCountryChange,
   environment,
-  onEnvironmentChange,
   onViewChange,
   onSelectEndpoint,
 }: CommandPaletteProps) {
@@ -150,23 +147,6 @@ export function CommandPalette({
               )}
             </CommandItem>
           ))}
-
-          <CommandItem
-            onSelect={() =>
-              handleSelect(() =>
-                onEnvironmentChange(environment === 'sandbox' ? 'production' : 'sandbox')
-              )
-            }
-            className="cursor-pointer hover:bg-accent"
-          >
-            <Layers className="mr-2 h-4 w-4 text-muted-foreground" />
-            <span>
-              Toggle Environment: Currently {environment.toUpperCase()}
-            </span>
-            <CommandShortcut>
-              {environment === 'sandbox' ? 'Switch to Prod' : 'Switch to Sandbox'}
-            </CommandShortcut>
-          </CommandItem>
         </CommandGroup>
 
         <CommandSeparator className="bg-border" />

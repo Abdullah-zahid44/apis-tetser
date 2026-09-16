@@ -13,7 +13,7 @@ export async function GET() {
     );
   }
 
-  const environments = ['sandbox', 'production'] as const;
+  const environments = ['sandbox'] as const;
   const configMap: Record<
     string,
     Record<string, ReturnType<typeof getSafeEnvironmentReadiness>>

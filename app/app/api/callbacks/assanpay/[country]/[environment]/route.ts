@@ -13,7 +13,7 @@ export async function POST(
 ) {
   const params = await props.params;
   const countrySlug = (params.country || 'pkr').toLowerCase();
-  const environment = (params.environment || 'production').toLowerCase();
+  const environment = (params.environment || 'sandbox').toLowerCase();
 
   // 1. Read raw request body FIRST before JSON parsing
   const rawBody = await request.text();

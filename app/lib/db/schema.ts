@@ -85,7 +85,7 @@ export const savedRequests = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
     countryId: uuid('country_id').references(() => countries.id, { onDelete: 'set null' }),
-    environment: text('environment').notNull().default('sandbox'), // sandbox, production
+    environment: text('environment').notNull().default('sandbox'), // sandbox only
     endpointId: uuid('endpoint_id').references(() => apiEndpoints.id, { onDelete: 'set null' }),
     name: text('name').notNull(),
     method: text('method').notNull(),
@@ -142,7 +142,7 @@ export const webhookEvents = pgTable(
     id: uuid('id').defaultRandom().primaryKey(),
     eventId: text('event_id').notNull().unique(), // deduplication constraint
     countryId: uuid('country_id').references(() => countries.id, { onDelete: 'set null' }),
-    environment: text('environment').notNull().default('production'),
+    environment: text('environment').notNull().default('sandbox'),
     signature: text('signature').notNull().default(''),
     signatureVerified: boolean('signature_verified').notNull().default(false),
     verificationMessage: text('verification_message').notNull().default(''),
@@ -168,7 +168,7 @@ export const environmentVariables = pgTable(
   {
     id: uuid('id').defaultRandom().primaryKey(),
     countryId: uuid('country_id').references(() => countries.id, { onDelete: 'cascade' }), // null = global
-    environment: text('environment').notNull().default('all'), // all, sandbox, production
+    environment: text('environment').notNull().default('all'), // all, sandbox
     key: text('key').notNull(),
     encryptedValue: text('encrypted_value').notNull().default(''),
     isSecret: boolean('is_secret').notNull().default(false),

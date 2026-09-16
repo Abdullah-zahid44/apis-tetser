@@ -10,7 +10,7 @@ export const runtime = 'nodejs';
 const VariableSchema = z.object({
   id: z.string().uuid().optional(),
   country: z.string().optional().nullable(),
-  environment: z.enum(['all', 'sandbox', 'production']).default('all'),
+  environment: z.enum(['all', 'sandbox']).default('all'),
   key: z.string().min(1).max(100),
   value: z.string().default(''),
   isSecret: z.boolean().default(false),

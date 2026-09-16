@@ -5,7 +5,6 @@ import {
   ShieldCheck,
   LogOut,
   ServerCog,
-  AlertTriangle,
   Search,
   Sun,
   Moon,
@@ -40,7 +39,6 @@ interface TopbarProps {
   selectedCountry: string;
   onCountryChange: (slug: string) => void;
   environment: Environment;
-  onEnvironmentChange: (env: Environment) => void;
   config: SafeConfig | null;
   user?: {
     name?: string | null;
@@ -122,7 +120,6 @@ export function Topbar({
   selectedCountry,
   onCountryChange,
   environment,
-  onEnvironmentChange,
   config,
   user,
   onOpenStatus,
@@ -134,18 +131,9 @@ export function Topbar({
   const currentCountryObj = countries.find((c) => c.slug === selectedCountry);
   const currentEnvConfig = config?.[selectedCountry]?.[environment];
   const isConfigured = Boolean(currentEnvConfig?.configured);
-  const isProduction = environment === 'production';
 
   return (
     <>
-      {/* Production Live Warning — full-width strip above topbar */}
-      {isProduction && (
-        <div className="h-7 shrink-0 flex items-center justify-center gap-2 bg-amber-950/60 border-b border-amber-700/50 text-amber-200 text-xs font-semibold animate-fade-in z-40 select-none">
-          <AlertTriangle size={12} className="text-amber-400 shrink-0 status-dot-live" />
-          <span>LIVE ENVIRONMENT — Real transactions will be executed. Proceed with caution.</span>
-        </div>
-      )}
-
       <header className="h-[52px] shrink-0 border-b border-[var(--border)] flex items-center justify-between px-3 sm:px-4 gap-2 z-30 select-none inset-shadow"
         style={{ background: 'var(--topbar-bg)' }}>
 
@@ -210,46 +198,14 @@ export function Topbar({
             </SelectContent>
           </Select>
 
-          {/* Environment Selector */}
-          <Select
-            value={environment}
-            onValueChange={(val) => { if (val) onEnvironmentChange(val as Environment); }}
+          {/* Environment Badge — sandbox only */}
+          <div
+            className="h-8 px-2 sm:px-3 flex items-center gap-1.5 rounded-md bg-[var(--surface-4)] border border-[var(--border)] select-none"
+            title="Sandbox environment (Mock Rails)"
           >
-            <SelectTrigger
-              className={`w-[96px] sm:w-[132px] h-8 text-sm font-medium transition-all shadow-none focus:ring-1 px-2 sm:px-3 ${
-                isProduction
-                  ? 'bg-amber-950/40 border-amber-600/60 text-amber-200 focus:ring-amber-500/60'
-                  : 'bg-[var(--surface-4)] border-[var(--border)] text-foreground focus:ring-[var(--primary)]'
-              }`}
-            >
-              <div className="flex items-center gap-1.5 w-full">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                    isProduction ? 'bg-amber-400 status-dot-live' : 'bg-emerald-400 status-dot-live'
-                  }`}
-                />
-                <span className="text-xs sm:text-sm truncate">
-                  {isProduction ? 'Production' : 'Sandbox'}
-                </span>
-              </div>
-            </SelectTrigger>
-            <SelectContent style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
-              <SelectGroup>
-                <SelectItem value="sandbox" className="cursor-pointer text-foreground text-xs hover:bg-[var(--surface-4)] focus:bg-[var(--surface-4)]">
-                  <span className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span className="font-medium">Sandbox (Mock Rails)</span>
-                  </span>
-                </SelectItem>
-                <SelectItem value="production" className="cursor-pointer text-amber-200 text-xs hover:bg-amber-950/40 focus:bg-amber-950/40">
-                  <span className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                    <span className="font-bold">Production (Live Rails)</span>
-                  </span>
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-emerald-400 status-dot-live" />
+            <span className="text-xs sm:text-sm font-medium text-foreground">Sandbox</span>
+          </div>
 
           {/* Quick Search Button */}
           {onOpenCommandPalette && (

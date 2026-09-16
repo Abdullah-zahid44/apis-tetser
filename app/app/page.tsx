@@ -258,13 +258,6 @@ export default function ConsoleDashboard() {
     setLoadedHistoryId(null);
   };
 
-  // Handle Environment Change
-  const handleEnvironmentChange = (nextEnv: Environment) => {
-    setEnvironment(nextEnv);
-    void fetchSavedRequests(nextEnv);
-    void fetchHistory(nextEnv);
-  };
-
   // Select Built-in Endpoint
   const handleSelectEndpoint = (ep: Endpoint) => {
     setSelectedId(ep.id);
@@ -437,7 +430,7 @@ export default function ConsoleDashboard() {
   // Send request execution logic
   const handleTriggerSend = () => {
     const looksLikeMoneyMovement = method !== 'GET' && /\/(payments|wallet-payouts|checkout\/sessions)(\/|$)/i.test(url.split('?')[0]);
-    if (environment === 'production' && (isMoneyMovement || looksLikeMoneyMovement)) {
+    if (isMoneyMovement || looksLikeMoneyMovement) {
       setIsConfirmModalOpen(true);
       return;
     }
@@ -623,7 +616,6 @@ export default function ConsoleDashboard() {
         selectedCountry={selectedCountry}
         onCountryChange={handleCountryChange}
         environment={environment}
-        onEnvironmentChange={handleEnvironmentChange}
         config={config}
         user={session?.user}
         onOpenStatus={() => setView('status')}
@@ -642,7 +634,7 @@ export default function ConsoleDashboard() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <CardTitle>API Request Workspace</CardTitle>
-                  <Badge variant={environment === 'production' ? 'destructive' : 'secondary'}>{environment === 'production' ? 'Production' : 'Sandbox ready'}</Badge>
+                  <Badge variant="secondary">Sandbox ready</Badge>
                 </div>
                 <CardDescription>Build, sign and inspect AssanPay gateway requests.</CardDescription>
                 <CardAction><Button onClick={handleNewRequest}><Plus data-icon="inline-start" />New request</Button></CardAction>
@@ -888,12 +880,11 @@ export default function ConsoleDashboard() {
         selectedCountry={selectedCountry}
         onCountryChange={handleCountryChange}
         environment={environment}
-        onEnvironmentChange={handleEnvironmentChange}
         onViewChange={setView}
         onSelectEndpoint={handleSelectEndpoint}
       />
 
-      {/* Production Payout Confirmation Safety Modal */}
+      {/* Payout Confirmation Safety Modal */}
       <MoneyConfirmModal
         isOpen={isConfirmModalOpen}
         endpointName={requestName}

@@ -35,7 +35,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
   const [value, setValue] = useState('');
   const [isSecret, setIsSecret] = useState(false);
   const [description, setDescription] = useState('');
-  const [varScope, setVarScope] = useState<'all' | 'sandbox' | 'production'>('all');
+  const [varScope, setVarScope] = useState<'all' | 'sandbox'>('all');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [revealedIds, setRevealedIds] = useState<Record<string, boolean>>({});
 
@@ -109,7 +109,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
     setValue(item.value === '••••••••' ? '' : item.value);
     setIsSecret(item.isSecret);
     setDescription(item.description || '');
-    setVarScope((item.environment as 'all' | 'sandbox' | 'production') || 'all');
+    setVarScope((item.environment as 'all' | 'sandbox') || 'all');
   };
 
   const toggleReveal = (id: string) => {
@@ -202,12 +202,11 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
               </label>
               <select
                 value={varScope}
-                onChange={(e) => setVarScope(e.target.value as 'all' | 'sandbox' | 'production')}
+                onChange={(e) => setVarScope(e.target.value as 'all' | 'sandbox')}
                 className="w-full h-8 px-2.5 rounded-md text-xs font-mono bg-card border border-border text-foreground outline-none cursor-pointer"
               >
                 <option value="all">Global (All Envs)</option>
                 <option value="sandbox">Sandbox Only</option>
-                <option value="production">Production Only</option>
               </select>
             </div>
           </div>

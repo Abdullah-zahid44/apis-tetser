@@ -1,5 +1,5 @@
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-export type Environment = 'sandbox' | 'production' | 'staging';
+export type Environment = 'sandbox';
 export type View = 'workbench' | 'history' | 'callbacks' | 'variables' | 'status';
 
 export type Country = {

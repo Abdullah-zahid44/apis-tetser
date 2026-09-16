@@ -1,4 +1,4 @@
-export type EnvironmentName = 'sandbox' | 'production' | 'staging';
+export type EnvironmentName = 'sandbox';
 
 export type AssanPayCredentials = {
   baseUrl?: string;

@@ -10,7 +10,7 @@ const SaveRequestSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1).max(150),
   country: z.string().min(2).max(20).default('pkr'),
-  environment: z.enum(['sandbox', 'production', 'staging']).default('sandbox'),
+  environment: z.enum(['sandbox']).default('sandbox'),
   endpointId: z.string().uuid().optional().nullable(),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
   relativeUrl: z.string().min(1).max(1000),

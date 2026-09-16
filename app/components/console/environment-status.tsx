@@ -28,7 +28,7 @@ export function EnvironmentStatusView({
   config,
   onBackToWorkbench,
 }: EnvironmentStatusProps) {
-  const environments = ['sandbox', 'production'] as const;
+  const environments = ['sandbox'] as const;
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-background p-3 sm:p-4 lg:p-6 overflow-y-auto select-none">
@@ -124,7 +124,6 @@ export function EnvironmentStatusView({
                   {environments.map((env) => {
                     const status = config?.[country.slug]?.[env];
                     const isConfigured = Boolean(status?.configured);
-                    const isProd = env === 'production';
 
                     return (
                       <div
@@ -137,12 +136,8 @@ export function EnvironmentStatusView({
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-mono font-bold uppercase flex items-center gap-2 text-xs">
-                            <span
-                              className={`w-2 h-2 rounded-full ${
-                                isProd ? 'bg-rose-500' : 'bg-primary'
-                              }`}
-                            />
-                            <span className={isProd ? 'text-rose-300' : 'text-primary'}>
+                            <span className="w-2 h-2 rounded-full bg-primary" />
+                            <span className="text-primary">
                               {env}
                             </span>
                           </span>

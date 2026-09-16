@@ -386,7 +386,7 @@ export function Workbench({
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink className="text-muted-foreground hover:text-foreground cursor-default">
-                {environment === 'production' ? 'Production' : 'Sandbox'}
+                Sandbox
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />

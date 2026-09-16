@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 
 const ExecuteSchema = z.object({
   country: z.string().min(2).max(20),
-  environment: z.enum(['sandbox', 'production', 'staging']).default('sandbox'),
+  environment: z.enum(['sandbox']).default('sandbox'),
   method: z.enum(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
   relativePath: z.string().min(1).max(1000),
   queryParams: z.record(z.string(), z.string()).optional(),
