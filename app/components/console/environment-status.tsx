@@ -37,7 +37,7 @@ export function EnvironmentStatusView({
           <div>
             <h2 className="text-sm font-bold text-foreground flex flex-wrap items-center gap-2">
               <ServerCog size={18} className="text-primary" />
-              <span>Environment</span>
+              <span>Environment Readiness</span>
             </h2>
           </div>
 
@@ -83,7 +83,7 @@ export function EnvironmentStatusView({
           </div>
         </div>
 
-        {/* Country & Environment Readiness Matrix */}
+        {/* Country & Gateway Readiness Matrix */}
         <div className="space-y-3">
           <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.05em]">
             Gateways
@@ -109,7 +109,7 @@ export function EnvironmentStatusView({
                   </span>
                 </div>
 
-                {/* Environments per Country */}
+                {/* Gateway per Country */}
                 <div className="p-3 space-y-3">
                   {environments.map((env) => {
                     const status = config?.[country.slug]?.[env];
@@ -128,7 +128,7 @@ export function EnvironmentStatusView({
                           <span className="font-mono font-bold uppercase flex items-center gap-2 text-xs">
                             <span className="w-2 h-2 rounded-full bg-primary" />
                             <span className="text-primary">
-                              {env}
+                              API Gateway
                             </span>
                           </span>
 
@@ -187,7 +187,7 @@ export function EnvironmentStatusView({
                           <div className="flex justify-between">
                             <span>Callback Route:</span>
                             <span className="text-secondary-foreground truncate max-w-[200px]">
-                              /api/callbacks/assanpay/{country.slug}/{env}
+                              /api/callbacks/assanpay/{country.slug}
                             </span>
                           </div>
                         </div>
@@ -197,6 +197,18 @@ export function EnvironmentStatusView({
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Security & Audit Strip */}
+        <div className="p-3 rounded-lg border border-border bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <ShieldCheck size={14} className="text-success" />
+            <span>Strict server-side validation active. Credentials are never sent to the browser.</span>
+          </div>
+          <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+            <Lock size={12} />
+            <span>HTTPS Only</span>
           </div>
         </div>
       </div>

@@ -25,18 +25,18 @@ export function MoneyConfirmModal({ isOpen, endpointName, method, url, country, 
       <AlertDialogContent className="max-h-[calc(100dvh-2rem)] w-[calc(100%-1.5rem)] overflow-y-auto sm:max-w-lg">
         <AlertDialogHeader>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">Sandbox</Badge>
+            <Badge variant="secondary">Live Payment</Badge>
             <Badge variant="outline">{country.toUpperCase()}</Badge>
           </div>
           <AlertDialogTitle>Confirm request</AlertDialogTitle>
           <AlertDialogDescription>
-            This request may create or move funds in the sandbox environment. Verify the account, amount and order ID before continuing.
+            This request may create or move transaction funds. Verify the account, amount and order ID before continuing.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <Alert variant="destructive">
           <AlertTriangle />
           <AlertTitle>{endpointName}</AlertTitle>
-          <AlertDescription className="break-all">{method} {url} · {environment.toUpperCase()}</AlertDescription>
+          <AlertDescription className="break-all">{method} {url}</AlertDescription>
         </Alert>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>

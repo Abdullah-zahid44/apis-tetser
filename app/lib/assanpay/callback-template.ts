@@ -9,7 +9,7 @@ export function withCallbackUrl(defaultBody: string, countrySlug: string, origin
     let changed = false;
 
     if (Object.prototype.hasOwnProperty.call(record, 'callbackUrl')) {
-      record.callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}/sandbox`;
+      record.callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}`;
       changed = true;
     }
 

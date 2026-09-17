@@ -6,17 +6,14 @@ import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
-// Public endpoint for AssanPay webhook callbacks (NO GOOGLE AUTH REQUIRED)
+// Public endpoint for AssanPay webhook callbacks (clean URL without /sandbox)
 export async function POST(
   request: Request,
-  props: { params: Promise<{ country: string; environment: string }> }
+  props: { params: Promise<{ country: string }> }
 ) {
   const params = await props.params;
   const countrySlug = (params.country || 'pkr').toLowerCase();
-  const environment = (params.environment || 'sandbox').toLowerCase();
-  if (environment !== 'sandbox') {
-    return Response.json({ error: 'Invalid callback environment.' }, { status: 404 });
-  }
+  const environment = 'sandbox';
 
   // 1. Read raw request body FIRST before JSON parsing
   const rawBody = await request.text();
@@ -89,7 +86,10 @@ export async function POST(
     },
     {
       status: 200,
-      headers: { 'Cache-Control': 'no-store' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store',
+      },
     }
   );
 }

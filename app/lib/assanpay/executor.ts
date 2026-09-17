@@ -85,17 +85,18 @@ export async function executeAssanPayRequest(
   let fullPath = input.relativePath.trim();
   if (!fullPath.startsWith('/')) fullPath = '/' + fullPath;
 
-  // Append query params if provided
+  // Merge and deduplicate query parameters cleanly
+  const [pathPart, existingQuery] = fullPath.split('?');
+  const sp = new URLSearchParams(existingQuery || '');
   if (input.queryParams && Object.keys(input.queryParams).length > 0) {
-    const sp = new URLSearchParams();
     for (const [k, v] of Object.entries(input.queryParams)) {
-      if (k.trim()) sp.set(k.trim(), v);
-    }
-    const queryString = sp.toString();
-    if (queryString) {
-      fullPath += (fullPath.includes('?') ? '&' : '?') + queryString;
+      if (k.trim()) {
+        sp.set(k.trim(), v);
+      }
     }
   }
+  const queryString = sp.toString();
+  fullPath = queryString ? `${pathPart}?${queryString}` : pathPart;
 
   const ssrfCheck = validateAssanPayUrl(fullPath, creds.baseUrl);
   if (!ssrfCheck.valid || !ssrfCheck.finalUrl) {
@@ -143,7 +144,7 @@ export async function executeAssanPayRequest(
 
   // Skip signature if explicitly requested or if it is a status-inquiry endpoint per manual
   const shouldSkipSignature =
-    input.requiresSignature === false || targetUrl.pathname === '/api/merchant/status-inquiry';
+    input.requiresSignature === false || targetUrl.pathname.includes('/status-inquiry');
 
   let signed = false;
   if (!shouldSkipSignature) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Braces, Code2, Command, History, PanelLeftClose, ServerCog, ShieldCheck, Webhook, X } from 'lucide-react';
+import { Code2, Command, History, PanelLeftClose, ServerCog, ShieldCheck, Webhook, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import {
@@ -36,8 +36,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
       label: 'Operations',
       items: [
         { id: 'callbacks' as View, label: 'Callbacks', icon: Webhook, shortcut: 'Alt+3', badge: callbackCount },
-        { id: 'variables' as View, label: 'Variables', icon: Braces, shortcut: 'Alt+4' },
-        { id: 'status' as View, label: 'Environment', icon: ServerCog, shortcut: 'Alt+5' },
+        { id: 'status' as View, label: 'Environment', icon: ServerCog, shortcut: 'Alt+4' },
       ],
     },
   ];

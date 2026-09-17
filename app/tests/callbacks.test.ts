@@ -63,7 +63,7 @@ export function runCallbackTests(): { passed: boolean; message: string }[] {
     results.push({
       passed: templates.length > 0 && templates.every((endpoint) => {
         const filled = JSON.parse(withCallbackUrl(endpoint.defaultBody || '', country, publicOrigin));
-        return filled.callbackUrl === `${publicOrigin}/api/callbacks/assanpay/${country}/sandbox`;
+        return filled.callbackUrl === `${publicOrigin}/api/callbacks/assanpay/${country}`;
       }),
       message: `Prefills ${country.toUpperCase()} callback URLs in request templates`,
     });

@@ -9,7 +9,6 @@ import { Sidebar } from '@/components/console/sidebar';
 import { Workbench } from '@/components/console/workbench';
 import { ResponsePanel } from '@/components/console/response-panel';
 import { CallbackInbox } from '@/components/console/callback-inbox';
-import { VariablesWorkspace } from '@/components/console/variables-workspace';
 import { HistoryView } from '@/components/console/history-view';
 import { EnvironmentStatusView } from '@/components/console/environment-status';
 import { MoneyConfirmModal } from '@/components/console/money-confirm-modal';
@@ -570,9 +569,9 @@ export default function ConsoleDashboard() {
       } else if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
         e.preventDefault();
         setCommandPaletteOpen((prev) => !prev);
-      } else if (e.altKey && ['1', '2', '3', '4', '5'].includes(e.key)) {
+      } else if (e.altKey && ['1', '2', '3', '4'].includes(e.key)) {
         e.preventDefault();
-        const views: View[] = ['workbench', 'history', 'callbacks', 'variables', 'status'];
+        const views: View[] = ['workbench', 'history', 'callbacks', 'status'];
         setView(views[Number(e.key) - 1]);
       }
     };
@@ -826,13 +825,6 @@ export default function ConsoleDashboard() {
 
         {view === 'callbacks' && (
           <CallbackInbox
-            countrySlug={selectedCountry}
-            environment={environment}
-          />
-        )}
-
-        {view === 'variables' && (
-          <VariablesWorkspace
             countrySlug={selectedCountry}
             environment={environment}
           />

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     id: '/',
     name: 'AssanPay Developer Console',
     short_name: 'AssanPay',
-    description: 'AssanPay sandbox API testing workspace.',
+    description: 'AssanPay API testing workspace.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

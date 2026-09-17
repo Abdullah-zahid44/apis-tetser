@@ -50,7 +50,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
     }
   }, []);
 
-  const callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}/${environment}`;
+  const callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}`;
 
   const fetchCallbacks = useCallback(async () => {
     setLoading(true);

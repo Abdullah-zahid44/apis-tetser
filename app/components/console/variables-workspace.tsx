@@ -169,6 +169,20 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
               />
             </div>
 
+            <div>
+              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
+                Scope
+              </label>
+              <select
+                value={varScope}
+                onChange={(e) => setVarScope(e.target.value as 'all' | 'sandbox')}
+                className="h-8 w-full text-xs bg-card border border-border rounded-md px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              >
+                <option value="all">Global (All Envs)</option>
+                <option value="sandbox">Gateway Only</option>
+              </select>
+            </div>
+
             <div className="md:col-span-2">
               <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Value
@@ -185,22 +199,6 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
               />
             </div>
 
-            <div>
-              <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
-                Scope
-              </label>
-              <select
-                value={varScope}
-                onChange={(e) => setVarScope(e.target.value as 'all' | 'sandbox')}
-                className="w-full h-8 px-2.5 rounded-md text-xs font-mono bg-card border border-border text-foreground outline-none cursor-pointer"
-              >
-                <option value="all">Global (All Envs)</option>
-                <option value="sandbox">Sandbox Only</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
             <div className="md:col-span-3">
               <label className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                 Description (Optional)
@@ -303,7 +301,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                     </td>
                     <td data-label="Scope" className="p-3">
                       <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-secondary-foreground uppercase">
-                        {item.environment}
+                        {item.environment === 'sandbox' ? 'Gateway' : item.environment}
                       </span>
                     </td>
                     <td className="p-3 text-muted-foreground font-sans text-xs">{item.description || '—'}</td>

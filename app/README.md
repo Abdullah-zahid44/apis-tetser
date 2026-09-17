@@ -2,7 +2,7 @@
 
 An enterprise-grade internal API testing, debugging, and webhook inspection workspace engineered specifically for the **AssanPay Support and Technical Engineering teams**.
 
-Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Auth.js**, and **Tailwind CSS**, this tool empowers support engineers to debug merchant integration issues, inspect canonical signing headers, test sandbox endpoints, receive callbacks in real-time, and maintain comprehensive audit logs across multiple countries (Pakistan 🇵🇰, Bangladesh 🇧🇩, and future markets).
+Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Auth.js**, and **Tailwind CSS**, this tool empowers support engineers to debug merchant integration issues, inspect canonical signing headers, test API endpoints, receive callbacks in real-time, and maintain comprehensive audit logs across multiple countries (Pakistan 🇵🇰, Bangladesh 🇧🇩, and future markets).
 
 ---
 
@@ -113,32 +113,30 @@ AUTH_GOOGLE_SECRET=GOCSPX-your_client_secret
 # Optional local dev bypass (offline development)
 DEV_BYPASS_AUTH=false
 
-# Vault Encryption
-ENV_VAULT_KEY=your_vault_encryption_key
 
 # Gateway credentials (server-only; see .env.example for all four countries)
-ASSANPAY_PKR_SANDBOX_BASE_URL=https://pc.assanpay.com/
-ASSANPAY_PKR_SANDBOX_API_KEY=your_branch_key
-ASSANPAY_PKR_SANDBOX_API_SECRET=your_branch_secret
-ASSANPAY_PKR_SANDBOX_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+ASSANPAY_PKR_BASE_URL=https://pc.assanpay.com/
+ASSANPAY_PKR_API_KEY=your_branch_key
+ASSANPAY_PKR_API_SECRET=your_branch_secret
+ASSANPAY_PKR_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
 
-ASSANPAY_BDT_SANDBOX_BASE_URL=https://bn3.assanpay.com/
-ASSANPAY_BDT_SANDBOX_API_KEY=your_branch_key
-ASSANPAY_BDT_SANDBOX_API_SECRET=your_branch_secret
-ASSANPAY_BDT_SANDBOX_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+ASSANPAY_BDT_BASE_URL=https://bn3.assanpay.com/
+ASSANPAY_BDT_API_KEY=your_branch_key
+ASSANPAY_BDT_API_SECRET=your_branch_secret
+ASSANPAY_BDT_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
 
-ASSANPAY_IDR_SANDBOX_BASE_URL=https://id-sandbox.assanpay.com/
-ASSANPAY_IDR_SANDBOX_API_KEY=your_branch_key
-ASSANPAY_IDR_SANDBOX_API_SECRET=your_branch_secret
-ASSANPAY_IDR_SANDBOX_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+ASSANPAY_IDR_BASE_URL=https://id-sandbox.assanpay.com/
+ASSANPAY_IDR_API_KEY=your_branch_key
+ASSANPAY_IDR_API_SECRET=your_branch_secret
+ASSANPAY_IDR_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
 
-ASSANPAY_PHP_SANDBOX_BASE_URL=https://ph-sandbox.assanpay.com/
-ASSANPAY_PHP_SANDBOX_API_KEY=your_branch_key
-ASSANPAY_PHP_SANDBOX_API_SECRET=your_branch_secret
-ASSANPAY_PHP_SANDBOX_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+ASSANPAY_PHP_BASE_URL=https://ph-sandbox.assanpay.com/
+ASSANPAY_PHP_API_KEY=your_branch_key
+ASSANPAY_PHP_API_SECRET=your_branch_secret
+ASSANPAY_PHP_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
 ```
 
-For Vercel, add these variables in Project Settings -> Environment Variables, with `APP_URL` set to the deployed HTTPS domain. The app talks only to AssanPay sandbox gateways, even if the Vercel deployment itself is in Vercel's Production scope. Do not upload the local `.env` wholesale: it may contain obsolete legacy/live keys. Add only the names in `.env.example`, and never commit real secrets.
+For Vercel, add these variables in Project Settings -> Environment Variables, with `APP_URL` set to the deployed HTTPS domain. Add only the names in `.env.example`, and never commit real secrets.
 
 ### 3. Database Migration & Seeding
 Generate and run migrations, then seed initial Pakistan & Bangladesh endpoint catalogs:

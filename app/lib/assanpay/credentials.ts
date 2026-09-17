@@ -26,11 +26,17 @@ export function getAssanPayCredentials(
 ): AssanPayCredentials {
   const normCountry = countrySlug.toUpperCase();
   const normEnv = environment.toUpperCase();
-  if (normEnv !== 'SANDBOX') return {};
+  if (normEnv && !['SANDBOX', 'DEFAULT', 'GATEWAY'].includes(normEnv)) return {};
 
-  const baseUrl = process.env[`ASSANPAY_${normCountry}_SANDBOX_BASE_URL`];
-  const apiKey = process.env[`ASSANPAY_${normCountry}_SANDBOX_API_KEY`];
-  const apiSecret = process.env[`ASSANPAY_${normCountry}_SANDBOX_API_SECRET`];
+  const baseUrl =
+    process.env[`ASSANPAY_${normCountry}_BASE_URL`] ||
+    process.env[`ASSANPAY_${normCountry}_SANDBOX_BASE_URL`];
+  const apiKey =
+    process.env[`ASSANPAY_${normCountry}_API_KEY`] ||
+    process.env[`ASSANPAY_${normCountry}_SANDBOX_API_KEY`];
+  const apiSecret =
+    process.env[`ASSANPAY_${normCountry}_API_SECRET`] ||
+    process.env[`ASSANPAY_${normCountry}_SANDBOX_API_SECRET`];
 
   return { baseUrl, apiKey, apiSecret };
 }
@@ -42,8 +48,12 @@ export function getAssanPayCallbackSecret(
 ): string | undefined {
   const normCountry = countrySlug.toUpperCase();
   const normEnv = environment.toUpperCase();
-  if (normEnv !== 'SANDBOX') return undefined;
-  return process.env[`ASSANPAY_${normCountry}_SANDBOX_MAIN_API_SECRET`] || undefined;
+  if (normEnv && !['SANDBOX', 'DEFAULT', 'GATEWAY'].includes(normEnv)) return undefined;
+  return (
+    process.env[`ASSANPAY_${normCountry}_MAIN_API_SECRET`] ||
+    process.env[`ASSANPAY_${normCountry}_SANDBOX_MAIN_API_SECRET`] ||
+    undefined
+  );
 }
 
 /**

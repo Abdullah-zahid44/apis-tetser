@@ -22,7 +22,6 @@ import {
   Code2,
   History,
   Webhook,
-  Braces,
   ServerCog,
   Globe,
   Send,
@@ -101,21 +100,12 @@ export function CommandPalette({
           </CommandItem>
 
           <CommandItem
-            onSelect={() => handleSelect(() => onViewChange('variables'))}
-            className="cursor-pointer hover:bg-accent"
-          >
-            <Braces className="mr-2 h-4 w-4 text-muted-foreground" />
-            <span>Environment Variables</span>
-            <CommandShortcut className="font-mono">Alt+4</CommandShortcut>
-          </CommandItem>
-
-          <CommandItem
             onSelect={() => handleSelect(() => onViewChange('status'))}
             className="cursor-pointer hover:bg-accent"
           >
             <ServerCog className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>Environment Readiness Status</span>
-            <CommandShortcut className="font-mono">Alt+5</CommandShortcut>
+            <CommandShortcut className="font-mono">Alt+4</CommandShortcut>
           </CommandItem>
         </CommandGroup>
 

@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const market = url.searchParams.get('market') || 'bdt';
     const environment = url.searchParams.get('environment') || 'sandbox';
     if (environment !== 'sandbox') {
-      return Response.json({ error: 'Only sandbox callbacks are supported.' }, { status: 404 });
+      return Response.json({ error: 'Invalid callback environment.' }, { status: 404 });
     }
 
     const callbackSecret = getAssanPayCallbackSecret(market, environment);
