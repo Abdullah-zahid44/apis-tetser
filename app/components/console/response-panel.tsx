@@ -11,6 +11,8 @@ import {
   ShieldCheck,
   AlertTriangle,
   Download,
+  ExternalLink,
+  Link2,
   Trash2,
   Code2,
 } from 'lucide-react';
@@ -28,6 +30,126 @@ interface ResponsePanelProps {
   onClear?: () => void;
 }
 
+interface FoundUrl {
+  key: string;
+  url: string;
+}
+
+/** Strip whitespace + surrounding quote layers gateways sometimes wrap around URL values. */
+function sanitizeUrl(value: string): string {
+  let v = value.trim();
+  for (let i = 0; i < 4; i++) {
+    const quoted =
+      v.length > 1 &&
+      ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")));
+    if (!quoted) break;
+    v = v.slice(1, -1).trim();
+  }
+  return v.replace(/[.,;)\]]+$/, '');
+}
+
+function looksLikeUrl(v: string): boolean {
+  return /^https?:\/\/[^\s"'<>\\]+$/i.test(v);
+}
+
+function collectUrlsFromValue(value: unknown, key: string, out: FoundUrl[], seen: Set<unknown>): void {
+  if (typeof value === 'string') {
+    const clean = sanitizeUrl(value);
+    if (looksLikeUrl(clean)) out.push({ key, url: clean });
+    return;
+  }
+  if (value && typeof value === 'object' && !seen.has(value)) {
+    seen.add(value);
+    if (Array.isArray(value)) {
+      value.forEach((v, i) => collectUrlsFromValue(v, `${key}[${i}]`, out, seen));
+    } else {
+      for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+        collectUrlsFromValue(v, k, out, seen);
+      }
+    }
+  }
+}
+
+/** Raw-text fallback: pull bare URLs out of malformed (non-JSON) bodies. */
+function extractUrlsFromText(text: string): FoundUrl[] {
+  const out: FoundUrl[] = [];
+  const re = /https?:\/\/[^\s"'<>\\]+/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const clean = sanitizeUrl(m[0]);
+    if (looksLikeUrl(clean) && !out.some((u) => u.url === clean)) {
+      out.push({ key: 'response', url: clean });
+    }
+  }
+  return out;
+}
+
+function rankUrls(urls: FoundUrl[]): FoundUrl[] {
+  const score = (u: FoundUrl) =>
+    /checkout|redirect|pay/i.test(u.key) ? 0 : /url|link/i.test(u.key) ? 1 : 2;
+  return [...urls].sort((a, b) => score(a) - score(b));
+}
+
+const URL_VALUE_LINE = /^(\s*"(?:[^"\\]|\\.)*"\s*:\s*)("(?:[^"\\]|\\.)*")(,?)\s*$/;
+
+function urlLink(href: string, label: string, key: string): React.ReactNode {
+  return (
+    <a
+      key={key}
+      href={href}
+      target="_blank"
+      rel="noreferrer noopener"
+      title={href}
+      className="text-primary underline decoration-primary/40 underline-offset-2 hover:decoration-primary break-all"
+    >
+      {label}
+    </a>
+  );
+}
+
+/** Render body text with URL values as sanitized, clickable links (keeps JSON layout intact). */
+function renderBodyWithLinks(text: string, asJson: boolean): React.ReactNode {
+  const nodes: React.ReactNode[] = [];
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) nodes.push('\n');
+    if (asJson) {
+      const m = line.match(URL_VALUE_LINE);
+      if (m) {
+        let decoded: string = m[2];
+        try {
+          decoded = JSON.parse(m[2]) as string;
+        } catch {
+          /* keep raw match */
+        }
+        const clean = sanitizeUrl(decoded);
+        if (typeof decoded === 'string' && looksLikeUrl(clean)) {
+          nodes.push(
+            <span key={`k${i}`}>{m[1]}</span>,
+            urlLink(clean, m[2], `u${i}`),
+            <span key={`c${i}`}>{m[3]}</span>
+          );
+          return;
+        }
+      }
+    } else {
+      const parts = line.split(/(https?:\/\/[^\s"'<>\\]+)/gi);
+      if (parts.length > 1) {
+        parts.forEach((part, j) => {
+          const clean = sanitizeUrl(part);
+          if (/^https?:\/\//i.test(part) && looksLikeUrl(clean)) {
+            nodes.push(urlLink(clean, part, `r${i}-${j}`));
+          } else {
+            nodes.push(part);
+          }
+        });
+        return;
+      }
+    }
+    nodes.push(line);
+  });
+  return <>{nodes}</>;
+}
+
 export function ResponsePanel({
   countrySlug,
   result,
@@ -42,6 +164,35 @@ export function ResponsePanel({
       await navigator.clipboard.writeText(text);
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 1600);
+    } catch {
+      // ignore
+    }
+  };
+
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const bodyIsObject =
+    !!result && result.upstream.body !== null && typeof result.upstream.body === 'object';
+
+  /** Payment/checkout URLs anywhere in the response body, best match first. */
+  const paymentUrls: FoundUrl[] = React.useMemo(() => {
+    if (!result) return [];
+    const body = result.upstream.body;
+    if (body !== null && typeof body === 'object') {
+      const found: FoundUrl[] = [];
+      collectUrlsFromValue(body, 'response', found, new Set());
+      return rankUrls(found);
+    }
+    // Gateway occasionally returns malformed JSON — still fish the link out of raw text.
+    if (result.upstream.rawBody) return rankUrls(extractUrlsFromText(result.upstream.rawBody));
+    return [];
+  }, [result]);
+
+  const copyPaymentLink = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 1600);
     } catch {
       // ignore
     }
@@ -230,6 +381,45 @@ export function ResponsePanel({
               </Alert>
             )}
 
+            {/* Payment link quick actions — checkout URL sanitized, ready to copy/open */}
+            {paymentUrls.length > 0 && (
+              <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/[0.06] px-2.5 py-2 shrink-0">
+                <Link2 size={13} className="text-primary shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                    Payment link
+                  </div>
+                  <div className="text-xs font-mono text-foreground truncate select-text" title={paymentUrls[0].url}>
+                    {paymentUrls[0].url}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void copyPaymentLink(paymentUrls[0].url)}
+                  className="h-7 text-xs text-secondary-foreground hover:text-foreground hover:bg-accent px-2 gap-1.5 cursor-pointer rounded-lg shrink-0"
+                  title="Copy payment link"
+                >
+                  {linkCopied ? (
+                    <CheckCircle2 size={12} className="text-success" />
+                  ) : (
+                    <Copy size={11} />
+                  )}
+                  <span className="hidden sm:inline">{linkCopied ? 'Copied' : 'Copy'}</span>
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => window.open(paymentUrls[0].url, '_blank', 'noopener,noreferrer')}
+                  className="h-7 text-xs px-2.5 gap-1.5 cursor-pointer rounded-lg shrink-0"
+                  title="Open payment link in new tab"
+                >
+                  <ExternalLink size={12} />
+                  <span className="hidden sm:inline">Open</span>
+                </Button>
+              </div>
+            )}
+
             <Tabs defaultValue="pretty" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
               <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
                 <TabsTrigger
@@ -264,10 +454,10 @@ export function ResponsePanel({
                 </TabsTrigger>
               </TabsList>
 
-              {/* Pretty JSON Tab */}
+              {/* Pretty JSON Tab — URL values render as sanitized, clickable links */}
               <TabsContent value="pretty" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
                 <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
-                  {prettyJson || '// Empty response body.'}
+                  {prettyJson ? renderBodyWithLinks(prettyJson, bodyIsObject) : '// Empty response body.'}
                 </pre>
               </TabsContent>
 
@@ -383,3 +573,4 @@ export function ResponsePanel({
     </section>
   );
 }
+
