@@ -47,7 +47,7 @@ interface WorkbenchProps {
   countrySlug: string;
   environment: string;
   name: string;
-  onNameChange: (name: string) => void;
+
   method: Method;
   onMethodChange: (method: Method) => void;
   url: string;
@@ -75,7 +75,7 @@ export function Workbench({
   countrySlug,
   environment,
   name,
-  onNameChange,
+
   method,
   onMethodChange,
   url,
@@ -331,16 +331,12 @@ export function Workbench({
             <span className="text-xs font-mono text-muted-foreground uppercase shrink-0 tracking-wider">
               {countrySlug}
             </span>
-            <input
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
-              onFocus={(e) => {
-                setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
-              }}
-              placeholder="Request Name"
-              className="text-sm font-medium text-foreground bg-transparent outline-none border-b border-transparent focus:border-[var(--primary)] truncate min-w-0 w-24 sm:w-44 md:w-56 transition-colors"
-              title="Click to rename request"
-            />
+            <span
+              className="text-sm font-medium text-foreground truncate min-w-0 max-w-24 sm:max-w-44 md:max-w-56"
+              title={name}
+            >
+              {name}
+            </span>
             {dirty && (
               <span
                 className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
@@ -940,3 +936,4 @@ export function Workbench({
     </section>
   );
 }
+

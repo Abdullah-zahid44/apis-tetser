@@ -672,10 +672,6 @@ export default function ConsoleDashboard() {
                       countrySlug={selectedCountry}
                       environment={environment}
                       name={requestName}
-                      onNameChange={(val) => {
-                        setRequestName(val);
-                        setDirty(true);
-                      }}
                       method={method}
                       onMethodChange={(val) => {
                         setMethod(val);
@@ -757,10 +753,6 @@ export default function ConsoleDashboard() {
                   countrySlug={selectedCountry}
                   environment={environment}
                   name={requestName}
-                  onNameChange={(val) => {
-                    setRequestName(val);
-                    setDirty(true);
-                  }}
                   method={method}
                   onMethodChange={(val) => {
                     setMethod(val);
