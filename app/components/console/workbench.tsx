@@ -381,8 +381,8 @@ export function Workbench({
         </div>
       </div>
 
-      {/* Main Request Work Area with mobile keyboard clearance */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-2.5 sm:px-4 lg:px-5 py-3 sm:py-4 pb-64 sm:pb-6 space-y-3 sm:space-y-3.5 overscroll-y-contain">
+      {/* Request Bar — STICKY, always visible above keyboard */}
+      <div className="shrink-0 px-2.5 sm:px-4 lg:px-5 pt-3 sm:pt-4 pb-2 space-y-2" style={{ background: 'var(--workbench-bg)' }}>
 
         {/* Unified Request Bar — single cohesive instrument */}
         <div
@@ -504,6 +504,10 @@ export function Workbench({
             <span>Plaintext JSON</span>
           </div>
         </div>
+      </div>
+
+      {/* Scrollable Tabs Area — only this part scrolls */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-2.5 sm:px-4 lg:px-5 pb-64 sm:pb-6 overscroll-y-contain">
 
         {/* Postman-Grade Request Tabs */}
         <Tabs defaultValue="body" className="flex flex-col min-w-0 pt-1">
