@@ -35,6 +35,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { signOut } from 'next-auth/react';
 import { InstallAppButton } from './install-app-button';
+import { AnimatedThemeToggler } from '@/registry/magicui/animated-theme-toggler';
 import type { Country, Environment, SafeConfig } from './types';
 
 interface TopbarProps {
@@ -209,15 +210,6 @@ export function Topbar({
             </SelectContent>
           </Select>
 
-          {/* Environment Badge — sandbox only */}
-          <div
-            className="h-8 px-2 sm:px-3 flex items-center gap-1.5 rounded-md bg-[var(--surface-4)] border border-[var(--border)] select-none"
-            title="Sandbox environment (Mock Rails)"
-          >
-            <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-primary" />
-            <span className="text-xs sm:text-sm font-medium text-foreground">Sandbox</span>
-          </div>
-
           {/* Quick Search Button */}
           {onOpenCommandPalette && (
             <Button
@@ -255,26 +247,13 @@ export function Topbar({
             )}
           </Button>
 
-          {/* Appearance Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={<Button variant="ghost" size="icon-sm" className="text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)]" />}
-              title="Appearance"
-              aria-label="Choose appearance"
-            >
-              <Palette size={14} />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-3 rounded-xl shadow-xl animate-fade-in" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
-              <div className="mb-3 px-1">
-                <p className="text-sm font-semibold text-foreground">Appearance</p>
-              </div>
-              <ToggleGroup value={[theme]} onValueChange={(value) => value[0] && onThemeChange(value[0] as 'light' | 'dark' | 'system')} className="grid grid-cols-3">
-                <ToggleGroupItem value="light"><Sun size={13} />Light</ToggleGroupItem>
-                <ToggleGroupItem value="dark"><Moon size={13} />Dark</ToggleGroupItem>
-                <ToggleGroupItem value="system"><Monitor size={13} />System</ToggleGroupItem>
-              </ToggleGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* MagicUI Animated Theme Toggler */}
+          <AnimatedThemeToggler
+            theme={theme === 'dark' ? 'dark' : 'light'}
+            onThemeChange={(newTheme) => onThemeChange(newTheme)}
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] rounded-[5px]"
+            title="Toggle theme"
+          />
 
           {/* User + Sign Out */}
           <UserAvatar name={user?.name} email={user?.email} role={user?.role} />

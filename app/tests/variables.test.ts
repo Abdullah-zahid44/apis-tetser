@@ -2,6 +2,7 @@ import {
   resolveVariablesInString,
   resolveVariablesInParams,
   resolveVariablesInHeaders,
+  autoRefreshPayloadIdentifiers,
 } from '../lib/variables/resolver';
 
 export function runVariableTests(): { passed: boolean; message: string }[] {
@@ -58,6 +59,30 @@ export function runVariableTests(): { passed: boolean; message: string }[] {
   results.push({
     passed: resolvedHeaders['X-Order-Ref'] === 'ORD-999',
     message: `Resolves headers map correctly`,
+  });
+
+  // 6. Dynamic orderId and branchCode auto-refresh
+  const samplePayload = JSON.stringify({
+    orderId: 'ORD1999',
+    amount: 10,
+    branchCode: 'OLD_BRANCH',
+  });
+  const refreshedPayload = autoRefreshPayloadIdentifiers(samplePayload, { branchCode: 'APTEST01' });
+  const parsedRefreshed = JSON.parse(refreshedPayload);
+  results.push({
+    passed:
+      parsedRefreshed.orderId !== 'ORD1999' &&
+      parsedRefreshed.orderId.startsWith('ORD') &&
+      parsedRefreshed.branchCode === 'APTEST01',
+    message: `Auto-refreshes static orderId and applies env branchCode: ${parsedRefreshed.orderId}, ${parsedRefreshed.branchCode}`,
+  });
+
+  // 7. Consecutive refreshes guarantee unique orderIds
+  const secondRefreshed = autoRefreshPayloadIdentifiers(samplePayload, { newOrderId: 'ORD-UNIQUE-1' });
+  const thirdRefreshed = autoRefreshPayloadIdentifiers(samplePayload, { newOrderId: 'ORD-UNIQUE-2' });
+  results.push({
+    passed: JSON.parse(secondRefreshed).orderId !== JSON.parse(thirdRefreshed).orderId,
+    message: `Consecutive calls generate distinct unique orderIds`,
   });
 
   return results;

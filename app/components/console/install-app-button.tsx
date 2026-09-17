@@ -76,16 +76,64 @@ export function InstallAppButton() {
         <Download size={14} />
         <span className="hidden xl:inline text-xs">Install app</span>
       </Button>
+
       <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Install AssanPay Console</DialogTitle>
-            <DialogDescription>
-              {isIos
-                ? 'In Safari, tap Share, then Add to Home Screen. Open this site in Safari if you are using another iPhone browser.'
-                : 'Open your browser menu and choose Install app or Add to home screen. The option appears when your browser supports installation.'}
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Download size={16} className="text-primary" />
+              Install AssanPay Console
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Install the console directly onto your home screen for quick access and full-screen experience.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="space-y-3 pt-2 text-xs">
+            {isIos ? (
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">1</span>
+                  <p className="leading-snug">
+                    Open this site in <strong className="text-foreground">Safari</strong> and tap the <strong className="text-foreground">Share</strong> icon (square with arrow up) at the bottom toolbar.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">2</span>
+                  <p className="leading-snug">
+                    Scroll down and select <strong className="text-foreground">Add to Home Screen</strong>.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">3</span>
+                  <p className="leading-snug">
+                    Tap <strong className="text-foreground">Add</strong> in the top-right corner to finish.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">1</span>
+                  <p className="leading-snug">
+                    Tap the <strong className="text-foreground">three dots menu (⋮)</strong> in your browser (Chrome, Edge, or Samsung Internet).
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">2</span>
+                  <p className="leading-snug">
+                    Choose <strong className="text-foreground">Install app</strong> or <strong className="text-foreground">Add to Home screen</strong>.
+                  </p>
+                </div>
+                <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">3</span>
+                  <p className="leading-snug">
+                    Confirm prompt to launch AssanPay as a standalone standalone app.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </>

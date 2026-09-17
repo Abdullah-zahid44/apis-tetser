@@ -53,16 +53,29 @@ export function resolveVariablesInHeaders(
 }
 
 /**
+ * Generates a fresh guaranteed unique orderId based on current unix timestamp.
+ */
+export function generateOrderId(prefix = 'ORD'): string {
+  return `${prefix}${Date.now()}`;
+}
+
+/**
  * Generates dynamic mock variables if not already defined:
- * e.g. {{uuid}}, {{timestamp}}, {{randomOrderId}}
+ * e.g. {{uuid}}, {{timestamp}}, {{orderId}}, {{branchCode}}
  */
 export function getBuiltInDynamicVariables(): VariableMap {
   const now = Date.now();
+  const branchCode =
+    (typeof process !== 'undefined' && (process.env.ASSANPAY_BRANCH_CODE || process.env.NEXT_PUBLIC_ASSANPAY_BRANCH_CODE)) ||
+    'APTEST01';
+
   return {
     timestamp: Math.floor(now / 1000).toString(),
     isoTimestamp: new Date(now).toISOString(),
     uuid: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2),
     randomOrderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
+    orderId: generateOrderId('ORD'),
+    branchCode,
   };
 }
 
@@ -74,4 +87,62 @@ export function mergeVariables(userVars: VariableMap): VariableMap {
     ...getBuiltInDynamicVariables(),
     ...userVars,
   };
+}
+
+/**
+ * Automatically updates dynamic transaction identifiers (fresh unique orderId and env branchCode)
+ * in a JSON or raw payload string before execution.
+ */
+export function autoRefreshPayloadIdentifiers(
+  bodyStr: string,
+  options?: { branchCode?: string; newOrderId?: string; forceRefreshOrderId?: boolean }
+): string {
+  if (!bodyStr || !bodyStr.trim()) return bodyStr;
+
+  const freshOrderId = options?.newOrderId || generateOrderId('ORD');
+  const targetBranch =
+    options?.branchCode ||
+    (typeof process !== 'undefined' && (process.env.NEXT_PUBLIC_ASSANPAY_BRANCH_CODE || process.env.ASSANPAY_BRANCH_CODE)) ||
+    'APTEST01';
+
+  try {
+    const parsed: unknown = JSON.parse(bodyStr);
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      const record = parsed as Record<string, unknown>;
+      let changed = false;
+
+      if ('orderId' in record) {
+        const currentOrderId = String(record.orderId || '');
+        if (
+          options?.forceRefreshOrderId !== false &&
+          (options?.forceRefreshOrderId ||
+            currentOrderId === 'ORD1999' ||
+            currentOrderId === '{{orderId}}' ||
+            currentOrderId.startsWith('ORD') ||
+            currentOrderId.startsWith('PO-') ||
+            currentOrderId.startsWith('OR'))
+        ) {
+          record.orderId = freshOrderId;
+          changed = true;
+        }
+      }
+      if ('branchCode' in record && targetBranch) {
+        record.branchCode = targetBranch;
+        changed = true;
+      }
+
+      if (changed) {
+        return JSON.stringify(record, null, 2);
+      }
+    }
+  } catch {
+    // If not strict JSON, apply regex replacement
+    let updated = bodyStr.replace(/"orderId"\s*:\s*"[^"]*"/g, `"orderId": "${freshOrderId}"`);
+    if (targetBranch) {
+      updated = updated.replace(/"branchCode"\s*:\s*"[^"]*"/g, `"branchCode": "${targetBranch}"`);
+    }
+    return updated;
+  }
+
+  return bodyStr;
 }

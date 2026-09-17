@@ -48,18 +48,18 @@ interface SidebarProps {
 }
 
 const METHOD_STYLES: Record<string, { text: string; bg: string; border: string }> = {
-  GET:    { text: 'var(--primary)', bg: 'color-mix(in srgb, var(--primary) 10%, transparent)', border: 'color-mix(in srgb, var(--primary) 25%, transparent)' },
-  POST:   { text: '#fb923c', bg: 'rgba(251,146,60,0.08)',  border: 'rgba(251,146,60,0.2)' },
-  PUT:    { text: '#818cf8', bg: 'rgba(129,140,248,0.08)', border: 'rgba(129,140,248,0.2)' },
-  PATCH:  { text: '#c084fc', bg: 'rgba(192,132,252,0.08)', border: 'rgba(192,132,252,0.2)' },
-  DELETE: { text: '#f87171', bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.2)' },
+  GET:    { text: '#059669', bg: 'rgba(5, 150, 105, 0.12)',  border: 'rgba(5, 150, 105, 0.28)' },
+  POST:   { text: '#e05320', bg: 'rgba(224, 83, 32, 0.12)',  border: 'rgba(224, 83, 32, 0.30)' },
+  PUT:    { text: '#0265d2', bg: 'rgba(2, 101, 210, 0.12)',  border: 'rgba(2, 101, 210, 0.28)' },
+  PATCH:  { text: '#7c3aed', bg: 'rgba(124, 58, 237, 0.12)', border: 'rgba(124, 58, 237, 0.28)' },
+  DELETE: { text: '#dc2626', bg: 'rgba(220, 38, 38, 0.12)',  border: 'rgba(220, 38, 38, 0.28)' },
 };
 
 function MethodPill({ method }: { method: Method }) {
   const s = METHOD_STYLES[method] ?? METHOD_STYLES.POST;
   return (
     <span
-      className="inline-flex items-center justify-center text-[11px] font-bold font-mono tracking-wider px-1.5 py-0.5 rounded shrink-0"
+      className="inline-flex items-center justify-center text-[10px] font-bold font-mono tracking-wider px-2 py-0.5 rounded-[4px] shrink-0"
       style={{ color: s.text, background: s.bg, border: `1px solid ${s.border}` }}
     >
       {method}
@@ -133,7 +133,7 @@ export function Sidebar({
               variant="ghost"
               size="icon"
               onClick={onToggleCollapse}
-              className="w-7 h-7 text-muted-foreground hover:text-secondary-foreground hover:bg-[var(--surface-5)] transition-colors"
+              className="w-7 h-7 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose size={14} />
@@ -147,19 +147,19 @@ export function Sidebar({
         <ToggleGroup
           value={[activeTab]}
           onValueChange={(value) => value[0] && setActiveTab(value[0] as 'catalog' | 'saved')}
-          className="grid grid-cols-2 h-9 p-1 rounded-full bg-muted border border-border gap-1"
+          className="grid grid-cols-2 h-8 p-0.5 rounded-lg bg-muted border border-border gap-1"
         >
-          <ToggleGroupItem value="catalog" className="text-xs gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm data-active:hover:bg-primary">
+          <ToggleGroupItem value="catalog" className="text-xs gap-1.5 rounded-md data-active:bg-surface-2 data-active:text-foreground data-active:border data-active:border-border data-active:shadow-sm">
             <Layers size={12} />
             Catalog
-            <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">
+            <Badge variant="secondary" className="text-[10px] font-mono h-4 px-1 ml-0.5">
               {filteredEndpoints.length}
             </Badge>
           </ToggleGroupItem>
-          <ToggleGroupItem value="saved" className="text-xs gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm data-active:hover:bg-primary">
+          <ToggleGroupItem value="saved" className="text-xs gap-1.5 rounded-md data-active:bg-surface-2 data-active:text-foreground data-active:border data-active:border-border data-active:shadow-sm">
             <BookmarkCheck size={12} />
             Saved
-            <Badge variant="secondary" className="text-[11px] font-mono h-4 px-1 ml-0.5">
+            <Badge variant="secondary" className="text-[10px] font-mono h-4 px-1 ml-0.5">
               {filteredSaved.length}
             </Badge>
           </ToggleGroupItem>
@@ -217,67 +217,80 @@ export function Sidebar({
                       {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category)}
-                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-100 cursor-pointer group/cat"
+                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 cursor-pointer group/cat"
                       >
-                        <span className="text-muted-foreground/60 group-hover/cat:text-muted-foreground transition-colors">
-                          {isOpen ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                        <span className="text-muted-foreground/60 group-hover/cat:text-foreground transition-colors">
+                          {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                         </span>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.05em] flex-1 text-left">
+                        <span className="text-[10.5px] font-bold uppercase tracking-[0.06em] flex-1 text-left text-muted-foreground/80 group-hover/cat:text-foreground transition-colors">
                           {category}
                         </span>
-                        <span className="text-[11px] font-mono tabular-nums text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-mono tabular-nums font-semibold text-muted-foreground bg-muted border border-border/60 px-1.5 py-0.5 rounded-full">
                           {catEndpoints.length}
                         </span>
                       </button>
 
                       {/* Endpoints */}
                       {isOpen && (
-                        <div className="mt-0.5 ml-2 pl-2 border-l border-[var(--border)] space-y-0.5">
+                        <div className="mt-1 ml-1.5 pl-2 border-l border-border/80 space-y-1.5">
                           {catEndpoints.map((ep) => {
                             const isSelected = selectedId === ep.id;
                             return (
                               <HoverCard key={ep.id}>
                                 <HoverCardTrigger>
-                              <button
-                                onClick={() => onSelectEndpoint(ep)}
-                                className={`w-full group/ep text-left px-2 py-2 rounded-md transition-colors duration-100 flex items-center gap-2 cursor-pointer ${
-                                  isSelected
-                                    ? 'bg-foreground text-background font-medium shadow-sm'
-                                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-                                }`}
-                              >
-                                <MethodPill method={ep.method} />
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-xs font-medium truncate leading-snug">
-                                    {ep.name}
-                                  </div>
-                                  <div className={`text-[11px] font-mono truncate mt-0.5 ${isSelected ? 'text-background/60' : 'text-muted-foreground/60'}`}>
-                                    {ep.path}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-1 shrink-0">
-                                  {ep.isMoneyMovement && (
-                                    <span title="Money Movement" className={isSelected ? 'text-background/60' : 'text-muted-foreground/60'}>
-                                      <ShieldAlert size={11} />
-                                    </span>
-                                  )}
-                                  {ep.requiresSignature && (
-                                    <span title="HMAC-SHA256 Required" className={isSelected ? 'text-background/60' : 'text-muted-foreground/60'}>
-                                      <Lock size={10} />
-                                    </span>
-                                  )}
-                                </div>
-                              </button>
+                                  <button
+                                    onClick={() => onSelectEndpoint(ep)}
+                                    className={`w-full group/ep relative text-left p-2.5 rounded-[8px] border transition-all duration-150 flex items-start gap-2.5 cursor-pointer select-none ${
+                                      isSelected
+                                        ? 'bg-card text-foreground border-primary/50 shadow-xs ring-1 ring-primary/20'
+                                        : 'bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground border-border/80 hover:border-border hover:shadow-xs'
+                                    }`}
+                                  >
+                                    {isSelected && (
+                                      <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-primary" />
+                                    )}
+                                    <div className="pt-0.5 shrink-0">
+                                      <MethodPill method={ep.method} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between gap-1">
+                                        <span className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-foreground' : 'font-medium text-foreground/90 group-hover/ep:text-foreground'}`}>
+                                          {ep.name}
+                                        </span>
+                                        <div className="flex items-center gap-1 shrink-0 ml-1">
+                                          {ep.isMoneyMovement && (
+                                            <span
+                                              title="Money Movement"
+                                              className="text-[9px] px-1 py-0.2 rounded font-mono font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
+                                            >
+                                              PAY
+                                            </span>
+                                          )}
+                                          {ep.requiresSignature && (
+                                            <span
+                                              title="HMAC-SHA256 Required"
+                                              className={`transition-colors ${isSelected ? 'text-primary' : 'text-muted-foreground/60 group-hover/ep:text-muted-foreground'}`}
+                                            >
+                                              <Lock size={11} />
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-primary/90 font-medium' : 'text-muted-foreground/70'}`}>
+                                        {ep.path}
+                                      </div>
+                                    </div>
+                                  </button>
                                 </HoverCardTrigger>
                                 <HoverCardContent
                                   side="right"
                                   align="start"
-                                  className="w-72 p-4 bg-popover border-border rounded-lg shadow-xl"
+                                  className="w-72 p-3 bg-popover border-border rounded-lg shadow-xl"
                                 >
-                                  <div className="space-y-2.5">
+                                  <div className="space-y-2">
                                     <div className="flex items-center gap-2">
                                       <MethodPill method={ep.method} />
-                                      <span className="text-sm font-bold text-foreground">{ep.name}</span>
+                                      <span className="text-xs font-semibold text-foreground">{ep.name}</span>
                                     </div>
                                     <code className="block text-[11px] font-mono text-primary bg-primary/10 border border-primary/20 rounded-md px-2 py-1.5 break-all">
                                       {ep.path}
@@ -287,12 +300,12 @@ export function Sidebar({
                                     )}
                                     <div className="flex flex-wrap gap-1.5 pt-1">
                                       {ep.requiresSignature && (
-                                        <Badge variant="outline" className="text-[11px] gap-1 border-primary/30 text-primary">
+                                        <Badge variant="outline" className="text-[10px] gap-1 border-primary/30 text-primary">
                                           <Lock size={10} /> HMAC Signed
                                         </Badge>
                                       )}
                                       {ep.isMoneyMovement && (
-                                        <Badge variant="outline" className="text-[11px] gap-1 border-warning/30 text-warning">
+                                        <Badge variant="outline" className="text-[10px] gap-1 border-warning/30 text-warning">
                                           <ShieldAlert size={10} /> Money Movement
                                         </Badge>
                                       )}
@@ -320,28 +333,33 @@ export function Sidebar({
                 </EmptyHeader>
               </Empty>
             ) : (
-              <div className="space-y-0.5">
+              <div className="space-y-1.5">
                 {filteredSaved.map((saved) => {
                   const isSelected = selectedId === `saved-${saved.id}`;
                   return (
                     <div
                       key={saved.id}
-                      className={`group/saved flex items-center rounded-md border transition-colors duration-100 px-2 py-1.5 ${
+                      className={`group/saved relative flex items-start rounded-[8px] border transition-all duration-150 p-2.5 ${
                         isSelected
-                          ? 'bg-foreground text-background border-transparent font-medium shadow-sm'
-                          : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border hover:bg-accent/50'
+                          ? 'bg-card text-foreground border-primary/50 shadow-xs ring-1 ring-primary/20'
+                          : 'bg-card/50 hover:bg-card text-muted-foreground hover:text-foreground border-border/80 hover:border-border hover:shadow-xs'
                       }`}
                     >
+                      {isSelected && (
+                        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-primary" />
+                      )}
                       <button
                         onClick={() => onSelectSaved(saved)}
-                        className="flex-1 flex items-center gap-2 text-left min-w-0 cursor-pointer"
+                        className="flex-1 flex items-start gap-2.5 text-left min-w-0 cursor-pointer"
                       >
-                        <MethodPill method={saved.method} />
+                        <div className="pt-0.5 shrink-0">
+                          <MethodPill method={saved.method} />
+                        </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-medium truncate leading-snug">
+                          <div className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-foreground' : 'font-medium text-foreground/90 group-hover/saved:text-foreground'}`}>
                             {saved.name}
                           </div>
-                          <div className={`text-[11px] font-mono truncate mt-0.5 ${isSelected ? 'text-background/60' : 'text-muted-foreground/60'}`}>
+                          <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-primary/90 font-medium' : 'text-muted-foreground/70'}`}>
                             {saved.relativeUrl}
                           </div>
                         </div>
@@ -353,7 +371,7 @@ export function Sidebar({
                             <Button
                               variant="ghost"
                               size="icon-xs"
-                              className="opacity-0 group-hover/saved:opacity-100 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors w-6 h-6"
+                              className="opacity-0 group-hover/saved:opacity-100 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-4)] transition-colors w-6 h-6"
                             />
                           }
                           title="Options"

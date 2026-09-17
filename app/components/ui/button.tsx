@@ -4,20 +4,22 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-colors duration-150 outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-primary/40 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-45 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-colors duration-150 outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-40 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-[0_1px_2px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.18)] hover:bg-primary/90',
+          'bg-primary text-primary-foreground shadow-sm hover:bg-[#0251a8] active:bg-[#01428a]',
+        accent:
+          'bg-accent text-accent-foreground shadow-sm hover:bg-[#cf4717] active:bg-[#bd3d10]',
         outline:
-          'border-border bg-card text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.08)] hover:bg-accent hover:text-accent-foreground hover:border-[color-mix(in_srgb,var(--border)_55%,var(--primary)_45%)] aria-expanded:bg-accent aria-expanded:text-accent-foreground',
+          'border-border bg-card text-foreground hover:bg-secondary hover:text-foreground hover:border-border-strong aria-expanded:bg-secondary',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_6%)] aria-expanded:bg-secondary',
+          'border border-border bg-secondary text-secondary-foreground hover:bg-muted hover:text-foreground aria-expanded:bg-muted',
         ghost:
-          'text-muted-foreground hover:bg-accent hover:text-accent-foreground aria-expanded:bg-accent aria-expanded:text-accent-foreground',
+          'text-muted-foreground hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary',
         destructive:
-          'bg-destructive/12 text-destructive border-[color-mix(in_srgb,var(--destructive)_28%,transparent)] hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/40',
+          'bg-destructive/15 text-destructive border-[color-mix(in_srgb,var(--destructive)_25%,transparent)] hover:bg-destructive/25 focus-visible:border-destructive/40 focus-visible:ring-destructive/40',
         link: 'text-primary underline-offset-4 hover:underline font-medium',
       },
       size: {

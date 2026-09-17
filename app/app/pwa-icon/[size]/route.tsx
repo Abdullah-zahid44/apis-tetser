@@ -15,7 +15,7 @@ export async function GET(_request: Request, context: { params: Promise<{ size: 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#b45309',
+        background: '#0265d2',
         color: '#ffffff',
         fontFamily: 'Arial, sans-serif',
         fontWeight: 800,

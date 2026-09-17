@@ -5,12 +5,21 @@ export function withCallbackUrl(defaultBody: string, countrySlug: string, origin
   try {
     const payload: unknown = JSON.parse(defaultBody);
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return defaultBody;
-    if (!Object.prototype.hasOwnProperty.call(payload, 'callbackUrl')) return defaultBody;
+    const record = payload as Record<string, unknown>;
+    let changed = false;
 
-    return JSON.stringify({
-      ...payload,
-      callbackUrl: `${origin}/api/callbacks/assanpay/${countrySlug}/sandbox`,
-    }, null, 2);
+    if (Object.prototype.hasOwnProperty.call(record, 'callbackUrl')) {
+      record.callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}/sandbox`;
+      changed = true;
+    }
+
+    const envBranch = process.env.ASSANPAY_BRANCH_CODE || process.env.NEXT_PUBLIC_ASSANPAY_BRANCH_CODE;
+    if (envBranch && Object.prototype.hasOwnProperty.call(record, 'branchCode')) {
+      record.branchCode = envBranch;
+      changed = true;
+    }
+
+    return changed ? JSON.stringify(record, null, 2) : defaultBody;
   } catch {
     return defaultBody;
   }

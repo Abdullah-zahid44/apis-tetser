@@ -85,6 +85,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user && token.email) {
         session.user.email = token.email as string;
+        session.user.name = (token.name as string) || session.user.name || 'Local Dev Engineer';
+        (session.user as { role?: string }).role = (token.role as string) || 'admin';
         try {
           const db = getDb();
           const dbUser = await db
@@ -97,7 +99,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             (session.user as { id?: string; role?: string }).role = dbUser[0].role;
           }
         } catch {
-          (session.user as { role?: string }).role = 'support';
+          // DB optional in local dev
         }
       }
       return session;
@@ -105,6 +107,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user?.email) {
         token.email = user.email.toLowerCase();
+        if (user.name) token.name = user.name;
+        if ((user as { role?: string }).role) token.role = (user as { role?: string }).role;
       }
       return token;
     },

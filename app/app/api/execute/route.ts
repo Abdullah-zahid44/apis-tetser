@@ -6,6 +6,7 @@ import {
   resolveVariablesInParams,
   resolveVariablesInHeaders,
   mergeVariables,
+  autoRefreshPayloadIdentifiers,
 } from '@/lib/variables/resolver';
 
 export const runtime = 'nodejs';
@@ -64,9 +65,17 @@ export async function POST(request: Request) {
   const resolvedHeaders = data.headers
     ? resolveVariablesInHeaders(data.headers, mergedVars)
     : undefined;
-  const resolvedBody = data.body
+  let resolvedBody = data.body
     ? resolveVariablesInString(data.body, mergedVars)
     : undefined;
+
+  // Auto-refresh orderId and branchCode for outgoing write requests (Payin/Payout/etc.)
+  if (resolvedBody && data.method !== 'GET' && !resolvedRelativePath.includes('/status-inquiry')) {
+    resolvedBody = autoRefreshPayloadIdentifiers(resolvedBody, {
+      branchCode: mergedVars.branchCode,
+      newOrderId: mergedVars.orderId,
+    });
+  }
 
   // 4. Execute via secure backend pipeline
   const result = await executeAssanPayRequest({

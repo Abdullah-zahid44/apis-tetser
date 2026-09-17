@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import {
+  Archive,
+  Pencil,
   Send,
   Loader2,
   Code2,
@@ -27,6 +29,7 @@ import {
   X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { autoRefreshPayloadIdentifiers } from '@/lib/variables/resolver';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -98,12 +101,21 @@ export function Workbench({
   const [jsonError, setJsonError] = useState('');
   const [copiedHeaders, setCopiedHeaders] = useState(false);
   const [copiedBody, setCopiedBody] = useState(false);
+  const [copiedCurl, setCopiedCurl] = useState(false);
 
   const currentEnvConfig = config?.[countrySlug]?.[environment];
   const baseUrl = currentEnvConfig?.hostname
     ? `https://${currentEnvConfig.hostname}`
     : 'https://api.assanpay.com';
   const isStatusInquiry = url.includes('/status-inquiry') || requiresSignature === false;
+
+  // Auto-regenerate fresh orderId & branchCode in body
+  const handleRegenerateOrderId = () => {
+    const updated = autoRefreshPayloadIdentifiers(body, { forceRefreshOrderId: true });
+    if (updated !== body) {
+      onBodyChange(updated);
+    }
+  };
 
   // Beautify JSON body
   const handleBeautify = () => {
@@ -216,8 +228,6 @@ export function Workbench({
     setTimeout(() => setCopiedHeaders(false), 1500);
   };
 
-  const [copiedCurl, setCopiedCurl] = useState(false);
-
   // Generate a runnable Bash cURL script without exposing server-side secrets.
   const handleCopyCurl = async () => {
     try {
@@ -235,8 +245,8 @@ export function Workbench({
           'API_SECRET="${ASSANPAY_API_SECRET:?Set ASSANPAY_API_SECRET first}"',
           'TIMESTAMP=$(date +%s)',
           'NONCE=$(uuidgen | tr "[:upper:]" "[:lower:]")',
-          'BODY_HASH=$(printf "%s" "$BODY" | openssl dgst -sha256 | awk "{print \\$2}")',
-          'CANONICAL=$(printf "%s\\n%s\\n%s\\n%s\\n%s" "$METHOD" "$PATH_WITH_QUERY" "$TIMESTAMP" "$NONCE" "$BODY_HASH")',
+          'BODY_HASH=$(printf "%s" "$BODY" | openssl dgst -sha256 | awk "{print \$2}")',
+          'CANONICAL=$(printf "%s\n%s\n%s\n%s\n%s" "$METHOD" "$PATH_WITH_QUERY" "$TIMESTAMP" "$NONCE" "$BODY_HASH")',
           'SIGNATURE=$(printf "%s" "$CANONICAL" | openssl dgst -sha256 -hmac "$API_SECRET" -binary | openssl base64 -A)'
         );
       }
@@ -271,15 +281,15 @@ export function Workbench({
   const getMethodColorClass = (m: Method) => {
     switch (m) {
       case 'GET':
-        return 'text-primary';
+        return 'text-[#059669]';
       case 'POST':
-        return 'text-[var(--color-method-post)]';
+        return 'text-[#e05320]';
       case 'PUT':
-        return 'text-[var(--color-method-put)]';
+        return 'text-[#0265d2]';
       case 'PATCH':
-        return 'text-[var(--color-method-patch)]';
+        return 'text-[#7c3aed]';
       case 'DELETE':
-        return 'text-[var(--color-method-delete)]';
+        return 'text-[#dc2626]';
       default:
         return 'text-muted-foreground';
     }
@@ -288,21 +298,21 @@ export function Workbench({
   return (
     <section className="h-full flex flex-col min-w-0 select-none" style={{ background: 'var(--workbench-bg)' }}>
       {/* Top Workspace Tab Strip & Save Toolbar */}
-      <div className="min-h-[42px] px-2 sm:px-3 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0" style={{ background: 'var(--surface-2)' }}>
+      <div className="min-h-[42px] px-2 sm:px-3 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0" style={{ background: 'var(--surface-1)' }}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {sidebarCollapsed && onToggleSidebar && (
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleSidebar}
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] cursor-pointer shrink-0 -ml-1 mr-1 transition-colors"
+              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] cursor-pointer shrink-0 -ml-1 mr-1 transition-colors"
               title="Open Collections Sidebar"
             >
               <PanelLeftOpen size={13} />
             </Button>
           )}
 
-          <div className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 border-x border-[var(--border)] min-w-0 max-w-md rounded-none" style={{ background: 'var(--surface-4)' }}>
+          <div className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 border-x border-[var(--border)] min-w-0 max-w-md rounded-none" style={{ background: 'var(--surface-2)' }}>
             <span className={`method-badge ${method.toLowerCase()}`}>{method}</span>
             <span className="text-xs font-mono text-muted-foreground uppercase shrink-0 tracking-wider">
               {countrySlug}
@@ -376,12 +386,25 @@ export function Workbench({
               >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="text-xs font-mono font-bold" style={{ background: 'var(--surface-2)', borderColor: 'var(--border)' }}>
-                <SelectItem value="GET" className="text-primary">GET</SelectItem>
-                <SelectItem value="POST" className="text-[var(--color-method-post)]">POST</SelectItem>
-                <SelectItem value="PUT" className="text-[var(--color-method-put)]">PUT</SelectItem>
-                <SelectItem value="PATCH" className="text-[var(--color-method-patch)]">PATCH</SelectItem>
-                <SelectItem value="DELETE" className="text-[var(--color-method-delete)]">DELETE</SelectItem>
+              <SelectContent
+                className="w-[110px] p-1 text-xs font-mono font-bold shadow-md rounded-[6px] border border-border"
+                style={{ background: 'var(--surface-1)' }}
+              >
+                <SelectItem value="GET" className="text-[#059669] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                  GET
+                </SelectItem>
+                <SelectItem value="POST" className="text-[#e05320] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                  POST
+                </SelectItem>
+                <SelectItem value="PUT" className="text-[#0265d2] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                  PUT
+                </SelectItem>
+                <SelectItem value="PATCH" className="text-[#7c3aed] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                  PATCH
+                </SelectItem>
+                <SelectItem value="DELETE" className="text-[#dc2626] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                  DELETE
+                </SelectItem>
               </SelectContent>
             </Select>
 
@@ -751,6 +774,16 @@ export function Workbench({
 
                 {method !== 'GET' && (
                   <div className="flex items-center gap-0.5">
+                    <button
+                      type="button"
+                      onClick={handleRegenerateOrderId}
+                      className="flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary-hover px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
+                      title="Auto-generate fresh unique orderId & apply env branchCode"
+                    >
+                      <RotateCcw size={11} />
+                      <span>New Order ID</span>
+                    </button>
+
                     <button
                       onClick={handleBeautify}
                       className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"

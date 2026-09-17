@@ -71,9 +71,9 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD1999',
+        orderId: '{{orderId}}',
         amount: 10,
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         paymentMethodName: 'JazzCash',
         customerContact: '03273595453',
         customerName: 'Bilal',
@@ -96,7 +96,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         otp: '26676',
-        orderId: 'OR1901',
+        orderId: '{{orderId}}',
       },
       null,
       2
@@ -113,9 +113,9 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD1999',
+        orderId: '{{orderId}}',
         amount: 10,
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         paymentMethodName: 'JazzCash',
         customerContact: '03273595453',
         customerName: 'Bilal',
@@ -137,8 +137,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD1137a9970163',
-        branchCode: 'APTEST01',
+        orderId: '{{orderId}}',
+        branchCode: '{{branchCode}}',
         amount: 1,
         paymentMethodName: 'jazzcash',
         customerContact: '03409583505',
@@ -164,7 +164,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payin',
-      orderId: 'ORD1301',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -182,8 +182,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         amount: 1000,
-        branchCode: 'APTEST01',
-        orderId: 'ORDPAYOUT1001',
+        branchCode: '{{branchCode}}',
+        orderId: '{{orderId}}',
         bankCode: '59',
         accountNo: '03273595453',
         purpose: 'Settlement',
@@ -205,7 +205,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payout',
-      orderId: 'ORDPAYOUT1001',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -238,8 +238,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         paymentMethodName: 'bkash',
         amount: 500,
         currency: 'BDT',
-        orderId: 'ORD-12345',
-        branchCode: 'APTEST01',
+        orderId: '{{orderId}}',
+        branchCode: '{{branchCode}}',
         customerName: 'Rahim Uddin',
         customerEmail: 'rahim@example.com',
         customerContact: '01700000000',
@@ -267,8 +267,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         mode: 'P2P',
         amount: 500,
         currency: 'BDT',
-        orderId: 'ORD-12345',
-        branchCode: 'APTEST01',
+        orderId: '{{orderId}}',
+        branchCode: '{{branchCode}}',
         customerContact: '01700000000',
         customerName: 'Rahim Uddin',
         customerEmail: 'rahim@example.com',
@@ -289,7 +289,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD-12345',
+        orderId: '{{orderId}}',
         trxId: '75COJ0K0',
       },
       null,
@@ -306,7 +306,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payin',
-      orderId: 'ORD-12345',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -327,8 +327,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
         mode: 'P2P',
         amount: 1000,
         accountNo: '01711111111',
-        branchCode: 'APTEST01',
-        orderId: 'PO-98765',
+        branchCode: '{{branchCode}}',
+        orderId: '{{orderId}}',
         beneficiaryName: 'Karim',
         callbackUrl: 'https://merchant.com/webhooks/assanpay-payout',
       },
@@ -346,7 +346,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payout',
-      orderId: 'PO-98765',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -375,10 +375,10 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD-100001',
+        orderId: '{{orderId}}',
         amount: 50000,
         currency: 'IDR',
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         customerName: 'Budi Santoso',
         customerEmail: 'budi@example.com',
         customerContact: '081234567890',
@@ -425,11 +425,11 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     isMoneyMovement: true,
     defaultBody: JSON.stringify(
       {
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         paymentMethodName: 'QRIS',
         amount: 50000,
         currency: 'IDR',
-        orderId: 'ORD-100001',
+        orderId: '{{orderId}}',
         customerContact: '081234567890',
         customerName: 'Budi Santoso',
         customerEmail: 'budi@example.com',
@@ -470,7 +470,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payin',
-      orderId: 'ORD-100001',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -488,8 +488,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         amount: 75000,
-        orderId: 'PO-200045',
-        branchCode: 'APTEST01',
+        orderId: '{{orderId}}',
+        branchCode: '{{branchCode}}',
         bankName: 'Bank Central Asia',
         bankCode: '1007',
         accountNo: '1234567890',
@@ -532,7 +532,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payout',
-      orderId: 'PO-200045',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -561,10 +561,10 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     requiresSignature: true,
     defaultBody: JSON.stringify(
       {
-        orderId: 'ORD-100001',
+        orderId: '{{orderId}}',
         amount: 1500.0,
         currency: 'PHP',
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         customerName: 'Juan Dela Cruz',
         customerEmail: 'juan@example.com',
         customerContact: '09151037551',
@@ -611,11 +611,11 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     isMoneyMovement: true,
     defaultBody: JSON.stringify(
       {
-        branchCode: 'APTEST01',
+        branchCode: '{{branchCode}}',
         paymentMethodName: 'QRPH',
         amount: 1500.0,
         currency: 'PHP',
-        orderId: 'ORD-100001',
+        orderId: '{{orderId}}',
         customerContact: '09151037551',
         customerName: 'Juan Dela Cruz',
         customerEmail: 'juan@example.com',
@@ -656,7 +656,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payin',
-      orderId: 'ORD-100001',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',
@@ -674,8 +674,8 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     defaultBody: JSON.stringify(
       {
         amount: 2500.0,
-        orderId: 'PO-200045',
-        branchCode: 'APTEST01',
+        orderId: '{{orderId}}',
+        branchCode: '{{branchCode}}',
         bankName: 'AllBank',
         bankCode: 'ALLBPHM1',
         accountNo: '1234567890',
@@ -718,7 +718,7 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     path: '/api/merchant/status-inquiry',
     defaultQuery: {
       type: 'payout',
-      orderId: 'PO-200045',
+      orderId: '{{orderId}}',
     },
     requiresSignature: false,
     defaultBody: '',

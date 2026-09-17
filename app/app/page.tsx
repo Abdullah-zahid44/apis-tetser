@@ -14,6 +14,7 @@ import { HistoryView } from '@/components/console/history-view';
 import { EnvironmentStatusView } from '@/components/console/environment-status';
 import { MoneyConfirmModal } from '@/components/console/money-confirm-modal';
 import { CommandPalette } from '@/components/console/command-palette';
+import { autoRefreshPayloadIdentifiers } from '@/lib/variables/resolver';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -81,7 +82,7 @@ export default function ConsoleDashboard() {
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('system');
+  const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('light');
 
   // Responsive mobile active pane (for screens < 1024px)
   const [mobilePane, setMobilePane] = useState<'catalog' | 'workbench' | 'response'>('workbench');
@@ -99,7 +100,7 @@ export default function ConsoleDashboard() {
       const saved = localStorage.getItem('assanpay_last_country');
       if (saved) setSelectedCountry(saved);
       const savedTheme = localStorage.getItem('assanpay_theme');
-      const nextTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'system';
+      const nextTheme = savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system' ? savedTheme : 'light';
       setTheme(nextTheme);
     }
   }, []);
@@ -171,7 +172,7 @@ export default function ConsoleDashboard() {
           setRequestName(first.name);
           setMethod(first.method);
           setUrl(first.path);
-          setBody(first.defaultBody || '');
+          setBody(autoRefreshPayloadIdentifiers(first.defaultBody || ''));
           setRequiresSignature(first.requiresSignature);
           setIsMoneyMovement(first.isMoneyMovement || false);
           setDirty(false);
@@ -438,6 +439,18 @@ export default function ConsoleDashboard() {
         customH[h.key.trim()] = h.value;
       });
 
+    // Auto-refresh static hardcoded orderId on send if not using {{orderId}} variable
+    let payloadBody = method === 'GET' ? undefined : body;
+    if (payloadBody && !url.includes('/status-inquiry')) {
+      if (!payloadBody.includes('{{orderId}}')) {
+        const refreshed = autoRefreshPayloadIdentifiers(payloadBody, { forceRefreshOrderId: true });
+        if (refreshed !== payloadBody) {
+          payloadBody = refreshed;
+          setBody(refreshed);
+        }
+      }
+    }
+
     try {
       const res = await fetch('/api/execute', {
         method: 'POST',
@@ -449,7 +462,7 @@ export default function ConsoleDashboard() {
           relativePath: url.trim(),
           queryParams: Object.keys(qp).length > 0 ? qp : undefined,
           headers: Object.keys(customH).length > 0 ? customH : undefined,
-          body: method === 'GET' ? undefined : body,
+          body: payloadBody,
           requestName: requestName.trim(),
           requiresSignature,
         }),
@@ -592,17 +605,17 @@ export default function ConsoleDashboard() {
 
       <SidebarInset className="min-w-0 overflow-hidden">
         <Topbar
-        countries={countries}
-        selectedCountry={selectedCountry}
-        onCountryChange={handleCountryChange}
-        environment={environment}
-        config={config}
-        user={session?.user}
-        onOpenStatus={() => setView('status')}
-        onOpenCommandPalette={() => setCommandPaletteOpen(true)}
-        gatewayLatencyMs={gatewayLatencyMs}
-        theme={theme}
-        onThemeChange={handleThemeChange}
+          countries={countries}
+          selectedCountry={selectedCountry}
+          onCountryChange={handleCountryChange}
+          environment={environment}
+          config={config}
+          user={session?.user}
+          onOpenStatus={() => setView('status')}
+          onOpenCommandPalette={() => setCommandPaletteOpen(true)}
+          gatewayLatencyMs={gatewayLatencyMs}
+          theme={theme}
+          onThemeChange={handleThemeChange}
         />
 
         {/* Main Workspace Frame */}
