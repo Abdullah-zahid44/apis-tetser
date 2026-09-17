@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Archive,
   Pencil,
@@ -108,6 +108,18 @@ export function Workbench({
     ? `https://${currentEnvConfig.hostname}`
     : 'https://api.assanpay.com';
   const isStatusInquiry = url.includes('/status-inquiry') || requiresSignature === false;
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const bodyContainerRef = useRef<HTMLDivElement>(null);
+
+  // When virtual keyboard opens on mobile, ensure editor scrolls into comfortable view
+  const handleTextareaFocus = () => {
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 250);
+  };
 
   // Auto-regenerate fresh orderId & branchCode in body
   const handleRegenerateOrderId = () => {
@@ -320,6 +332,9 @@ export function Workbench({
             <input
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
+              onFocus={(e) => {
+                setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+              }}
               placeholder="Request Name"
               className="text-sm font-medium text-foreground bg-transparent outline-none border-b border-transparent focus:border-[var(--primary)] truncate min-w-0 w-24 sm:w-44 md:w-56 transition-colors"
               title="Click to rename request"
@@ -364,8 +379,8 @@ export function Workbench({
         </div>
       </div>
 
-      {/* Main Request Work Area */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-3 sm:px-4 lg:px-5 py-4 space-y-3.5">
+      {/* Main Request Work Area with mobile keyboard clearance */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-2.5 sm:px-4 lg:px-5 py-3 sm:py-4 pb-64 sm:pb-6 space-y-3 sm:space-y-3.5 overscroll-y-contain">
 
         {/* Unified Request Bar — single cohesive instrument */}
         <div
@@ -422,6 +437,9 @@ export function Workbench({
               <input
                 value={url}
                 onChange={(e) => onUrlChange(e.target.value)}
+                onFocus={(e) => {
+                  setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
+                }}
                 onKeyDown={(e) => {
                   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
@@ -525,18 +543,6 @@ export function Workbench({
               className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
             >
               <span>Signing Details</span>
-            </TabsTrigger>
-
-            <TabsTrigger
-              value="variables"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
-            >
-              <span>Variables</span>
-              {detectedVariables.length > 0 && (
-                <span className="font-mono text-xs font-bold text-warning ml-1">
-                  ({detectedVariables.length})
-                </span>
-              )}
             </TabsTrigger>
           </TabsList>
 
@@ -756,10 +762,17 @@ export function Workbench({
 
           {/* BODY TAB */}
           <TabsContent value="body" className="mt-2.5 flex-1 flex flex-col min-h-0">
-            <div className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
+            <div
+              ref={bodyContainerRef}
+              className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden min-h-[200px] sm:min-h-[260px] scroll-mt-24 sm:scroll-mt-0"
+              style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}
+            >
               {/* Code Editor Toolbar — subtle, integrated */}
-              <div className="min-h-[36px] px-3 py-1 border-b border-border/70 flex items-center justify-between gap-2 text-xs text-muted-foreground shrink-0 select-none flex-wrap" style={{ background: 'var(--surface-2)' }}>
-                <div className="flex items-center gap-2 font-mono text-[11px] min-w-0">
+              <div
+                className="min-h-[36px] px-2.5 sm:px-3 py-1.5 border-b border-border/70 flex items-center justify-between gap-1.5 text-xs text-muted-foreground shrink-0 select-none overflow-x-auto"
+                style={{ background: 'var(--surface-2)' }}
+              >
+                <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[11px] min-w-0 shrink-0">
                   <span className="flex items-center justify-center w-5 h-5 rounded-md bg-primary/10 text-primary shrink-0">
                     <Code2 size={11} />
                   </span>
@@ -773,20 +786,21 @@ export function Workbench({
                 </div>
 
                 {method !== 'GET' && (
-                  <div className="flex items-center gap-0.5">
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <button
                       type="button"
                       onClick={handleRegenerateOrderId}
-                      className="flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary-hover px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-primary hover:text-primary-hover px-1.5 sm:px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer whitespace-nowrap"
                       title="Auto-generate fresh unique orderId & apply env branchCode"
                     >
                       <RotateCcw size={11} />
-                      <span>New Order ID</span>
+                      <span className="hidden xs:inline">New Order ID</span>
+                      <span className="xs:hidden">New ID</span>
                     </button>
 
                     <button
                       onClick={handleBeautify}
-                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary px-1.5 sm:px-2 py-1 rounded-md hover:bg-primary/10 transition-colors cursor-pointer"
                       title="Format & indent JSON"
                     >
                       <Sparkles size={11} />
@@ -795,7 +809,7 @@ export function Workbench({
 
                     <button
                       onClick={handleMinify}
-                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-1.5 sm:px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer hidden sm:flex"
                       title="Minify JSON payload"
                     >
                       <span>Minify</span>
@@ -803,11 +817,11 @@ export function Workbench({
 
                     <button
                       onClick={handleCopyBody}
-                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground px-1.5 sm:px-2 py-1 rounded-md hover:bg-muted transition-colors cursor-pointer"
                       title="Copy Body"
                     >
                       {copiedBody ? <CheckCircle2 size={11} className="text-success" /> : <Copy size={11} />}
-                      <span>{copiedBody ? 'Copied' : 'Copy'}</span>
+                      <span className="hidden sm:inline">{copiedBody ? 'Copied' : 'Copy'}</span>
                     </button>
 
                     <button
@@ -839,9 +853,9 @@ export function Workbench({
               )}
 
               {/* Editor Workspace */}
-              <div className="flex-1 flex min-h-[220px] overflow-hidden" style={{ background: 'var(--surface-1)' }}>
+              <div className="flex-1 flex min-h-[160px] sm:min-h-[220px] overflow-hidden" style={{ background: 'var(--surface-1)' }}>
                 {/* Gutter Line Numbers */}
-                <div className="w-10 border-r border-border/50 py-3 pr-2 text-right select-none font-mono text-[11px] text-muted-foreground/50 leading-[1.65]" style={{ background: 'var(--surface-1)' }}>
+                <div className="w-8 sm:w-10 border-r border-border/50 py-2.5 sm:py-3 pr-1.5 sm:pr-2 text-right select-none font-mono text-[10px] sm:text-[11px] text-muted-foreground/50 leading-[1.65] shrink-0" style={{ background: 'var(--surface-1)' }}>
                   {lineNumbers.map((num) => (
                     <div key={num}>{num}</div>
                   ))}
@@ -849,7 +863,9 @@ export function Workbench({
 
                 {/* Textarea */}
                 <Textarea
+                  ref={textareaRef}
                   value={body}
+                  onFocus={handleTextareaFocus}
                   onChange={(e) => {
                     onBodyChange(e.target.value);
                     if (jsonError) setJsonError('');
@@ -860,7 +876,7 @@ export function Workbench({
                       onSend();
                     }
                   }}
-                  className="flex-1 h-full w-full resize-none rounded-none border-0 font-mono text-[13px] leading-relaxed shadow-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 selection:bg-primary/25 p-3"
+                  className="flex-1 h-full w-full resize-none rounded-none border-0 font-mono text-xs sm:text-[13px] leading-relaxed shadow-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 selection:bg-primary/25 p-2.5 sm:p-3 scroll-pb-16"
                   style={{ background: 'transparent' }}
                   placeholder={
                     method === 'GET'
@@ -881,7 +897,6 @@ export function Workbench({
                 <ShieldCheck size={16} />
                 <span>HMAC-SHA256 Request Signing Pipeline</span>
               </div>
-
 
               <div className="p-3 rounded bg-background border border-border font-mono text-[11px] text-primary space-y-1">
                 <div className="text-muted-foreground">// Canonical String Format</div>
@@ -912,45 +927,6 @@ export function Workbench({
                   <strong className="text-foreground">Disabled (Unencrypted JSON Mode)</strong>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-
-          {/* VARIABLES TAB */}
-          <TabsContent value="variables" className="mt-3 flex-1 overflow-y-auto">
-            <div className="p-4 rounded-md bg-card border border-border space-y-3 text-xs">
-              <div className="flex items-center gap-2 text-primary font-semibold">
-                <Braces size={16} />
-                <span>Detected Request Variables</span>
-              </div>
-
-              {detectedVariables.length === 0 ? (
-                <p className="text-muted-foreground text-xs">
-                  No <code className="text-primary font-mono">{'{{var}}'}</code> placeholders detected. Use variables like <code className="text-primary font-mono">{'{{orderId}}'}</code> in the URL, query parameters, or body.
-                </p>
-              ) : (
-                <div className="border border-border rounded overflow-x-auto bg-background">
-                  <table className="w-full min-w-[560px] text-xs text-left font-mono">
-                    <thead className="bg-muted/60 text-muted-foreground uppercase text-xs border-b border-border">
-                      <tr>
-                        <th className="p-2">Variable Token</th>
-                        <th className="p-2">Resolution Type</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border">
-                      {detectedVariables.map((v) => (
-                        <tr key={v}>
-                          <td className="p-2 text-primary font-semibold">{'{{'}{v}{'}}'}</td>
-                          <td className="p-2 text-muted-foreground font-sans">
-                            {['timestamp', 'uuid', 'randomOrderId'].includes(v)
-                              ? 'Built-in dynamic generator'
-                              : 'Resolved from Environment Variables Workspace'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
           </TabsContent>
         </Tabs>

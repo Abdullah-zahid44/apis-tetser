@@ -735,7 +735,7 @@ export default function ConsoleDashboard() {
             </div>
 
             {/* Mobile / Tablet (< 1024px) Single Active Pane */}
-            <div className="lg:hidden flex-1 h-full min-h-0 min-w-0 flex flex-col overflow-hidden">
+            <div className="lg:hidden flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
               {mobilePane === 'catalog' && (
                 <Sidebar
                   countryCode={selectedCountry}
