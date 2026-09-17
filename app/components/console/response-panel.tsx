@@ -52,6 +52,39 @@ function looksLikeUrl(v: string): boolean {
   return /^https?:\/\/[^\s"'<>\\]+$/i.test(v);
 }
 
+/** Copy that also works where navigator.clipboard is unavailable (older mobile webviews). */
+async function fallbackCopy(text: string): Promise<boolean> {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-9999px';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* fall through to legacy path */
+  }
+  return fallbackCopy(text);
+}
+
 function collectUrlsFromValue(value: unknown, key: string, out: FoundUrl[], seen: Set<unknown>): void {
   if (typeof value === 'string') {
     const clean = sanitizeUrl(value);
@@ -160,12 +193,9 @@ export function ResponsePanel({
   const [copiedType, setCopiedType] = useState<'json' | 'raw' | 'headers' | null>(null);
 
   const copyToClipboard = async (text: string, type: 'json' | 'raw' | 'headers') => {
-    try {
-      await navigator.clipboard.writeText(text);
+    if (await copyText(text)) {
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 1600);
-    } catch {
-      // ignore
     }
   };
 
@@ -189,12 +219,9 @@ export function ResponsePanel({
   }, [result]);
 
   const copyPaymentLink = async (url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
+    if (await copyText(url)) {
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 1600);
-    } catch {
-      // ignore
     }
   };
 
@@ -385,11 +412,17 @@ export function ResponsePanel({
             {paymentUrls.length > 0 && (
               <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/[0.06] px-2.5 py-2 shrink-0">
                 <Link2 size={13} className="text-primary shrink-0" />
-                <div className="min-w-0 flex-1">
+                <div
+                  className="min-w-0 flex-1 cursor-pointer"
+                  onClick={() => void copyPaymentLink(paymentUrls[0].url)}
+                  title="Tap to copy payment link"
+                  role="button"
+                  aria-label="Copy payment link"
+                >
                   <div className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                    Payment link
+                    {linkCopied ? <span className="text-success">Copied to clipboard</span> : 'Payment link — tap to copy'}
                   </div>
-                  <div className="text-xs font-mono text-foreground truncate select-text" title={paymentUrls[0].url}>
+                  <div className="text-xs font-mono text-foreground truncate select-text">
                     {paymentUrls[0].url}
                   </div>
                 </div>
