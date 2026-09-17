@@ -93,7 +93,8 @@ export default function ConsoleDashboard() {
     }
   }, [status, router]);
 
-  // 2. Load last selected country from localStorage
+  // 2. Load persisted UI state from localStorage (country, theme, view, mobile pane)
+  // so a page refresh restores the same screen instead of jumping back.
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('assanpay_last_country');
@@ -101,8 +102,42 @@ export default function ConsoleDashboard() {
       const savedTheme = localStorage.getItem('assanpay_theme');
       const nextTheme = savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system' ? savedTheme : 'light';
       setTheme(nextTheme);
+      const savedView = localStorage.getItem('assanpay_console_view');
+      if (savedView === 'history' || savedView === 'callbacks' || savedView === 'status') {
+        setView(savedView);
+      }
+      const savedPane = localStorage.getItem('assanpay_console_pane');
+      if (savedPane === 'catalog' || savedPane === 'response') {
+        setMobilePane(savedPane);
+      }
     }
   }, []);
+
+  // Persist view / selected endpoint / mobile pane so refresh restores this screen.
+  useEffect(() => {
+    try {
+      localStorage.setItem('assanpay_console_view', view);
+    } catch {
+      // ignore
+    }
+  }, [view]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    try {
+      localStorage.setItem('assanpay_console_endpoint', selectedId);
+    } catch {
+      // ignore
+    }
+  }, [selectedId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('assanpay_console_pane', mobilePane);
+    } catch {
+      // ignore
+    }
+  }, [mobilePane]);
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -164,9 +199,11 @@ export default function ConsoleDashboard() {
         const list = data.endpoints || [];
         setEndpoints(list);
 
-        // Select the first endpoint as default if none selected
+        // Restore the previously selected endpoint if it exists in this list,
+        // otherwise fall back to the first endpoint as default.
         if (list.length > 0) {
-          const first = list[0];
+          const savedId = typeof window !== 'undefined' ? localStorage.getItem('assanpay_console_endpoint') : null;
+          const first = (savedId && list.find((e) => e.id === savedId)) || list[0];
           setSelectedId(first.id);
           setRequestName(first.name);
           setMethod(first.method);
