@@ -112,13 +112,15 @@ export function Workbench({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bodyContainerRef = useRef<HTMLDivElement>(null);
 
-  // When virtual keyboard opens on mobile, ensure editor scrolls into comfortable view
+  // When virtual keyboard opens on mobile, scroll body container into view so it appears above keyboard
   const handleTextareaFocus = () => {
     setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (bodyContainerRef.current) {
+        bodyContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (textareaRef.current) {
+        textareaRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
-    }, 250);
+    }, 300);
   };
 
   // Auto-regenerate fresh orderId & branchCode in body
@@ -504,7 +506,7 @@ export function Workbench({
         </div>
 
         {/* Postman-Grade Request Tabs */}
-        <Tabs defaultValue="body" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden pt-1">
+        <Tabs defaultValue="body" className="flex flex-col min-w-0 pt-1">
           <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0">
             <TabsTrigger
               value="params"
@@ -761,10 +763,10 @@ export function Workbench({
           </TabsContent>
 
           {/* BODY TAB */}
-          <TabsContent value="body" className="mt-2.5 flex-1 flex flex-col min-h-0">
+          <TabsContent value="body" className="mt-2.5 flex flex-col">
             <div
               ref={bodyContainerRef}
-              className="flex-1 flex flex-col border border-border rounded-xl overflow-hidden min-h-[200px] sm:min-h-[260px] scroll-mt-24 sm:scroll-mt-0"
+              className="flex flex-col border border-border rounded-xl overflow-hidden min-h-[320px] sm:min-h-[360px]"
               style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}
             >
               {/* Code Editor Toolbar — subtle, integrated */}
@@ -853,7 +855,7 @@ export function Workbench({
               )}
 
               {/* Editor Workspace */}
-              <div className="flex-1 flex min-h-[160px] sm:min-h-[220px] overflow-hidden" style={{ background: 'var(--surface-1)' }}>
+              <div className="flex h-[260px] sm:h-[300px] overflow-hidden" style={{ background: 'var(--surface-1)' }}>
                 {/* Gutter Line Numbers */}
                 <div className="w-8 sm:w-10 border-r border-border/50 py-2.5 sm:py-3 pr-1.5 sm:pr-2 text-right select-none font-mono text-[10px] sm:text-[11px] text-muted-foreground/50 leading-[1.65] shrink-0" style={{ background: 'var(--surface-1)' }}>
                   {lineNumbers.map((num) => (
@@ -876,7 +878,7 @@ export function Workbench({
                       onSend();
                     }
                   }}
-                  className="flex-1 h-full w-full resize-none rounded-none border-0 font-mono text-xs sm:text-[13px] leading-relaxed shadow-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 selection:bg-primary/25 p-2.5 sm:p-3 scroll-pb-16"
+                  className="flex-1 w-full resize-none rounded-none border-0 font-mono text-xs sm:text-[13px] leading-relaxed shadow-none focus-visible:ring-0 text-foreground placeholder:text-muted-foreground/50 selection:bg-primary/25 p-2.5 sm:p-3"
                   style={{ background: 'transparent' }}
                   placeholder={
                     method === 'GET'
