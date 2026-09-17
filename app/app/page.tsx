@@ -83,7 +83,7 @@ export default function ConsoleDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('light');
 
-  // Responsive mobile active pane (for screens < 1024px)
+  // Responsive mobile active pane (for screens < 768px)
   const [mobilePane, setMobilePane] = useState<'catalog' | 'workbench' | 'response'>('workbench');
 
   // 1. Authentication guard
@@ -622,11 +622,11 @@ export default function ConsoleDashboard() {
         {/* View Router */}
         {view === 'workbench' && (
           <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
-            {/* Mobile / Tablet Segmented Pane Switcher (< 1024px) — shadcn Tabs */}
+            {/* Mobile Segmented Pane Switcher (< 768px) — shadcn Tabs */}
             <Tabs
               value={mobilePane}
               onValueChange={(value) => value && setMobilePane(value as 'catalog' | 'workbench' | 'response')}
-              className="lg:hidden mx-2 mt-2 shrink-0"
+              className="md:hidden mx-2 mt-2 shrink-0"
             >
               <TabsList className="grid w-full grid-cols-3 h-10 bg-muted border border-border rounded-full p-1">
                 <TabsTrigger value="catalog" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
@@ -642,7 +642,7 @@ export default function ConsoleDashboard() {
             </Tabs>
 
             {/* Desktop: collections + vertically split request/response workspace */}
-            <div className="hidden lg:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-background">
+            <div className="hidden md:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-background">
               {/* Collapsible Left Catalog Sidebar - Fixed 280px width so it never squishes */}
               {!sidebarCollapsed && (
                 <div className="w-[296px] shrink-0 h-full min-h-0 border border-border bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
@@ -734,8 +734,8 @@ export default function ConsoleDashboard() {
               </div>
             </div>
 
-            {/* Mobile / Tablet (< 1024px) Single Active Pane */}
-            <div className="lg:hidden flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
+            {/* Mobile (< 768px) Single Active Pane */}
+            <div className="md:hidden flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
               {mobilePane === 'catalog' && (
                 <Sidebar
                   countryCode={selectedCountry}
@@ -878,3 +878,4 @@ function tryParseJson(str: string): unknown {
     return str;
   }
 }
+
