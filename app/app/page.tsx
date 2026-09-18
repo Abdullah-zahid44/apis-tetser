@@ -11,7 +11,6 @@ import { ResponsePanel } from '@/components/console/response-panel';
 import { CallbackInbox } from '@/components/console/callback-inbox';
 import { HistoryView } from '@/components/console/history-view';
 import { EnvironmentStatusView } from '@/components/console/environment-status';
-import { MoneyConfirmModal } from '@/components/console/money-confirm-modal';
 import { CommandPalette } from '@/components/console/command-palette';
 import { autoRefreshPayloadIdentifiers } from '@/lib/variables/resolver';
 import {
@@ -67,7 +66,6 @@ export default function ConsoleDashboard() {
   const [paramRows, setParamRows] = useState<ParamRow[]>([]);
   const [headerRows, setHeaderRows] = useState<HeaderRow[]>([]);
   const [requiresSignature, setRequiresSignature] = useState<boolean>(true);
-  const [isMoneyMovement, setIsMoneyMovement] = useState<boolean>(false);
 
   // Execution & Persistence UI State
   const [search, setSearch] = useState<string>('');
@@ -78,7 +76,6 @@ export default function ConsoleDashboard() {
   const [savedMessage, setSavedMessage] = useState<string>('');
   const [loadedHistoryId, setLoadedHistoryId] = useState<string | null>(null);
   const [historyLoading, setHistoryLoading] = useState<boolean>(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState<boolean>(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [theme, setTheme] = useState<'dark' | 'light' | 'system'>('light');
@@ -210,7 +207,6 @@ export default function ConsoleDashboard() {
           setUrl(first.path);
           setBody(autoRefreshPayloadIdentifiers(first.defaultBody || ''));
           setRequiresSignature(first.requiresSignature);
-          setIsMoneyMovement(first.isMoneyMovement || false);
           setDirty(false);
           setResult(null);
 
@@ -299,7 +295,6 @@ export default function ConsoleDashboard() {
     setUrl(ep.path);
     setBody(ep.defaultBody || '');
     setRequiresSignature(ep.requiresSignature);
-    setIsMoneyMovement(ep.isMoneyMovement || false);
     setResult(null);
     setDirty(false);
     setLoadedHistoryId(null);
@@ -446,11 +441,6 @@ export default function ConsoleDashboard() {
 
   // Send request execution logic
   const handleTriggerSend = () => {
-    const looksLikeMoneyMovement = method !== 'GET' && /\/(payments|wallet-payouts|checkout\/sessions)(\/|$)/i.test(url.split('?')[0]);
-    if (isMoneyMovement || looksLikeMoneyMovement) {
-      setIsConfirmModalOpen(true);
-      return;
-    }
     void executeActiveRequest();
   };
 
@@ -882,20 +872,6 @@ export default function ConsoleDashboard() {
         onSelectEndpoint={handleSelectEndpoint}
       />
 
-      {/* Payout Confirmation Safety Modal */}
-      <MoneyConfirmModal
-        isOpen={isConfirmModalOpen}
-        endpointName={requestName}
-        method={method}
-        url={url}
-        country={selectedCountry}
-        environment={environment}
-        onConfirm={() => {
-          setIsConfirmModalOpen(false);
-          void executeActiveRequest();
-        }}
-        onCancel={() => setIsConfirmModalOpen(false)}
-      />
     </SidebarProvider>
   );
 }
