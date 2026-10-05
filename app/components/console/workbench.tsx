@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Archive,
   Pencil,
@@ -30,6 +31,13 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { autoRefreshPayloadIdentifiers } from '@/lib/variables/resolver';
+import {
+  suggestVariables,
+  getAutocompleteContext,
+  type Suggestion,
+  type VariableKeyInfo,
+} from '@/lib/variables/suggest';
+export type { VariableKeyInfo };
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -74,6 +82,8 @@ interface WorkbenchProps {
   draftSaveStatus?: DraftSaveStatus;
   /** Local HH:MM label for the last successful auto-save. */
   draftSavedLabel?: string | null;
+  /** User variable keys for {{var}} autocomplete (keys + isSecret flags only — never values). */
+  variableKeys?: VariableKeyInfo[];
 }
 
 export function Workbench({
@@ -104,6 +114,7 @@ export function Workbench({
   onToggleSidebar,
   draftSaveStatus = 'idle',
   draftSavedLabel = null,
+  variableKeys = [],
 }: WorkbenchProps) {
   const [jsonError, setJsonError] = useState('');
   const [copiedHeaders, setCopiedHeaders] = useState(false);
@@ -118,6 +129,142 @@ export function Workbench({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bodyContainerRef = useRef<HTMLDivElement>(null);
+
+  // ---- {{variable}} autocomplete (URL input + body editor) ----
+  const urlInputRef = useRef<HTMLInputElement>(null);
+  const suggestDropdownRef = useRef<HTMLDivElement>(null);
+  const [varAutocomplete, setVarAutocomplete] = useState<{
+    field: 'url' | 'body';
+    start: number;
+    partial: string;
+    activeIndex: number;
+    rect: { top: number; left: number; width: number };
+  } | null>(null);
+
+  const autocompleteSuggestions = useMemo(
+    () =>
+      varAutocomplete
+        ? suggestVariables({ keys: variableKeys, partial: varAutocomplete.partial })
+        : [],
+    [variableKeys, varAutocomplete]
+  );
+
+  // Detect an open `{{partial` context at the caret; opens/updates the dropdown.
+  // Dismisses when the context closes: `}}` typed, invalid char, caret moved away.
+  const updateVariableAutocomplete = (
+    field: 'url' | 'body',
+    text: string,
+    caret: number | null,
+    el: HTMLElement | null
+  ) => {
+    const ctx =
+      caret === null || caret === undefined ? null : getAutocompleteContext(text, caret);
+    setVarAutocomplete((prev) => {
+      if (!ctx) return null;
+      // Preserve keyboard position while the partial is unchanged (e.g. arrow keys).
+      const kept = prev && prev.field === field && prev.partial === ctx.partial ? prev : null;
+      let rect = kept?.rect;
+      const r = el?.getBoundingClientRect();
+      if (r) {
+        const width = Math.min(r.width, 320);
+        const maxLeft =
+          (typeof window !== 'undefined' ? window.innerWidth : 1280) - width - 8;
+        rect = {
+          // URL: below the field. Body: at the top of the editor (dropdown is fixed).
+          top: field === 'body' ? r.top + 8 : r.bottom + 4,
+          left: Math.max(8, Math.min(r.left, maxLeft)),
+          width,
+        };
+      }
+      if (!rect) return null;
+      return {
+        field,
+        start: ctx.start,
+        partial: ctx.partial,
+        activeIndex: kept?.activeIndex ?? 0,
+        rect,
+      };
+    });
+  };
+
+  // Replace `{{partial` with `{{key}}` and place the caret after `}}`.
+  const acceptVariableSuggestion = (suggestion: Suggestion) => {
+    const ac = varAutocomplete;
+    if (!ac) return;
+    const isUrl = ac.field === 'url';
+    const text = isUrl ? url : body;
+    const el = isUrl ? urlInputRef.current : textareaRef.current;
+    const caret = el?.selectionStart ?? text.length;
+    const inserted = `{{${suggestion.key}}}`;
+    const next = text.slice(0, ac.start) + inserted + text.slice(caret);
+    if (isUrl) {
+      onUrlChange(next);
+    } else {
+      onBodyChange(next);
+      if (jsonError) setJsonError('');
+    }
+    setVarAutocomplete(null);
+    requestAnimationFrame(() => {
+      const target = isUrl ? urlInputRef.current : textareaRef.current;
+      if (target) {
+        target.focus();
+        const pos = ac.start + inserted.length;
+        target.setSelectionRange(pos, pos);
+      }
+    });
+  };
+
+  // Keyboard for the autocomplete dropdown. Returns true when the key was consumed.
+  const handleVariableAutocompleteKeyDown = (
+    e: React.KeyboardEvent,
+    field: 'url' | 'body'
+  ): boolean => {
+    if (!varAutocomplete || varAutocomplete.field !== field) return false;
+    const items = autocompleteSuggestions;
+    if (items.length === 0) return false;
+    const activeIdx = Math.min(varAutocomplete.activeIndex, items.length - 1);
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      setVarAutocomplete((prev) => {
+        if (!prev) return prev;
+        const dir = e.key === 'ArrowDown' ? 1 : -1;
+        return { ...prev, activeIndex: (activeIdx + dir + items.length) % items.length };
+      });
+      return true;
+    }
+    if (e.key === 'Enter' || e.key === 'Tab') {
+      if (e.ctrlKey || e.metaKey) return false; // Ctrl+Enter still sends the request
+      e.preventDefault();
+      acceptVariableSuggestion(items[activeIdx]);
+      return true;
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setVarAutocomplete(null);
+      return true;
+    }
+    return false;
+  };
+
+  // Keep the keyboard-active row visible inside the dropdown
+  useEffect(() => {
+    if (!varAutocomplete) return;
+    suggestDropdownRef.current
+      ?.querySelector('[data-active="true"]')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [varAutocomplete]);
+
+  // The dropdown is fixed-positioned: dismiss when the layout scrolls/resizes
+  useEffect(() => {
+    if (!varAutocomplete) return;
+    const close = () => setVarAutocomplete(null);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [varAutocomplete]);
 
   // When virtual keyboard opens on mobile, scroll body container into view so it appears above keyboard
   const handleTextareaFocus = () => {
@@ -462,12 +609,39 @@ export function Workbench({
                 <span className="text-muted-foreground">{baseUrl}</span>
               </div>
               <input
+                ref={urlInputRef}
                 value={url}
-                onChange={(e) => onUrlChange(e.target.value)}
+                onChange={(e) => {
+                  onUrlChange(e.target.value);
+                  updateVariableAutocomplete(
+                    'url',
+                    e.target.value,
+                    e.currentTarget.selectionStart,
+                    e.currentTarget
+                  );
+                }}
+                onClick={(e) => {
+                  updateVariableAutocomplete(
+                    'url',
+                    e.currentTarget.value,
+                    e.currentTarget.selectionStart,
+                    e.currentTarget
+                  );
+                }}
+                onKeyUp={(e) => {
+                  updateVariableAutocomplete(
+                    'url',
+                    e.currentTarget.value,
+                    e.currentTarget.selectionStart,
+                    e.currentTarget
+                  );
+                }}
+                onBlur={() => setVarAutocomplete(null)}
                 onFocus={(e) => {
                   setTimeout(() => e.target.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 200);
                 }}
                 onKeyDown={(e) => {
+                  if (handleVariableAutocompleteKeyDown(e, 'url')) return;
                   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                     e.preventDefault();
                     onSend();
@@ -900,8 +1074,32 @@ export function Workbench({
                   onChange={(e) => {
                     onBodyChange(e.target.value);
                     if (jsonError) setJsonError('');
+                    updateVariableAutocomplete(
+                      'body',
+                      e.target.value,
+                      e.currentTarget.selectionStart,
+                      e.currentTarget
+                    );
                   }}
+                  onClick={(e) => {
+                    updateVariableAutocomplete(
+                      'body',
+                      e.currentTarget.value,
+                      e.currentTarget.selectionStart,
+                      e.currentTarget
+                    );
+                  }}
+                  onKeyUp={(e) => {
+                    updateVariableAutocomplete(
+                      'body',
+                      e.currentTarget.value,
+                      e.currentTarget.selectionStart,
+                      e.currentTarget
+                    );
+                  }}
+                  onBlur={() => setVarAutocomplete(null)}
                   onKeyDown={(e) => {
+                    if (handleVariableAutocompleteKeyDown(e, 'body')) return;
                     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                       e.preventDefault();
                       onSend();
@@ -962,6 +1160,68 @@ export function Workbench({
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* {{variable}} autocomplete dropdown — fixed under the field, portaled out of clipped containers */}
+      {varAutocomplete &&
+        autocompleteSuggestions.length > 0 &&
+        createPortal(
+          <div
+            ref={suggestDropdownRef}
+            role="listbox"
+            aria-label="Variable suggestions"
+            className="fixed z-[80] rounded-lg border border-border shadow-[var(--shadow-lift)]"
+            style={{
+              top: varAutocomplete.rect.top,
+              left: varAutocomplete.rect.left,
+              width: varAutocomplete.rect.width,
+              background: 'var(--surface-1)',
+            }}
+          >
+            <div className="max-h-60 overflow-auto p-1">
+              {autocompleteSuggestions.map((s, i) => {
+                const active =
+                  i === Math.min(varAutocomplete.activeIndex, autocompleteSuggestions.length - 1);
+                return (
+                  <button
+                    key={`${s.builtin ? 'builtin' : 'user'}:${s.key}`}
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    data-active={active ? 'true' : undefined}
+                    onMouseDown={(e) => {
+                      // preventDefault keeps input focus so the click registers before blur
+                      e.preventDefault();
+                      acceptVariableSuggestion(s);
+                    }}
+                    onMouseEnter={() =>
+                      setVarAutocomplete((prev) => (prev ? { ...prev, activeIndex: i } : prev))
+                    }
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-left cursor-pointer transition-colors duration-150 ${
+                      active ? 'bg-primary/10' : ''
+                    }`}
+                  >
+                    <span className="font-mono text-xs text-foreground truncate flex-1">
+                      {s.key}
+                    </span>
+                    {s.isSecret && (
+                      <Lock
+                        size={12}
+                        className="text-muted-foreground shrink-0"
+                        aria-label="Secret variable"
+                      />
+                    )}
+                    {s.builtin && (
+                      <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground/60 shrink-0">
+                        built-in
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>,
+          document.body
+        )}
     </section>
   );
 }

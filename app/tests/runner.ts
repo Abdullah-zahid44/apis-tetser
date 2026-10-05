@@ -4,6 +4,7 @@ import { runSecurityTests } from './security.test';
 import { runSigningTests } from './signing.test';
 import { runCallbackTests } from './callbacks.test';
 import { runParseAmountTests } from './parse-amount.test';
+import { runSuggestTests } from './variables-suggest.test';
 
 async function main() {
   console.log('🧪 Running AssanPay Console Test Suites...\n');
@@ -15,6 +16,7 @@ async function main() {
     { name: 'HMAC-SHA256 Request Signing Spec', runner: runSigningTests },
     { name: 'Webhook Callback Verification & Raw Body Integrity', runner: runCallbackTests },
     { name: 'Amount Parsing for History Feed', runner: runParseAmountTests },
+    { name: 'Variable Autocomplete Suggestions', runner: runSuggestTests },
   ];
 
   let total = 0;

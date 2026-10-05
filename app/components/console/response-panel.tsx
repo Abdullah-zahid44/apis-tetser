@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { JsonTree } from './json-tree';
 import type { ExecutionResult } from './types';
 
 interface ResponsePanelProps {
@@ -36,7 +37,7 @@ interface FoundUrl {
 }
 
 /** Strip whitespace + surrounding quote layers gateways sometimes wrap around URL values. */
-function sanitizeUrl(value: string): string {
+export function sanitizeUrl(value: string): string {
   let v = value.trim();
   for (let i = 0; i < 4; i++) {
     const quoted =
@@ -48,7 +49,7 @@ function sanitizeUrl(value: string): string {
   return v.replace(/[.,;)\]]+$/, '');
 }
 
-function looksLikeUrl(v: string): boolean {
+export function looksLikeUrl(v: string): boolean {
   return /^https?:\/\/[^\s"'<>\\]+$/i.test(v);
 }
 
@@ -73,7 +74,7 @@ async function fallbackCopy(text: string): Promise<boolean> {
   }
 }
 
-async function copyText(text: string): Promise<boolean> {
+export async function copyText(text: string): Promise<boolean> {
   try {
     if (navigator.clipboard) {
       await navigator.clipboard.writeText(text);
@@ -125,7 +126,7 @@ function rankUrls(urls: FoundUrl[]): FoundUrl[] {
 
 const URL_VALUE_LINE = /^(\s*"(?:[^"\\]|\\.)*"\s*:\s*)("(?:[^"\\]|\\.)*")(,?)\s*$/;
 
-function urlLink(href: string, label: string, key: string): React.ReactNode {
+export function urlLink(href: string, label: string, key: string): React.ReactNode {
   return (
     <a
       key={key}
@@ -191,6 +192,8 @@ export function ResponsePanel({
   onClear,
 }: ResponsePanelProps) {
   const [copiedType, setCopiedType] = useState<'json' | 'raw' | 'headers' | null>(null);
+  // Body viewer mode for the Pretty JSON tab: tree is the default for JSON bodies.
+  const [bodyView, setBodyView] = useState<'tree' | 'raw'>('tree');
 
   const copyToClipboard = async (text: string, type: 'json' | 'raw' | 'headers') => {
     if (await copyText(text)) {
@@ -235,6 +238,24 @@ export function ResponsePanel({
       ? JSON.stringify(result.upstream.body, null, 2)
       : result.upstream.rawBody
     : '';
+
+  /** Parsed JSON value for the tree view: object body, or raw text that parses as JSON. */
+  const treeData: unknown = React.useMemo(() => {
+    if (!result) return undefined;
+    if (bodyIsObject) return result.upstream.body;
+    if (result.upstream.rawBody) {
+      try {
+        return JSON.parse(result.upstream.rawBody) as unknown;
+      } catch {
+        return undefined;
+      }
+    }
+    return undefined;
+  }, [result, bodyIsObject]);
+
+  /** Tree is offered only when the body is valid JSON; otherwise the raw view stays. */
+  const canShowTree = treeData !== undefined;
+  const effectiveBodyView = canShowTree ? bodyView : 'raw';
 
   const downloadExample = () => {
     if (!result) return;
@@ -487,11 +508,43 @@ export function ResponsePanel({
                 </TabsTrigger>
               </TabsList>
 
-              {/* Pretty JSON Tab — URL values render as sanitized, clickable links */}
+              {/* Pretty JSON Tab — tree view for JSON bodies, raw text otherwise */}
               <TabsContent value="pretty" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
-                  {prettyJson ? renderBodyWithLinks(prettyJson, bodyIsObject) : '// Empty response body.'}
-                </pre>
+                {canShowTree && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="bg-muted rounded-full p-1 inline-flex" role="group" aria-label="Body view">
+                      <button
+                        type="button"
+                        onClick={() => setBodyView('tree')}
+                        className={`text-xs font-medium rounded-full px-2.5 py-1 transition-colors duration-150 cursor-pointer ${
+                          effectiveBodyView === 'tree'
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        Tree
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBodyView('raw')}
+                        className={`text-xs font-medium rounded-full px-2.5 py-1 transition-colors duration-150 cursor-pointer ${
+                          effectiveBodyView === 'raw'
+                            ? 'bg-primary text-primary-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        Raw
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {effectiveBodyView === 'tree' ? (
+                  <JsonTree key={result.meta.requestId} data={treeData} />
+                ) : (
+                  <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
+                    {prettyJson ? renderBodyWithLinks(prettyJson, bodyIsObject) : '// Empty response body.'}
+                  </pre>
+                )}
               </TabsContent>
 
               {/* Raw Response Tab */}

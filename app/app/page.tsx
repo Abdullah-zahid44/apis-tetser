@@ -7,7 +7,7 @@ import { useDraftAutosave, type WorkbenchState } from '@/hooks/use-draft-autosav
 import { Topbar } from '@/components/console/topbar';
 import { NavRail } from '@/components/console/nav-rail';
 import { Sidebar } from '@/components/console/sidebar';
-import { Workbench } from '@/components/console/workbench';
+import { Workbench, type VariableKeyInfo } from '@/components/console/workbench';
 import { ResponsePanel } from '@/components/console/response-panel';
 import { CallbackInbox } from '@/components/console/callback-inbox';
 import { HistoryView } from '@/components/console/history-view';
@@ -57,6 +57,10 @@ export default function ConsoleDashboard() {
   const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
   const [config, setConfig] = useState<SafeConfig | null>(null);
   const [gatewayLatencyMs, setGatewayLatencyMs] = useState<number | null>(null);
+
+  // Variable keys for {{var}} autocomplete — keys + isSecret flags only.
+  // Values are never stored here; the API already masks them in UI mode.
+  const [variableKeys, setVariableKeys] = useState<VariableKeyInfo[]>([]);
 
   // Workbench Current Request State
   const [selectedId, setSelectedId] = useState<string>('');
@@ -280,6 +284,25 @@ export default function ConsoleDashboard() {
     }
   }, []);
 
+  // 8. Fetch variable keys for {{var}} autocomplete. UI mode only (no
+  // resolve=true): secret values stay masked server-side, and we strip the
+  // response down to {key, isSecret} so no value ever reaches component props.
+  const fetchVariableKeys = useCallback(async () => {
+    try {
+      const res = await fetch('/api/variables');
+      if (res.ok) {
+        const data = (await res.json()) as { variables?: { key?: string; isSecret?: boolean }[] };
+        setVariableKeys(
+          (data.variables || [])
+            .filter((v) => typeof v.key === 'string' && v.key.length > 0)
+            .map((v) => ({ key: v.key as string, isSecret: v.isSecret === true }))
+        );
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   // Initial data loading
   useEffect(() => {
     if (status === 'authenticated') {
@@ -287,8 +310,9 @@ export default function ConsoleDashboard() {
       void fetchConfig();
       void fetchSavedRequests(environment);
       void fetchHistory(environment);
+      void fetchVariableKeys();
     }
-  }, [status, fetchCountries, fetchConfig, fetchSavedRequests, fetchHistory, environment]);
+  }, [status, fetchCountries, fetchConfig, fetchSavedRequests, fetchHistory, fetchVariableKeys, environment]);
 
   // Load endpoints when country changes
   useEffect(() => {
@@ -812,6 +836,7 @@ export default function ConsoleDashboard() {
                       onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
                       draftSaveStatus={draftSaveStatus}
                       draftSavedLabel={draftSavedLabel}
+                      variableKeys={variableKeys}
                     />
                   </ResizablePanel>
 
@@ -893,6 +918,7 @@ export default function ConsoleDashboard() {
                   requiresSignature={requiresSignature}
                   draftSaveStatus={draftSaveStatus}
                   draftSavedLabel={draftSavedLabel}
+                  variableKeys={variableKeys}
                 />
               )}
 
