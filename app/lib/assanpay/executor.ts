@@ -18,6 +18,7 @@ export type ExecuteRequestInput = {
   body?: string;
   requestName?: string;
   endpointId?: string;
+  endpointCategory?: string;
   requiresSignature?: boolean;
   timeoutMs?: number;
   user?: AuthenticatedUser | null;
@@ -400,23 +401,50 @@ export function historyKindForCategory(
 
 async function resolveHistoryKind(
   db: Database,
-  endpointId: string | null
+  endpointId: string | null,
+  endpointCategory?: string | null,
+  url?: string | null
 ): Promise<'payin' | 'payout' | 'other'> {
-  if (!endpointId) return 'other';
-  const cached = kindCache.get(endpointId);
-  if (cached) return cached;
-  try {
-    const rows = await db
-      .select({ category: apiEndpoints.category })
-      .from(apiEndpoints)
-      .where(eq(apiEndpoints.id, endpointId))
-      .limit(1);
-    const kind = historyKindForCategory(rows[0]?.category);
-    kindCache.set(endpointId, kind);
-    return kind;
-  } catch {
-    return 'other';
+  // (a) Explicit category passed by the client — cheapest and most reliable.
+  if (endpointCategory) return historyKindForCategory(endpointCategory);
+
+  // (b) Look up the endpoint's category by id (cached per instance).
+  // Synthetic ids (static-*) never match DB uuids — skip the query.
+  if (endpointId && !endpointId.startsWith('static-')) {
+    const cached = kindCache.get(endpointId);
+    if (cached) return cached;
+    try {
+      const rows = await db
+        .select({ category: apiEndpoints.category })
+        .from(apiEndpoints)
+        .where(eq(apiEndpoints.id, endpointId))
+        .limit(1);
+      if (rows[0]) {
+        const kind = historyKindForCategory(rows[0]?.category);
+        kindCache.set(endpointId, kind);
+        return kind;
+      }
+    } catch {
+      // fall through to the URL heuristic
+    }
   }
+
+  // (c) URL heuristic — last resort for custom / saved / history-loaded requests.
+  return historyKindForUrl(url);
+}
+
+/**
+ * Pure URL heuristic for history kind classification.
+ * Exported for unit tests.
+ */
+export function historyKindForUrl(
+  url: string | null | undefined
+): 'payin' | 'payout' | 'other' {
+  if (!url) return 'other';
+  const lower = url.toLowerCase();
+  if (lower.includes('payout')) return 'payout';
+  if (lower.includes('payin')) return 'payin';
+  return 'other';
 }
 
 async function logHistorySafe(params: {
@@ -441,7 +469,12 @@ async function logHistorySafe(params: {
     const db = getDb();
     const sanitizedReqHeaders = sanitizeForAudit(params.requestHeaders);
     const sanitizedReqBody = sanitizeForAudit(params.requestBody);
-    const kind = await resolveHistoryKind(db, params.input.endpointId || null);
+    const kind = await resolveHistoryKind(
+      db,
+      params.input.endpointId || null,
+      params.input.endpointCategory || null,
+      params.url
+    );
 
     await db.insert(requestHistory).values({
       userId: params.user?.id || null,

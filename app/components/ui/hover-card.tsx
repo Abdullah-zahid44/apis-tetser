@@ -38,7 +38,7 @@ function HoverCardContent({
  <PreviewCardPrimitive.Popup
  data-slot="hover-card-content"
  className={cn(
- data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-popover text-popover-foreground w-64 rounded-lg p-2.5 text-sm shadow-[var(--shadow-overlay)] border border-border duration-200 z-50 origin-(--transform-origin) outline-hidden',
+ 'data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 bg-popover text-popover-foreground w-64 rounded-lg p-2.5 text-sm shadow-[var(--shadow-overlay)] border border-border duration-200 z-50 origin-(--transform-origin) outline-hidden',
  className,
  )}
  {...props}

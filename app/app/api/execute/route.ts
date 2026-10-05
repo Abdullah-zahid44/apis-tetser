@@ -21,6 +21,7 @@ const ExecuteSchema = z.object({
   body: z.string().optional(),
   requestName: z.string().max(200).optional(),
   endpointId: z.string().optional(),
+  endpointCategory: z.string().max(50).optional(),
   requiresSignature: z.boolean().optional(),
   variables: z.record(z.string(), z.string()).optional(),
 });
@@ -88,6 +89,7 @@ export async function POST(request: Request) {
     body: resolvedBody,
     requestName: data.requestName,
     endpointId: data.endpointId,
+    endpointCategory: data.endpointCategory,
     requiresSignature: data.requiresSignature,
     user,
   });

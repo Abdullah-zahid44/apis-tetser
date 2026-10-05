@@ -81,7 +81,7 @@ function MenubarContent({
  alignOffset={alignOffset}
  sideOffset={sideOffset}
  className={cn(
- bg-popover text-popover-foreground data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 min-w-36 rounded-lg p-1 shadow-[var(--shadow-overlay)] border border-border duration-200 cn-menu-target cn-menu-translucent',
+ 'bg-popover text-popover-foreground data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 min-w-36 rounded-lg p-1 shadow-[var(--shadow-overlay)] border border-border duration-200 cn-menu-target cn-menu-translucent',
  className,
  )}
  {...props}
@@ -256,7 +256,7 @@ function MenubarSubContent({
  <DropdownMenuSubContent
  data-slot="menubar-sub-content"
  className={cn(
- bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 min-w-32 rounded-lg p-1 shadow-[var(--shadow-overlay)] border border-border duration-200 cn-menu-target cn-menu-translucent',
+ 'bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 min-w-32 rounded-lg p-1 shadow-[var(--shadow-overlay)] border border-border duration-200 cn-menu-target cn-menu-translucent',
  className,
  )}
  {...props}

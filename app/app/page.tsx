@@ -41,6 +41,10 @@ import type {
   SafeConfig,
 } from '@/components/console/types';
 
+// Only real catalog uuids are sent as endpointId — synthetic ids
+// (saved-*, history-*) would violate the uuid FK on request_history.endpoint_id.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export default function ConsoleDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -64,6 +68,7 @@ export default function ConsoleDashboard() {
 
   // Workbench Current Request State
   const [selectedId, setSelectedId] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [requestName, setRequestName] = useState<string>('H2H Payin API (Async)');
   const [method, setMethod] = useState<Method>('POST');
   const [url, setUrl] = useState<string>('/api/payments');
@@ -221,6 +226,7 @@ export default function ConsoleDashboard() {
           const savedId = typeof window !== 'undefined' ? localStorage.getItem('assanpay_console_endpoint') : null;
           const first = (savedId && list.find((e) => e.id === savedId)) || list[0];
           setSelectedId(first.id);
+          setSelectedCategory(first.category || '');
           // A draft restore may have already populated the workbench — never let
           // the catalog's default population clobber the restored draft fields.
           const suppressDefaults = suppressEndpointDefaultsRef.current;
@@ -389,6 +395,7 @@ export default function ConsoleDashboard() {
   // Select Built-in Endpoint
   const handleSelectEndpoint = (ep: Endpoint) => {
     setSelectedId(ep.id);
+    setSelectedCategory(ep.category || '');
     setRequestName(ep.name);
     setMethod(ep.method);
     setUrl(ep.path);
@@ -416,6 +423,7 @@ export default function ConsoleDashboard() {
   // Select Saved Request
   const handleSelectSaved = (saved: SavedRequestItem) => {
     setSelectedId(`saved-${saved.id}`);
+    setSelectedCategory('');
     setRequestName(saved.name);
     setMethod(saved.method);
     setUrl(saved.relativeUrl);
@@ -493,6 +501,7 @@ export default function ConsoleDashboard() {
   // Load from History
   const handleLoadIntoWorkbench = (item: HistoryItem) => {
     setSelectedId(`history-${item.id}`);
+    setSelectedCategory('');
     setRequestName(item.requestName);
     setMethod(item.method);
     setUrl(item.url);
@@ -589,6 +598,8 @@ export default function ConsoleDashboard() {
           headers: Object.keys(customH).length > 0 ? customH : undefined,
           body: payloadBody,
           requestName: requestName.trim(),
+          endpointId: UUID_RE.test(selectedId) ? selectedId : undefined,
+          endpointCategory: selectedCategory || undefined,
           requiresSignature,
         }),
       });

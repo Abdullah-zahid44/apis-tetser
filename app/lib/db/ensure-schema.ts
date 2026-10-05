@@ -66,6 +66,10 @@ async function runSchemaGuard(): Promise<void> {
       WHERE rh.endpoint_id = e.id
         AND rh.kind = 'other'
         AND rh.endpoint_id IS NOT NULL`;
+    // URL-heuristic backfill for rows whose endpointId was never recorded
+    // (kind stuck at 'other'). Only upgrades 'other' rows — never downgrades.
+    await sql`UPDATE request_history SET kind = 'payout' WHERE kind = 'other' AND url ILIKE '%payout%'`;
+    await sql`UPDATE request_history SET kind = 'payin' WHERE kind = 'other' AND url ILIKE '%payin%'`;
   } catch (err) {
     console.warn('[SCHEMA] request_history.kind guard failed (non-fatal):', err);
   }
