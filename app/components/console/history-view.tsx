@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   History,
   Search,
@@ -16,11 +16,13 @@ import {
   X,
   RefreshCw,
   Terminal,
+  Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { formatAmount } from '@/lib/parse-amount';
 import type { HistoryItem, Method } from './types';
 
 interface HistoryViewProps {
@@ -28,19 +30,62 @@ interface HistoryViewProps {
   onLoadIntoWorkbench: (item: HistoryItem) => void;
   onRefresh: () => void;
   loading: boolean;
+  // Active environment, passed through to the payout feed fetch.
+  environment?: string;
 }
+
+type HistoryKind = 'payin' | 'payout';
 
 export function HistoryView({
   history,
   onLoadIntoWorkbench,
   onRefresh,
   loading,
+  environment,
 }: HistoryViewProps) {
+  const [kind, setKind] = useState<HistoryKind>('payin');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobileSection, setMobileSection] = useState<'list' | 'detail'>('list');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'success' | 'failed'>('all');
   const [copied, setCopied] = useState<string | null>(null);
+  const [payoutItems, setPayoutItems] = useState<HistoryItem[]>([]);
+  const [payoutLoading, setPayoutLoading] = useState(false);
+
+  const fetchPayout = useCallback(async () => {
+    setPayoutLoading(true);
+    try {
+      const params = new URLSearchParams({ kind: 'payout', limit: '100' });
+      if (environment) params.set('environment', environment);
+      if (search.trim()) params.set('search', search.trim());
+      const res = await fetch(`/api/history?${params.toString()}`);
+      if (res.ok) {
+        const data = (await res.json()) as { history?: HistoryItem[] };
+        setPayoutItems(data.history || []);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setPayoutLoading(false);
+    }
+  }, [environment, search]);
+
+  // Load the team-wide payout feed when the Payout tab becomes active.
+  useEffect(() => {
+    if (kind === 'payout') {
+      void fetchPayout();
+    }
+  }, [kind, fetchPayout]);
+
+  const handleRefresh = () => {
+    if (kind === 'payout') {
+      void fetchPayout();
+    } else {
+      onRefresh();
+    }
+  };
+
+  const refreshDisabled = kind === 'payout' ? payoutLoading : loading;
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
@@ -92,27 +137,60 @@ export function HistoryView({
     <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-background select-none">
       {/* Top Header */}
       <div className="min-h-12 px-3 sm:px-4 py-2 bg-card border-b border-border flex items-center justify-between gap-2 shrink-0">
-        <div>
-          <h2 className="text-xs font-bold text-foreground flex items-center gap-2">
+        <div className="flex items-center gap-3 min-w-0">
+          <h2 className="text-xs font-bold text-foreground flex items-center gap-2 shrink-0">
             <History size={16} className="text-primary" />
             <span>History</span>
           </h2>
+
+          {/* Payin / Payout kind switcher */}
+          <Tabs
+            value={kind}
+            onValueChange={(value) => value && setKind(value as HistoryKind)}
+            className="shrink-0"
+          >
+            <TabsList className="h-7 bg-muted border border-border rounded-full p-0.5">
+              <TabsTrigger
+                value="payin"
+                className="h-full px-3 text-[11px] rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm font-medium cursor-pointer"
+              >
+                Payin
+              </TabsTrigger>
+              <TabsTrigger
+                value="payout"
+                className="h-full px-3 text-[11px] rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm font-medium cursor-pointer"
+              >
+                Payout
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
 
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={onRefresh}
-            disabled={loading}
+            onClick={handleRefresh}
+            disabled={refreshDisabled}
             className="h-7 text-xs bg-card border-border hover:bg-muted text-secondary-foreground gap-1.5 cursor-pointer"
           >
-            <RefreshCw size={12} className={loading ? 'spin text-primary' : ''} />
+            <RefreshCw size={12} className={refreshDisabled ? 'spin text-primary' : ''} />
             <span>Refresh</span>
           </Button>
         </div>
       </div>
 
+      {/* Payin retention hint */}
+      {kind === 'payin' && (
+        <div className="px-3 sm:px-4 py-1.5 border-b border-border bg-card shrink-0">
+          <p className="text-[11px] text-muted-foreground">
+            Payin history auto-deletes after 7 days.
+          </p>
+        </div>
+      )}
+
+      {kind === 'payin' ? (
+      <>
       {/* Split Workstation Panes */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
         {/* Left Side: History Item List */}
@@ -408,6 +486,96 @@ export function HistoryView({
           )}
         </div>
       </div>
+      </>
+      ) : (
+      /* Payout tab: team-wide read-only feed */
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-background">
+        <ScrollArea className="flex-1 min-h-0">
+          {payoutLoading && payoutItems.length === 0 ? (
+            <div className="py-12 flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <RefreshCw size={14} className="spin text-primary" />
+              <span>Loading payout requests...</span>
+            </div>
+          ) : payoutItems.length === 0 ? (
+            <Empty className="py-12">
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <History size={20} />
+                </EmptyMedia>
+                <EmptyTitle className="text-sm">No payout requests yet.</EmptyTitle>
+                <EmptyDescription className="text-xs">
+                  Team payout activity will appear here.
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <table className="w-full min-w-[680px] text-xs">
+              <thead>
+                <tr className="border-b border-border text-left text-[11px] uppercase tracking-[0.05em] text-muted-foreground">
+                  <th className="p-2.5 font-semibold">User</th>
+                  <th className="p-2.5 font-semibold">Time</th>
+                  <th className="p-2.5 font-semibold">Request</th>
+                  <th className="p-2.5 font-semibold text-right">Amount</th>
+                  <th className="p-2.5 font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {payoutItems.map((item) => {
+                  const isSuccess = item.responseStatus >= 200 && item.responseStatus < 300;
+                  return (
+                    <tr key={item.id} className="hover:bg-accent/50 transition-colors">
+                      <td className="p-2.5">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span
+                            title="Attributed to this account"
+                            className="shrink-0 text-muted-foreground cursor-help"
+                          >
+                            <Lock size={11} />
+                          </span>
+                          <div className="min-w-0">
+                            <div className="text-xs font-semibold text-foreground truncate">
+                              {item.userName || 'Unknown user'}
+                            </div>
+                            <div className="text-[11px] text-muted-foreground truncate">
+                              {item.userEmail || ''}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-2.5 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                        {new Date(item.createdAt).toLocaleString()}
+                      </td>
+                      <td className="p-2.5">
+                        <div className="text-xs font-semibold text-foreground truncate max-w-[220px]">
+                          {item.requestName}
+                        </div>
+                        <div className="text-[11px] font-mono text-muted-foreground truncate max-w-[220px]">
+                          {item.url}
+                        </div>
+                      </td>
+                      <td className="p-2.5 font-mono text-xs text-foreground text-right whitespace-nowrap">
+                        {formatAmount(item.requestBody)}
+                      </td>
+                      <td className="p-2.5">
+                        <span
+                          className={`px-1.5 py-0.5 rounded font-mono text-xs font-bold whitespace-nowrap ${
+                            isSuccess
+                              ? 'bg-success/10 text-success border border-success/25'
+                              : 'bg-destructive/10 text-destructive border border-destructive/25'
+                          }`}
+                        >
+                          {item.responseStatus}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </ScrollArea>
+      </div>
+      )}
     </div>
   );
 }

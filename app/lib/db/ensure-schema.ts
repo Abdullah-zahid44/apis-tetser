@@ -11,7 +11,8 @@ import { DEV_BYPASS_USER_ID } from '@/lib/auth/session';
  * data route hit of a warm instance, then caches the promise so it runs once.
  *
  * The canonical migration history stays in drizzle/0001_user_data_isolation.sql
- * for local/dev use via drizzle-kit — keep both in sync.
+ * and drizzle/0002_payin_payout_kinds.sql for local/dev use via drizzle-kit —
+ * keep both in sync.
  */
 let schemaPromise: Promise<void> | null = null;
 
@@ -48,5 +49,24 @@ async function runSchemaGuard(): Promise<void> {
     await sql`INSERT INTO users (id, name, email, role)
       VALUES (${DEV_BYPASS_USER_ID}, 'Local Dev Engineer', 'support@assanpay.com', 'admin')
       ON CONFLICT DO NOTHING`;
+  }
+
+  // request_history.kind: 'payin' | 'payout' | 'other' (0002 migration).
+  // Wrapped fully: the backfill must never break the guard or throw.
+  try {
+    await sql`ALTER TABLE request_history ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'other'`;
+    await sql`CREATE INDEX IF NOT EXISTS request_history_kind_idx ON request_history(kind)`;
+    await sql`UPDATE request_history rh
+      SET kind = CASE
+        WHEN e.category = 'Payin' THEN 'payin'
+        WHEN e.category = 'Payout' THEN 'payout'
+        ELSE 'other'
+      END
+      FROM api_endpoints e
+      WHERE rh.endpoint_id = e.id
+        AND rh.kind = 'other'
+        AND rh.endpoint_id IS NOT NULL`;
+  } catch (err) {
+    console.warn('[SCHEMA] request_history.kind guard failed (non-fatal):', err);
   }
 }

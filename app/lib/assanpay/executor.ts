@@ -3,8 +3,9 @@ import { getAssanPayCredentials } from './credentials';
 import { generateRequestSignature } from './signing';
 import { validateAssanPayUrl } from '../security/ssrf';
 import { sanitizeForAudit } from '../security/audit-sanitizer';
-import { getDb } from '../db';
-import { requestHistory } from '../db/schema';
+import { getDb, type Database } from '../db';
+import { apiEndpoints, requestHistory } from '../db/schema';
+import { eq } from 'drizzle-orm';
 import type { AuthenticatedUser } from '../auth/session';
 
 export type ExecuteRequestInput = {
@@ -385,6 +386,39 @@ function buildErrorResponse(
 /**
  * Failure-safe audit logger to PostgreSQL.
  */
+
+// Per-instance cache: endpointId -> history kind ('payin' | 'payout' | 'other').
+// Endpoint categories never change at runtime, so caching avoids an extra
+// SELECT on every executed request.
+const kindCache = new Map<string, 'payin' | 'payout' | 'other'>();
+
+export function historyKindForCategory(
+  category: string | null | undefined
+): 'payin' | 'payout' | 'other' {
+  return category === 'Payin' ? 'payin' : category === 'Payout' ? 'payout' : 'other';
+}
+
+async function resolveHistoryKind(
+  db: Database,
+  endpointId: string | null
+): Promise<'payin' | 'payout' | 'other'> {
+  if (!endpointId) return 'other';
+  const cached = kindCache.get(endpointId);
+  if (cached) return cached;
+  try {
+    const rows = await db
+      .select({ category: apiEndpoints.category })
+      .from(apiEndpoints)
+      .where(eq(apiEndpoints.id, endpointId))
+      .limit(1);
+    const kind = historyKindForCategory(rows[0]?.category);
+    kindCache.set(endpointId, kind);
+    return kind;
+  } catch {
+    return 'other';
+  }
+}
+
 async function logHistorySafe(params: {
   input: ExecuteRequestInput;
   user?: AuthenticatedUser | null;
@@ -407,11 +441,13 @@ async function logHistorySafe(params: {
     const db = getDb();
     const sanitizedReqHeaders = sanitizeForAudit(params.requestHeaders);
     const sanitizedReqBody = sanitizeForAudit(params.requestBody);
+    const kind = await resolveHistoryKind(db, params.input.endpointId || null);
 
     await db.insert(requestHistory).values({
       userId: params.user?.id || null,
       environment: params.input.environment || 'sandbox',
       endpointId: params.input.endpointId || null,
+      kind,
       requestName: params.input.requestName || 'Custom Request',
       method: params.method,
       url: params.url,

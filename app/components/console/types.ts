@@ -80,6 +80,12 @@ export type HistoryItem = {
   errorType?: string | null;
   errorMessage?: string | null;
   createdAt: string;
+  // History feed kind: 'payin' = the current user's own requests,
+  // 'payout' = team-wide payout requests feed (read-only).
+  kind?: 'payin' | 'payout';
+  // Populated on payout rows: the account the payout request is attributed to.
+  userName?: string | null;
+  userEmail?: string | null;
 };
 
 export type WebhookEventItem = {

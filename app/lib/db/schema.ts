@@ -111,6 +111,7 @@ export const requestHistory = pgTable(
     countryId: uuid('country_id').references(() => countries.id, { onDelete: 'set null' }),
     environment: text('environment').notNull().default('sandbox'),
     endpointId: uuid('endpoint_id').references(() => apiEndpoints.id, { onDelete: 'set null' }),
+    kind: text('kind').notNull().default('other'), // 'payin' | 'payout' | 'other'
     requestName: text('request_name').notNull(),
     method: text('method').notNull(),
     url: text('url').notNull(),
@@ -132,6 +133,7 @@ export const requestHistory = pgTable(
     index('request_history_user_idx').on(table.userId),
     index('request_history_country_idx').on(table.countryId),
     index('request_history_created_idx').on(table.createdAt),
+    index('request_history_kind_idx').on(table.kind),
   ]
 );
 

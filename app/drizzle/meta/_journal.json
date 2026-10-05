@@ -14,6 +14,13 @@
       "tag": "0001_user_data_isolation",
       "version": "7",
       "when": 1791204591187
+    },
+    {
+      "breakpoints": true,
+      "idx": 2,
+      "tag": "0002_payin_payout_kinds",
+      "version": "7",
+      "when": 1791207836255
     }
   ],
   "version": "7"

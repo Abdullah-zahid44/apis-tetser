@@ -268,7 +268,7 @@ export default function ConsoleDashboard() {
   const fetchHistory = useCallback(async (env: string) => {
     setHistoryLoading(true);
     try {
-      const res = await fetch(`/api/history?environment=${env}&limit=100`);
+      const res = await fetch(`/api/history?kind=payin&environment=${env}&limit=100`);
       if (res.ok) {
         const data = (await res.json()) as { history?: HistoryItem[] };
         setHistoryItems(data.history || []);
@@ -918,6 +918,7 @@ export default function ConsoleDashboard() {
             onLoadIntoWorkbench={handleLoadIntoWorkbench}
             onRefresh={() => void fetchHistory(environment)}
             loading={historyLoading}
+            environment={environment}
           />
         )}
 

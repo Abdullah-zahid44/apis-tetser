@@ -3,6 +3,7 @@ import { runVariableTests } from './variables.test';
 import { runSecurityTests } from './security.test';
 import { runSigningTests } from './signing.test';
 import { runCallbackTests } from './callbacks.test';
+import { runParseAmountTests } from './parse-amount.test';
 
 async function main() {
   console.log('🧪 Running AssanPay Console Test Suites...\n');
@@ -13,6 +14,7 @@ async function main() {
     { name: 'SSRF Host Validation & Audit Masking', runner: runSecurityTests },
     { name: 'HMAC-SHA256 Request Signing Spec', runner: runSigningTests },
     { name: 'Webhook Callback Verification & Raw Body Integrity', runner: runCallbackTests },
+    { name: 'Amount Parsing for History Feed', runner: runParseAmountTests },
   ];
 
   let total = 0;
