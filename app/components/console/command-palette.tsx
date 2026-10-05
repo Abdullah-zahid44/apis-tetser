@@ -26,6 +26,7 @@ import {
   Globe,
   Send,
   ArrowRight,
+  SearchX,
 } from 'lucide-react';
 import type { Country, Endpoint, Environment, View } from './types';
 
@@ -68,7 +69,17 @@ export function CommandPalette({
         className="text-sm"
       />
       <CommandList className="max-h-80 overflow-y-auto text-sm">
-        <CommandEmpty>No matching commands or endpoints found.</CommandEmpty>
+        <CommandEmpty>
+          <div className="flex flex-col items-center gap-1.5 py-4">
+            <SearchX className="h-5 w-5 text-muted-foreground" />
+            <p className="text-sm font-semibold text-foreground">
+              No matching commands
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Try a different search term, or browse the endpoint list below.
+            </p>
+          </div>
+        </CommandEmpty>
 
         {/* Navigation Group */}
         <CommandGroup heading={<span className={groupHeadingClass}>Navigation</span>}>
@@ -76,7 +87,7 @@ export function CommandPalette({
             onSelect={() => handleSelect(() => onViewChange('workbench'))}
             className="cursor-pointer hover:bg-accent"
           >
-            <Code2 className="mr-2 h-4 w-4 text-primary" />
+            <Code2 className="mr-2 h-4 w-4 text-muted-foreground" />
             <span>API Workbench</span>
             <CommandShortcut className="font-mono">Alt+1</CommandShortcut>
           </CommandItem>
@@ -119,7 +130,7 @@ export function CommandPalette({
               onSelect={() => handleSelect(() => onCountryChange(c.slug))}
               className="cursor-pointer hover:bg-accent"
             >
-              <span className="mr-2 text-sm">{c.flagEmoji}</span>
+              <Globe className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
               <span>
                 Switch to {c.name} ({c.currency})
               </span>
@@ -162,7 +173,7 @@ export function CommandPalette({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="bg-popover border-border rounded-t-2xl max-h-[85dvh]">
+        <DrawerContent className="bg-popover border-border rounded-t-2xl max-h-[85dvh] shadow-[var(--shadow-overlay)]">
           <DrawerTitle className="sr-only">Search and commands</DrawerTitle>
           <Command className="bg-transparent">
             {commandBody}
@@ -176,7 +187,7 @@ export function CommandPalette({
     <CommandDialog
       open={open}
       onOpenChange={onOpenChange}
-      className="bg-popover border border-border shadow-2xl text-foreground rounded-2xl overflow-hidden"
+      className="bg-popover border border-border shadow-[var(--shadow-overlay)] text-foreground rounded-2xl overflow-hidden"
     >
       {commandBody}
     </CommandDialog>

@@ -100,7 +100,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                         className={`relative transition-colors duration-150 group/nav-item rounded-xl ${
                           isActive
                             ? 'font-semibold shadow-sm'
-                            : 'text-foreground/70 hover:text-foreground hover:bg-accent'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                         }`}
                         style={isActive ? {
                           background: 'var(--foreground)',
@@ -142,7 +142,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                   if (isMobile) setOpenMobile(false);
                   onOpenCommandPalette();
                 }}
-                className="text-muted-foreground hover:text-secondary-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Command size={14} className="text-muted-foreground" />
                 <span className="text-xs">Quick search</span>

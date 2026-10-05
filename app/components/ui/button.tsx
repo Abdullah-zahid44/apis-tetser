@@ -4,16 +4,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-[5px] border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-colors duration-150 outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-40 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-colors duration-150 outline-none select-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.99] disabled:pointer-events-none disabled:opacity-40 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-sm hover:bg-[#0251a8] active:bg-[#01428a]',
+          'bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:bg-primary-active',
         accent:
-          'bg-accent text-accent-foreground shadow-sm hover:bg-[#cf4717] active:bg-[#bd3d10]',
+          'border border-primary/25 bg-primary/10 text-primary hover:bg-primary/15',
         outline:
-          'border-border bg-card text-foreground hover:bg-secondary hover:text-foreground hover:border-border-strong aria-expanded:bg-secondary',
+          'border-border bg-card text-foreground hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary',
         secondary:
           'border border-border bg-secondary text-secondary-foreground hover:bg-muted hover:text-foreground aria-expanded:bg-muted',
         ghost:

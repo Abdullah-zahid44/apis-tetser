@@ -317,7 +317,7 @@ export function AnimatedThemeToggler({
       ref={buttonRef}
       onClick={toggleTheme}
       className={cn(
-        'inline-flex items-center justify-center rounded-[5px] text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] cursor-pointer transition-colors p-2 text-sm',
+        'inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] cursor-pointer transition-colors p-2 text-sm',
         className
       )}
       aria-label="Toggle theme"

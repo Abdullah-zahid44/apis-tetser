@@ -10,7 +10,6 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-import { BorderBeam } from '@/registry/magicui/border-beam';
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
@@ -19,21 +18,15 @@ export default async function LoginPage(props: {
   const isDenied = searchParams.error === 'AccessDenied' || searchParams.error === 'OAuthSignin' || Boolean(searchParams.error);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-background">
-      {/* Ambient backgrounds */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[120px] opacity-15 bg-[#0265d2]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-[100px] opacity-10 bg-[#e05320]" />
-      </div>
-
-      <div className="w-full max-w-[420px] relative z-10 animate-fade-in">
-        <Card className="relative overflow-hidden border border-border bg-card shadow-[var(--shadow-card)]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <div className="w-full max-w-[420px] animate-fade-in">
+        <Card>
           <CardHeader className="text-center pb-2">
             {/* Brand Mark */}
-            <div className="mx-auto brand-mark inline-flex items-center justify-center w-13 h-13 rounded-xl mb-3">
-              <ShieldCheck className="w-7 h-7 text-white" strokeWidth={2.2} />
+            <div className="mx-auto brand-mark inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3">
+              <ShieldCheck className="w-6 h-6 text-white" strokeWidth={2.2} />
             </div>
-            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+            <CardTitle className="text-[28px] font-bold tracking-tight text-foreground">
               AssanPay Console
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-1">
@@ -68,7 +61,7 @@ export default async function LoginPage(props: {
                 type="submit"
                 variant="outline"
                 size="lg"
-                className="w-full h-11 text-sm rounded-[5px] flex items-center justify-center gap-2.5 border-border bg-[var(--surface-4)] text-foreground hover:bg-[var(--surface-3)]"
+                className="w-full h-11 text-sm rounded-md flex items-center justify-center gap-2.5 border-border text-foreground"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path
@@ -98,9 +91,6 @@ export default async function LoginPage(props: {
               Restricted to <span className="text-primary font-semibold">@assanpay.com</span> accounts
             </p>
           </CardFooter>
-
-          {/* Glowing Border Beam with Postman brand gradient */}
-          <BorderBeam duration={8} size={120} colorFrom="#0265d2" colorTo="#e05320" />
         </Card>
       </div>
     </div>

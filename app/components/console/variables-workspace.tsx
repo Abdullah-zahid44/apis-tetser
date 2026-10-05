@@ -141,7 +141,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
         {/* Add / Edit Form */}
         <form
           onSubmit={handleSaveVariable}
-          className="p-3 sm:p-4 rounded-lg bg-card border border-border space-y-3"
+          className="p-3 sm:p-4 rounded-xl bg-card border border-border space-y-3"
         >
           <div className="flex items-center justify-between">
             <strong className="text-xs font-semibold text-foreground">
@@ -217,7 +217,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                   type="checkbox"
                   checked={isSecret}
                   onChange={(e) => setIsSecret(e.target.checked)}
-                  className="rounded bg-card border-border text-primary cursor-pointer"
+                  className="rounded-sm bg-card border-border text-primary cursor-pointer"
                 />
                 <span className="flex items-center gap-1.5 text-[11px]">
                   <Lock size={12} className="text-warning" />
@@ -248,7 +248,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
             <Button
               type="submit"
               size="sm"
-              className="h-7 text-xs bg-primary hover:bg-primary text-primary-foreground font-semibold px-4 cursor-pointer shadow-xs"
+              className="h-7 text-xs bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 cursor-pointer shadow-xs"
             >
               {editingId ? 'Update Variable' : 'Save Variable'}
             </Button>
@@ -256,7 +256,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
         </form>
 
         {/* Variables Table */}
-        <div className="rounded-lg border border-border overflow-x-auto bg-card">
+        <div className="rounded-xl border border-border overflow-x-auto bg-card">
           <table className="mobile-card-table w-full min-w-[720px] text-xs text-left">
             <thead className="bg-muted/60 text-muted-foreground uppercase text-[11px] font-semibold tracking-[0.05em] border-b border-border">
               <tr>
@@ -270,13 +270,19 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
             <tbody className="divide-y divide-border font-mono">
               {variables.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-muted-foreground font-sans text-xs">
-                    No custom environment variables defined yet. Create one above to start interpolating {'{{variableName}}'}.
+                  <td colSpan={5} className="p-10 text-center">
+                    <div className="mx-auto flex max-w-sm flex-col items-center gap-1.5">
+                      <Braces size={20} className="text-muted-foreground" />
+                      <p className="text-sm font-semibold text-foreground">No variables yet</p>
+                      <p className="text-xs text-muted-foreground">
+                        Create one above to start interpolating {'{{variableName}}'} in requests.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
                 variables.map((item) => (
-                  <tr key={item.id} className="hover:bg-accent/50 transition-colors">
+                  <tr key={item.id} className="hover:bg-accent/50 transition-colors duration-150">
                     <td data-label="Key" className="p-3 font-semibold text-primary">
                       {'{{'}{item.key}{'}}'}
                     </td>
@@ -300,7 +306,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                       )}
                     </td>
                     <td data-label="Scope" className="p-3">
-                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-secondary-foreground uppercase">
+                      <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-semibold uppercase text-secondary-foreground">
                         {item.environment === 'sandbox' ? 'Gateway' : item.environment}
                       </span>
                     </td>
@@ -309,14 +315,14 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => handleStartEdit(item)}
-                          className="p-1.5 text-muted-foreground hover:text-primary cursor-pointer rounded hover:bg-muted"
+                          className="p-1.5 text-muted-foreground hover:text-primary cursor-pointer rounded-md hover:bg-muted"
                           title="Edit"
                         >
                           <Edit2 size={13} />
                         </button>
                         <button
                           onClick={() => void handleDeleteVariable(item.id)}
-                          className="p-1.5 text-muted-foreground hover:text-destructive cursor-pointer rounded hover:bg-muted"
+                          className="p-1.5 text-muted-foreground hover:text-destructive cursor-pointer rounded-md hover:bg-muted"
                           title="Delete"
                         >
                           <Trash2 size={13} />

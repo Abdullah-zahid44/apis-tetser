@@ -7,6 +7,10 @@
 const SENSITIVE_KEYS = new Set([
   'api_secret',
   'apisecret',
+  'api_key',
+  'apikey',
+  'api-key',
+  'x-api-key',
   'auth_secret',
   'authsecret',
   'client_secret',

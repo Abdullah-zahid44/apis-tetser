@@ -4,7 +4,8 @@ import React from 'react';
 import {
   ServerCog,
   CheckCircle2,
-  XCircle,
+  Check,
+  X,
   ShieldCheck,
   Database,
   Globe,
@@ -53,32 +54,32 @@ export function EnvironmentStatusView({
         </div>
 
         {/* Global Infrastructure Health Bar */}
-        <div className="p-4 rounded-lg bg-card border border-border space-y-2.5">
+        <div className="p-4 rounded-xl bg-card border border-border space-y-2.5">
           <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
             <Database size={15} className="text-success" />
             <span>Infrastructure</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
-            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
               <span className="text-muted-foreground">Database (Neon Postgres)</span>
-              <span className="text-success flex items-center gap-1 font-bold">
+              <span className="font-mono text-success flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 CONNECTED
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
               <span className="text-muted-foreground">HMAC-SHA256 Signer</span>
-              <span className="text-success flex items-center gap-1 font-bold">
+              <span className="font-mono text-success flex items-center gap-1 font-bold">
                 <CheckCircle2 size={12} />
                 READY
               </span>
             </div>
 
-            <div className="p-2.5 rounded bg-card border border-border flex items-center justify-between">
+            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
               <span className="text-muted-foreground">Payload Encryption</span>
-              <span className="text-primary font-medium">OFF (Plaintext)</span>
+              <span className="font-mono text-primary">OFF (Plaintext)</span>
             </div>
           </div>
         </div>
@@ -93,14 +94,14 @@ export function EnvironmentStatusView({
             {countries.map((country) => (
               <div
                 key={country.slug}
-                className="rounded-lg bg-card border border-border overflow-hidden"
+                className="rounded-xl bg-card border border-border overflow-hidden"
               >
                 {/* Country Card Heading */}
-                <div className="p-3 bg-muted border-b border-border flex items-center justify-between">
+                <div className="p-3 border-b border-border flex items-center justify-between">
                   <span className="flex items-center gap-2 font-bold text-foreground text-xs">
-                    <span className="text-base">{country.flagEmoji}</span>
+                    <Globe size={15} className="text-muted-foreground shrink-0" />
                     <span>{country.name}</span>
-                    <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-muted text-primary border border-primary/25">
+                    <span className="inline-flex items-center rounded-full bg-primary/10 border border-primary/25 px-1.5 py-0.5 text-xs font-semibold font-mono text-primary">
                       {country.currency}
                     </span>
                   </span>
@@ -118,14 +119,14 @@ export function EnvironmentStatusView({
                     return (
                       <div
                         key={env}
-                        className={`p-2.5 rounded border text-xs space-y-2 ${
+                        className={`p-2.5 rounded-lg border text-xs space-y-2 ${
                           isConfigured
                             ? 'bg-card border-border'
                             : 'bg-warning/10 border-warning/25'
                         }`}
                       >
                         <div className="flex items-center justify-between">
-                          <span className="font-mono font-bold uppercase flex items-center gap-2 text-xs">
+                          <span className="font-semibold uppercase flex items-center gap-2 text-xs text-foreground">
                             <span className="w-2 h-2 rounded-full bg-primary" />
                             <span className="text-primary">
                               API Gateway
@@ -151,42 +152,62 @@ export function EnvironmentStatusView({
                           </span>
                         </div>
 
-                        <div className="space-y-1 font-mono text-xs text-muted-foreground pt-0.5">
+                        <div className="space-y-1 text-xs text-muted-foreground pt-0.5">
                           <div className="flex justify-between">
                             <span>Base URL:</span>
-                            <span className="text-foreground">
+                            <span className="font-mono text-foreground">
                               {status?.hostname ? `https://${status.hostname}` : 'Missing'}
                             </span>
                           </div>
 
                           <div className="flex justify-between">
                             <span>API Key:</span>
-                            <span
-                              className={status?.apiKeyConfigured ? 'text-success' : 'text-warning'}
-                            >
-                              {status?.apiKeyConfigured ? '✓ Configured' : '✗ Missing in .env'}
-                            </span>
+                            {status?.apiKeyConfigured ? (
+                              <span className="inline-flex items-center gap-1 font-mono text-success">
+                                <Check size={12} />
+                                Configured
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 font-mono text-warning">
+                                <X size={12} />
+                                Missing in .env
+                              </span>
+                            )}
                           </div>
 
                           <div className="flex justify-between">
                             <span>Branch API Secret:</span>
-                            <span
-                              className={status?.apiSecretConfigured ? 'text-success' : 'text-warning'}
-                            >
-                              {status?.apiSecretConfigured ? '✓ Configured' : '✗ Missing in .env'}
-                            </span>
+                            {status?.apiSecretConfigured ? (
+                              <span className="inline-flex items-center gap-1 font-mono text-success">
+                                <Check size={12} />
+                                Configured
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 font-mono text-warning">
+                                <X size={12} />
+                                Missing in .env
+                              </span>
+                            )}
                           </div>
 
                           <div className="flex justify-between gap-2">
                             <span>Main Callback Secret:</span>
-                            <span className={status?.callbackSecretConfigured ? 'text-success' : 'text-warning'}>
-                              {status?.callbackSecretConfigured ? 'Configured' : 'Missing in .env'}
-                            </span>
+                            {status?.callbackSecretConfigured ? (
+                              <span className="inline-flex items-center gap-1 font-mono text-success">
+                                <Check size={12} />
+                                Configured
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 font-mono text-warning">
+                                <X size={12} />
+                                Missing in .env
+                              </span>
+                            )}
                           </div>
 
                           <div className="flex justify-between">
                             <span>Callback Route:</span>
-                            <span className="text-secondary-foreground truncate max-w-[200px]">
+                            <span className="font-mono text-secondary-foreground truncate max-w-[200px]">
                               /api/callbacks/assanpay/{country.slug}
                             </span>
                           </div>
@@ -201,12 +222,12 @@ export function EnvironmentStatusView({
         </div>
 
         {/* Security & Audit Strip */}
-        <div className="p-3 rounded-lg border border-border bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <div className="p-3 rounded-xl border border-border bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 text-muted-foreground">
             <ShieldCheck size={14} className="text-success" />
             <span>Strict server-side validation active. Credentials are never sent to the browser.</span>
           </div>
-          <div className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <Lock size={12} />
             <span>HTTPS Only</span>
           </div>

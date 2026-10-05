@@ -62,7 +62,7 @@ interface TopbarProps {
 function LatencyIndicator({ ms }: { ms: number | null | undefined }) {
   if (ms == null) {
     return (
-      <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted border border-border text-xs text-muted-foreground">
+      <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted border border-border text-xs text-muted-foreground">
         <Loader2 size={11} className="spin text-muted-foreground" />
         <span className="font-mono text-xs">Checking...</span>
       </div>
@@ -74,7 +74,7 @@ function LatencyIndicator({ ms }: { ms: number | null | undefined }) {
 
   return (
     <div
-      className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-mono transition-colors ${
+      className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-mono transition-colors ${
         isGood
           ? 'bg-success/10 border-success/25 text-success'
           : isMid
@@ -90,7 +90,7 @@ function LatencyIndicator({ ms }: { ms: number | null | undefined }) {
       ) : (
         <WifiOff size={11} className="text-destructive" />
       )}
-      <span>{ms} ms</span>
+      <span className="tabular-nums">{ms} ms</span>
     </div>
   );
 }
@@ -108,7 +108,7 @@ function UserAvatar({ name, email, role }: { name?: string | null; email?: strin
         </p>
       </div>
       <div
-        className="relative w-8 h-8 rounded-md flex items-center justify-center text-[11px] font-bold select-none shrink-0 cursor-default bg-primary text-primary-foreground"
+        className="relative w-8 h-8 rounded-md flex items-center justify-center text-[11px] font-semibold select-none shrink-0 cursor-default bg-primary text-primary-foreground"
         title={`${name} · ${role || 'support'}`}
       >
         {initials}
@@ -160,7 +160,7 @@ export function Topbar({
           {onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
-              className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-[var(--surface-4)] border border-transparent hover:border-[var(--border)] transition-colors cursor-pointer ml-1"
+              className="hidden sm:flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent border border-transparent transition-colors cursor-pointer ml-1"
               title={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
               aria-label={sidebarCollapsed ? "Show collections sidebar" : "Hide collections sidebar"}
             >
@@ -177,7 +177,7 @@ export function Topbar({
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="w-[148px] min-[390px]:w-[168px] sm:w-[150px] lg:w-[155px] xl:w-[175px] h-9 sm:h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-[var(--surface-4)] border-[var(--border)] text-foreground px-2 sm:px-3"
+              className="w-[148px] min-[390px]:w-[168px] sm:w-[150px] lg:w-[155px] xl:w-[175px] h-9 sm:h-8 text-sm font-medium shadow-none focus-visible:ring-2 focus-visible:ring-primary/40 transition-colors bg-card border-[var(--border)] text-foreground px-2 sm:px-3"
             >
               <SelectValue>
                 {currentCountryObj ? (
@@ -197,7 +197,7 @@ export function Topbar({
                   <SelectItem
                     key={c.slug}
                     value={c.slug}
-                    className="cursor-pointer text-foreground text-xs hover:bg-[var(--surface-4)] focus:bg-[var(--surface-4)]"
+                    className="cursor-pointer text-foreground text-xs hover:bg-accent focus:bg-accent"
                   >
                     <span className="flex items-center gap-2 w-full">
                       <span className="text-sm leading-none">{c.flagEmoji}</span>
@@ -216,7 +216,7 @@ export function Topbar({
               variant="outline"
               size="sm"
               onClick={onOpenCommandPalette}
-              className="hidden md:flex h-8 gap-1.5 text-muted-foreground hover:text-foreground border-[var(--border)] bg-[var(--surface-4)] hover:bg-[var(--surface-5)] transition-colors rounded-md px-2 lg:px-3"
+              className="hidden md:flex h-8 gap-1.5 text-muted-foreground hover:text-foreground border-[var(--border)] bg-card hover:bg-accent transition-colors rounded-md px-2 lg:px-3"
               title="Search API Catalog & Commands (Ctrl+K)"
             >
               <Search size={13} />
@@ -237,7 +237,7 @@ export function Topbar({
             variant="ghost"
             size="sm"
             onClick={onOpenStatus}
-            className="h-8 px-2 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] flex items-center gap-1.5 transition-colors rounded-md"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground hover:bg-accent flex items-center gap-1.5 transition-colors rounded-md"
             title="Environment Readiness Matrix"
           >
             <ServerCog size={13} className="text-primary" />
@@ -251,7 +251,7 @@ export function Topbar({
           <AnimatedThemeToggler
             theme={theme === 'dark' ? 'dark' : 'light'}
             onThemeChange={(newTheme) => onThemeChange(newTheme)}
-            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] rounded-[5px]"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
             title="Toggle theme"
           />
 

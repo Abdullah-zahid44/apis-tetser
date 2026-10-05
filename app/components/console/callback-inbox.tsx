@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import type { WebhookEventItem } from './types';
 
 interface CallbackInboxProps {
@@ -128,7 +128,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
         </div>
 
         {/* Public Inbound URL Pill */}
-        <div className="order-3 lg:order-none flex items-center gap-2 bg-background border border-border px-2.5 py-1 rounded-md w-full lg:w-auto lg:max-w-lg min-w-0">
+        <div className="order-3 lg:order-none flex items-center gap-2 bg-background border border-border px-2.5 py-1 rounded-full w-full lg:w-auto lg:max-w-lg min-w-0">
           <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
             Inbound:
           </span>
@@ -151,7 +151,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
               type="checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="rounded bg-card border-border text-primary cursor-pointer"
+              className="rounded-sm bg-card border-border text-primary cursor-pointer"
             />
             <span className="text-[11px]">Auto-refresh (5s)</span>
           </label>
@@ -181,7 +181,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Filter by event ID or body..."
-                className="w-full h-7 pl-8 pr-7 bg-card border border-border rounded text-xs text-foreground placeholder:text-muted-foreground font-mono outline-none focus:border-primary/50 transition-colors"
+                className="w-full h-7 pl-8 pr-7 bg-card border border-border rounded-md text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
               />
               {search && (
                 <button
@@ -196,7 +196,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
             <div className="flex items-center gap-1 text-[11px]">
               <button
                 onClick={() => setFilterVerified('all')}
-                className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
                   filterVerified === 'all'
                     ? 'bg-accent text-primary font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
@@ -206,7 +206,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
               </button>
               <button
                 onClick={() => setFilterVerified('verified')}
-                className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
                   filterVerified === 'verified'
                     ? 'bg-success/10 text-success border border-success/25 font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
@@ -216,7 +216,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
               </button>
               <button
                 onClick={() => setFilterVerified('invalid')}
-                className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
+                className={`px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
                   filterVerified === 'invalid'
                     ? 'bg-destructive/10 text-destructive border border-destructive/25 font-semibold'
                     : 'text-muted-foreground hover:text-foreground'
@@ -238,9 +238,19 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                   </EmptyMedia>
                   <EmptyTitle className="text-sm">No callbacks yet</EmptyTitle>
                   <EmptyDescription className="text-xs">
-                    No callbacks received.
+                    When AssanPay posts to your inbound URL, events will appear here.
                   </EmptyDescription>
                 </EmptyHeader>
+                <EmptyContent>
+                  <Button
+                    size="sm"
+                    onClick={() => void fetchCallbacks()}
+                    className="h-7 text-xs gap-1.5 cursor-pointer"
+                  >
+                    <RefreshCw size={12} />
+                    Refresh
+                  </Button>
+                </EmptyContent>
               </Empty>
             ) : (
               filtered.map((item) => {
@@ -267,12 +277,12 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                         {timeStr}
                       </span>
                       {item.signatureVerified ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-success/10 border border-success/25 text-success font-bold">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-success/10 border border-success/25 px-1.5 py-0.5 text-xs font-semibold text-success">
                           <CheckCircle2 size={10} />
                           VERIFIED
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded-full bg-destructive/10 border border-destructive/25 text-destructive font-bold">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-destructive/10 border border-destructive/25 px-1.5 py-0.5 text-xs font-semibold text-destructive">
                           <XCircle size={10} />
                           INVALID
                         </span>
@@ -286,7 +296,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                     <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
                       <span className="uppercase">{item.environment}</span>
                       {item.duplicate && (
-                        <span className="text-warning bg-warning/10 px-1 rounded">
+                        <span className="inline-flex items-center rounded-full bg-warning/10 border border-warning/25 px-1.5 py-0.5 text-xs font-semibold text-warning">
                           Duplicate
                         </span>
                       )}
@@ -325,7 +335,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                         'payload'
                       )
                     }
-                    className="h-7 text-xs text-secondary-foreground hover:text-primary gap-1 cursor-pointer font-mono"
+                    className="h-7 text-xs text-secondary-foreground hover:text-primary gap-1 cursor-pointer"
                   >
                     {copied === 'payload' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
                     <span>Payload</span>
@@ -335,7 +345,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                     variant="ghost"
                     size="sm"
                     onClick={() => copyToClipboard(selectedItem.rawBody, 'raw')}
-                    className="h-7 text-xs text-secondary-foreground hover:text-primary gap-1 cursor-pointer font-mono"
+                    className="h-7 text-xs text-secondary-foreground hover:text-primary gap-1 cursor-pointer"
                   >
                     {copied === 'raw' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
                     <span>Raw Body</span>
@@ -345,7 +355,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
 
               {/* Status Alert Banner */}
               <div
-                className={`p-3 rounded-md border text-xs flex items-center gap-2.5 ${
+                className={`p-3 rounded-lg border text-xs flex items-center gap-2.5 ${
                   selectedItem.signatureVerified
                     ? 'bg-success/10 border-success/25 text-success'
                     : 'bg-destructive/10 border-destructive/25 text-destructive'
@@ -357,7 +367,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                   <ShieldAlert size={18} className="text-destructive shrink-0" />
                 )}
                 <div>
-                  <strong className="font-semibold block font-mono">
+                  <strong className="font-semibold block">
                     {selectedItem.signatureVerified
                       ? 'Cryptographic HMAC-SHA256 Signature Validated'
                       : 'Cryptographic Signature Verification Failed'}
@@ -371,25 +381,25 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                 <TabsList className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-card border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3">
                   <TabsTrigger
                     value="payload"
-                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground cursor-pointer"
                   >
                     Parsed Payload
                   </TabsTrigger>
                   <TabsTrigger
                     value="raw"
-                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground cursor-pointer"
                   >
                     Raw Body
                   </TabsTrigger>
                   <TabsTrigger
                     value="headers"
-                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground cursor-pointer"
                   >
                     Headers ({Object.keys(selectedItem.requestHeaders).length})
                   </TabsTrigger>
                   <TabsTrigger
                     value="crypto"
-                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground font-medium cursor-pointer"
+                    className="rounded-none border-0 border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-foreground text-xs py-2 px-1 text-muted-foreground cursor-pointer"
                   >
                     Verification Pipeline
                   </TabsTrigger>
@@ -416,7 +426,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                       <tbody className="divide-y divide-border">
                         {Object.entries(selectedItem.requestHeaders).map(([k, v]) => (
                           <tr key={k} className="hover:bg-accent/50 transition-colors">
-                            <td className="p-2 text-muted-foreground font-semibold w-1/3 border-r border-border">
+                            <td className="p-2 w-1/3 border-r border-border font-sans text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">
                               {k}
                             </td>
                             <td className="p-2 text-foreground break-all">{v}</td>
@@ -433,7 +443,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                       Canonical Signature Formula
                     </span>
-                    <code className="text-xs font-mono text-primary block bg-card p-2.5 rounded border border-border">
+                    <code className="text-xs font-mono text-primary block bg-card p-2.5 rounded-lg border border-border">
                       {selectedItem.eventId}\n{selectedItem.eventTimestamp}\n{'<RAW_PAYLOAD_BODY>'}
                     </code>
                   </div>
@@ -442,19 +452,19 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                       Received Inbound Signature (X-Signature)
                     </span>
-                    <code className="text-xs font-mono text-warning block bg-card p-2.5 rounded border border-border break-all">
+                    <code className="text-xs font-mono text-warning block bg-card p-2.5 rounded-lg border border-border break-all">
                       {selectedItem.signature}
                     </code>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
-                    <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-xs uppercase text-muted-foreground block">Event Timestamp</span>
+                    <div className="p-2.5 rounded-lg bg-card border border-border">
+                      <span className="block font-sans text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Event Timestamp</span>
                       <strong className="text-foreground text-xs">{selectedItem.eventTimestamp}</strong>
                     </div>
 
-                    <div className="p-2.5 rounded bg-card border border-border">
-                      <span className="text-xs uppercase text-muted-foreground block">Deduplication</span>
+                    <div className="p-2.5 rounded-lg bg-card border border-border">
+                      <span className="block font-sans text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Deduplication</span>
                       <strong className="text-foreground text-xs">
                         {selectedItem.duplicate ? 'Duplicate Event' : 'Unique Event Recorded'}
                       </strong>
@@ -466,7 +476,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-muted-foreground">
               <Webhook size={28} className="mb-2 text-muted-foreground" />
-              <p className="text-xs font-mono">Select a callback event from the inbox list to inspect details.</p>
+              <p className="text-xs">Select a callback event from the inbox list to inspect details.</p>
             </div>
           )}
         </div>

@@ -11,6 +11,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-primary-focus: var(--primary-focus);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
@@ -45,12 +46,14 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Radius scale (§4): controls 12px / inner boxes 14px / cards 18px / modals 22px / pills full */
+  --radius: 0.875rem;
   --radius-xs: 2px;
-  --radius-sm: 3px;
-  --radius-md: 5px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
-  --radius-2xl: 16px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
   --radius-pill: 9999px;
 
   /* Surface layer tokens from design.md */
@@ -69,150 +72,148 @@
 }
 
 /* ==============================================================================
-   POSTMAN DESIGN SYSTEM (Light Developer Workspace from design.md)
+   DESIGN SYSTEM v2 — Light "Cream" theme (§2)
    ============================================================================== */
 :root,
 .light,
 [data-theme="light"] {
   color-scheme: light;
   --canvas: #ffffff;
-  --background: #ffffff;
-  --foreground: #212121;
-  --card: #f9f8f7;
-  --card-foreground: #212121;
+  --background: #faf7f1;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
   --popover: #ffffff;
-  --popover-foreground: #212121;
-  --primary: #0265d2;
-  --primary-hover: #0251a8;
-  --primary-focus: #0265d2;
+  --popover-foreground: #1c1917;
+  --primary: #d97706;
+  --primary-hover: #b45309;
+  --primary-active: #92400e;
+  --primary-focus: #d97706;
   --primary-foreground: #ffffff;
-  --secondary: #f2f1ef;
-  --secondary-foreground: #212121;
-  --muted: #f2f1ef;
-  --muted-foreground: #666666;
-  --accent: #f2f1ef;
-  --accent-hover: #e9e8e6;
-  --accent-foreground: #212121;
-  --brand-orange: #e05320;
+  --secondary: #f3ede2;
+  --secondary-foreground: #1c1917;
+  --muted: #f3ede2;
+  --muted-foreground: #57534e;
+  --accent: #f3ede2;
+  --accent-hover: #e9dfcd;
+  --accent-foreground: #1c1917;
+  --brand-orange: #d97706;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --success: #059669;
+  --success: #16a34a;
   --warning: #d97706;
-  --info: #0265d2;
+  --info: #2563eb;
   --method-get: #059669;
-  --method-post: #e05320;
-  --method-put: #0265d2;
+  --method-post: #d97706;
+  --method-put: #2563eb;
   --method-patch: #7c3aed;
   --method-delete: #dc2626;
-  --border: #e6e6e6;
-  --border-strong: #d4d4d4;
-  --border-tertiary: #bfbfbf;
-  --input: #e6e6e6;
-  --ring: #0265d2;
-  --radius: 5px;
+  --border: #e7ddcd;
+  --border-strong: #d9cdb6;
+  --border-tertiary: #c4b498;
+  --input: #e7ddcd;
+  --ring: #d97706;
 
-  --sidebar: #f9f8f7;
-  --sidebar-foreground: #212121;
-  --sidebar-primary: #0265d2;
+  --sidebar: #f6f1e7;
+  --sidebar-foreground: #1c1917;
+  --sidebar-primary: #d97706;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f2f1ef;
-  --sidebar-accent-foreground: #0265d2;
-  --sidebar-border: #e6e6e6;
-  --sidebar-ring: #0265d2;
+  --sidebar-accent: #efe8d8;
+  --sidebar-accent-foreground: #b45309;
+  --sidebar-border: #e7ddcd;
+  --sidebar-ring: #d97706;
 
   --surface-0: #ffffff;
-  --surface-1: #f9f8f7;
-  --surface-2: #f2f1ef;
-  --surface-3: #e9e8e6;
-  --surface-4: #dfdedc;
-  --surface-5: #d0cecb;
+  --surface-1: #faf7f1;
+  --surface-2: #f3ede2;
+  --surface-3: #e9dfcd;
+  --surface-4: #ddd2ba;
+  --surface-5: #cfc0a6;
 
-  --topbar-bg: #f9f8f7;
-  --sidebar-bg: #f9f8f7;
+  --topbar-bg: #faf7f1;
+  --sidebar-bg: #f6f1e7;
   --workbench-bg: #ffffff;
-  --response-bg: #f9f8f7;
-  --code-bg: #f5f5f5;
+  --response-bg: #faf7f1;
+  --code-bg: #f3ede2;
 
-  --glow-primary: rgba(2, 101, 210, 0.16);
-  --glow-success: rgba(5, 150, 105, 0.14);
-  --glow-warning: rgba(224, 83, 32, 0.14);
-  --glow-danger: rgba(220, 38, 38, 0.12);
-
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 1px #e6e6e6;
-  --shadow-lift: 0 4px 14px rgba(0, 0, 0, 0.12), 0 0 0 1px #d4d4d4;
+  /* Elevation ladder (§5): hairline < --shadow-card < --shadow-md < --shadow-overlay */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
+  --shadow-overlay: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 48px -16px rgb(0 0 0 / 0.18);
+  /* Legacy alias kept for workbench.tsx (other team): same as --shadow-md */
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
 }
 
 /* ==============================================================================
-   POSTMAN DARK THEME (Technical Developer Mode)
+   DESIGN SYSTEM v2 — Dark "Ember" theme (§2). Elevation via tone step, not stronger shadows.
    ============================================================================== */
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #141416;
-  --background: #141416;
-  --foreground: #f4f4f5;
-  --card: #1c1c1f;
-  --card-foreground: #f4f4f5;
-  --popover: #212124;
-  --popover-foreground: #f4f4f5;
-  --primary: #2582e7;
-  --primary-hover: #3b94f5;
-  --primary-focus: #2582e7;
-  --primary-foreground: #ffffff;
-  --secondary: #27272a;
-  --secondary-foreground: #e4e4e7;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --accent: #27272a;
-  --accent-hover: #323238;
-  --accent-foreground: #f4f4f5;
-  --brand-orange: #e05320;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --info: #3b82f6;
-  --method-get: #10b981;
-  --method-post: #f97316;
-  --method-put: #3b82f6;
-  --method-patch: #a855f7;
-  --method-delete: #ef4444;
-  --border: #2e2e33;
-  --border-strong: #3f3f46;
-  --border-tertiary: #52525b;
-  --input: #2e2e33;
-  --ring: #2582e7;
-  --radius: 5px;
+  --canvas: #14110d;
+  --background: #14110d;
+  --foreground: #f5efe4;
+  --card: #1e1a15;
+  --card-foreground: #f5efe4;
+  --popover: #241d15;
+  --popover-foreground: #f5efe4;
+  --primary: #f59e0b;
+  --primary-hover: #fbbf24;
+  --primary-active: #d97706;
+  --primary-focus: #f59e0b;
+  --primary-foreground: #1c1917;
+  --secondary: #292420;
+  --secondary-foreground: #f5efe4;
+  --muted: #292420;
+  --muted-foreground: #a8a29e;
+  --accent: #292420;
+  --accent-hover: #332d26;
+  --accent-foreground: #f5efe4;
+  --brand-orange: #f59e0b;
+  --destructive: #f87171;
+  --destructive-foreground: #1c1917;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+  --method-get: #34d399;
+  --method-post: #fbbf24;
+  --method-put: #60a5fa;
+  --method-patch: #a78bfa;
+  --method-delete: #f87171;
+  --border: #3a332b;
+  --border-strong: #4a4238;
+  --border-tertiary: #5b5145;
+  --input: #3a332b;
+  --ring: #f59e0b;
 
-  --sidebar: #18181b;
-  --sidebar-foreground: #f4f4f5;
-  --sidebar-primary: #2582e7;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #27272a;
-  --sidebar-accent-foreground: #2582e7;
-  --sidebar-border: #2e2e33;
-  --sidebar-ring: #2582e7;
+  --sidebar: #171310;
+  --sidebar-foreground: #f5efe4;
+  --sidebar-primary: #f59e0b;
+  --sidebar-primary-foreground: #1c1917;
+  --sidebar-accent: #292420;
+  --sidebar-accent-foreground: #fbbf24;
+  --sidebar-border: #3a332b;
+  --sidebar-ring: #f59e0b;
 
-  --surface-0: #141416;
-  --surface-1: #18181b;
-  --surface-2: #212124;
-  --surface-3: #27272a;
-  --surface-4: #323238;
-  --surface-5: #3f3f46;
+  --surface-0: #14110d;
+  --surface-1: #1a1611;
+  --surface-2: #221d16;
+  --surface-3: #292420;
+  --surface-4: #332d26;
+  --surface-5: #3f372c;
 
-  --topbar-bg: #18181b;
-  --sidebar-bg: #18181b;
-  --workbench-bg: #141416;
-  --response-bg: #18181b;
-  --code-bg: #101012;
+  --topbar-bg: #171310;
+  --sidebar-bg: #171310;
+  --workbench-bg: #14110d;
+  --response-bg: #171310;
+  --code-bg: #100d0a;
 
-  --glow-primary: rgba(37, 130, 231, 0.16);
-  --glow-success: rgba(16, 185, 129, 0.14);
-  --glow-warning: rgba(224, 83, 32, 0.14);
-  --glow-danger: rgba(239, 68, 68, 0.12);
-
-  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.45), 0 0 0 1px #2e2e33;
-  --shadow-lift: 0 4px 16px rgba(0, 0, 0, 0.6), 0 0 0 1px #3f3f46;
+  /* Elevation ladder (§5): same subtle values as light — dark elevation via tone step */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
+  --shadow-md: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
+  --shadow-overlay: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 48px -16px rgb(0 0 0 / 0.18);
+  /* Legacy alias kept for workbench.tsx (other team): same as --shadow-md */
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
 }
 
 * {
@@ -242,7 +243,7 @@ html, body {
 
 button, input, textarea, select { font: inherit; }
 
-/* Focus indicator per design.md: 2px outline in primary blue (#0265d2) with 2px offset */
+/* Focus indicator (§6): always visible, never removed */
 button:focus-visible, input:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--primary, #0265d2);
   outline-offset: 2px;
@@ -280,7 +281,8 @@ code, pre, kbd,
   letter-spacing: -0.16px;
 }
 
-/* Postman HTTP method badges */
+/* HTTP method badges — theme-aware (§2): deeper 600-series light / 400-series dark.
+   Soft tint bg + strong text; pill per §4. */
 .method-badge {
   display: inline-flex;
   align-items: center;
@@ -291,15 +293,15 @@ code, pre, kbd,
   font-weight: 700;
   letter-spacing: 0.04em;
   padding: 3px 8px;
-  border-radius: 3px;
+  border-radius: 9999px;
   line-height: 1.2;
 }
 
-.method-badge.get { color: #059669; background: rgba(5, 150, 105, 0.12); border: 1px solid rgba(5, 150, 105, 0.25); }
-.method-badge.post { color: #e05320; background: rgba(224, 83, 32, 0.12); border: 1px solid rgba(224, 83, 32, 0.25); }
-.method-badge.put { color: #0265d2; background: rgba(2, 101, 210, 0.12); border: 1px solid rgba(2, 101, 210, 0.25); }
-.method-badge.patch { color: #7c3aed; background: rgba(124, 58, 237, 0.12); border: 1px solid rgba(124, 58, 237, 0.25); }
-.method-badge.delete { color: #dc2626; background: rgba(220, 38, 38, 0.12); border: 1px solid rgba(220, 38, 38, 0.25); }
+.method-badge.get { color: var(--method-get); background: color-mix(in srgb, var(--method-get) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-get) 25%, transparent); }
+.method-badge.post { color: var(--method-post); background: color-mix(in srgb, var(--method-post) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-post) 25%, transparent); }
+.method-badge.put { color: var(--method-put); background: color-mix(in srgb, var(--method-put) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-put) 25%, transparent); }
+.method-badge.patch { color: var(--method-patch); background: color-mix(in srgb, var(--method-patch) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-patch) 25%, transparent); }
+.method-badge.delete { color: var(--method-delete); background: color-mix(in srgb, var(--method-delete) 12%, transparent); border: 1px solid color-mix(in srgb, var(--method-delete) 25%, transparent); }
 
 .method-mini {
   display: inline-flex;
@@ -311,13 +313,13 @@ code, pre, kbd,
   font-weight: 700;
   letter-spacing: 0.03em;
   padding: 2px 6px;
-  border-radius: 3px;
+  border-radius: 9999px;
 }
-.method-mini.get { color: #059669; background: rgba(5, 150, 105, 0.1); border: 1px solid rgba(5, 150, 105, 0.2); }
-.method-mini.post { color: #e05320; background: rgba(224, 83, 32, 0.1); border: 1px solid rgba(224, 83, 32, 0.2); }
-.method-mini.put { color: #0265d2; background: rgba(2, 101, 210, 0.1); border: 1px solid rgba(2, 101, 210, 0.2); }
-.method-mini.patch { color: #7c3aed; background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.2); }
-.method-mini.delete { color: #dc2626; background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.2); }
+.method-mini.get { color: var(--method-get); background: color-mix(in srgb, var(--method-get) 10%, transparent); border: 1px solid color-mix(in srgb, var(--method-get) 20%, transparent); }
+.method-mini.post { color: var(--method-post); background: color-mix(in srgb, var(--method-post) 10%, transparent); border: 1px solid color-mix(in srgb, var(--method-post) 20%, transparent); }
+.method-mini.put { color: var(--method-put); background: color-mix(in srgb, var(--method-put) 10%, transparent); border: 1px solid color-mix(in srgb, var(--method-put) 20%, transparent); }
+.method-mini.patch { color: var(--method-patch); background: color-mix(in srgb, var(--method-patch) 10%, transparent); border: 1px solid color-mix(in srgb, var(--method-patch) 20%, transparent); }
+.method-mini.delete { color: var(--method-delete); background: color-mix(in srgb, var(--method-delete) 10%, transparent); border: 1px solid color-mix(in srgb, var(--method-delete) 20%, transparent); }
 
 .spin {
   animation: spin 0.85s linear infinite;
@@ -351,56 +353,38 @@ code, pre, kbd,
   background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: 5px;
+  border-radius: 12px;
 }
 
-/* Postman card elevation */
+/* Card elevation — borders over shadows for structure (§5).
+   No hover shadow on base card; hover = border shift only. */
 .card-elevated {
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 18px;
   box-shadow: var(--shadow-card);
-  transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .card-elevated:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-lift);
 }
 
-/* Postman blue active indicator */
-.active-indicator {
-  position: relative;
-}
-.active-indicator::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 15%;
-  height: 70%;
-  width: 3px;
-  background: var(--primary);
-  border-radius: 0 2px 2px 0;
-  transition: opacity 150ms;
-}
-
-/* Postman signature Orange Brand Mark */
+/* Brand mark — solid primary, no gradient, no glow (§1) */
 .brand-mark {
-  background: linear-gradient(135deg, #e05320 0%, #eb6332 50%, #f27344 100%);
-  box-shadow: 0 2px 8px rgba(224, 83, 32, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--primary);
 }
 
-/* Postman CTA button (Send / Actions) */
+/* CTA button (Send / Actions) — theme tokens */
 .btn-postman-send {
-  background-color: #e05320;
-  color: #ffffff;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .btn-postman-send:hover {
-  background-color: #cf4717;
+  background-color: var(--primary-hover);
 }
 .btn-postman-send:active {
-  background-color: #be3c0e;
+  background-color: var(--primary-active);
 }
 
 .hairline-divider {
