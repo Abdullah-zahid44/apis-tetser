@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { requireAuth } from '@/lib/auth/session';
 import { getDb } from '@/lib/db';
+import { ensureUserIsolationSchema } from '@/lib/db/ensure-schema';
 import { savedRequests, countries } from '@/lib/db/schema';
 import { desc, eq, and } from 'drizzle-orm';
 
@@ -21,14 +22,15 @@ const SaveRequestSchema = z.object({
 
 export async function GET(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(request.url);
   const environment = url.searchParams.get('environment');
 
   try {
     const db = getDb();
-    const conditions = [];
+    await ensureUserIsolationSchema();
+    const conditions = [eq(savedRequests.userId, user.id)];
 
     if (environment && environment !== 'all') {
       conditions.push(eq(savedRequests.environment, environment));
@@ -64,7 +66,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   let rawJson: unknown;
   try {
@@ -82,6 +84,7 @@ export async function POST(request: Request) {
 
   try {
     const db = getDb();
+    await ensureUserIsolationSchema();
 
     // Resolve countryId if available
     let countryId: string | null = null;
@@ -94,6 +97,20 @@ export async function POST(request: Request) {
     if (countryRows.length > 0) countryId = countryRows[0].id;
 
     if (data.id) {
+      // Ownership check before updating an existing row
+      const existing = await db
+        .select({ id: savedRequests.id, userId: savedRequests.userId })
+        .from(savedRequests)
+        .where(eq(savedRequests.id, data.id))
+        .limit(1);
+
+      if (existing.length === 0) {
+        return Response.json({ error: 'Saved request not found.' }, { status: 404 });
+      }
+      if (existing[0].userId !== user.id) {
+        return Response.json({ error: 'Forbidden.' }, { status: 403 });
+      }
+
       // Update existing
       await db
         .update(savedRequests)
@@ -117,7 +134,7 @@ export async function POST(request: Request) {
     const inserted = await db
       .insert(savedRequests)
       .values({
-        userId: user.id || null,
+        userId: user.id,
         countryId,
         environment: data.environment,
         endpointId: data.endpointId || null,
@@ -142,7 +159,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
@@ -150,7 +167,14 @@ export async function DELETE(request: Request) {
 
   try {
     const db = getDb();
-    await db.delete(savedRequests).where(eq(savedRequests.id, id));
+    await ensureUserIsolationSchema();
+    const deleted = await db
+      .delete(savedRequests)
+      .where(and(eq(savedRequests.id, id), eq(savedRequests.userId, user.id)))
+      .returning({ id: savedRequests.id });
+    if (deleted.length === 0) {
+      return Response.json({ error: 'Saved request not found.' }, { status: 404 });
+    }
     return Response.json({ success: true, id });
   } catch (err) {
     return Response.json(

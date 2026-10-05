@@ -1,5 +1,6 @@
 import { requireAuth } from '@/lib/auth/session';
 import { getDb } from '@/lib/db';
+import { ensureUserIsolationSchema } from '@/lib/db/ensure-schema';
 import { requestHistory } from '@/lib/db/schema';
 import { desc, eq, and, sql } from 'drizzle-orm';
 
@@ -7,7 +8,7 @@ export const runtime = 'nodejs';
 
 export async function GET(request: Request) {
   const user = await requireAuth();
-  if (!user) {
+  if (!user || !user.id) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -18,7 +19,8 @@ export async function GET(request: Request) {
 
   try {
     const db = getDb();
-    const conditions = [];
+    await ensureUserIsolationSchema();
+    const conditions = [eq(requestHistory.userId, user.id)];
 
     if (environment && environment !== 'all') {
       conditions.push(eq(requestHistory.environment, environment));

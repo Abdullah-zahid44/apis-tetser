@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useDraftAutosave, type WorkbenchState } from '@/hooks/use-draft-autosave';
 import { Topbar } from '@/components/console/topbar';
 import { NavRail } from '@/components/console/nav-rail';
 import { Sidebar } from '@/components/console/sidebar';
@@ -82,6 +83,20 @@ export default function ConsoleDashboard() {
 
   // Responsive mobile active pane (for screens < 768px)
   const [mobilePane, setMobilePane] = useState<'catalog' | 'workbench' | 'response'>('workbench');
+
+  // Draft auto-save coordination refs.
+  // suppressEndpointDefaultsRef: the catalog loader (fetchEndpoints) populates the
+  // workbench with the first endpoint's defaults whenever a country (re)loads.
+  // When a draft restore is about to be (or has just been) applied, this flag stops
+  // that default population from clobbering the restored draft fields.
+  const suppressEndpointDefaultsRef = useRef(false);
+  // endpointsInFlightRef: true while a fetchEndpoints call has not yet resolved.
+  const endpointsInFlightRef = useRef(false);
+  // Mirror of selectedCountry for use inside stable callbacks.
+  const selectedCountryMirrorRef = useRef(selectedCountry);
+  useEffect(() => {
+    selectedCountryMirrorRef.current = selectedCountry;
+  }, [selectedCountry]);
 
   // 1. Authentication guard
   useEffect(() => {
@@ -202,26 +217,32 @@ export default function ConsoleDashboard() {
           const savedId = typeof window !== 'undefined' ? localStorage.getItem('assanpay_console_endpoint') : null;
           const first = (savedId && list.find((e) => e.id === savedId)) || list[0];
           setSelectedId(first.id);
-          setRequestName(first.name);
-          setMethod(first.method);
-          setUrl(first.path);
-          setBody(autoRefreshPayloadIdentifiers(first.defaultBody || ''));
-          setRequiresSignature(first.requiresSignature);
-          setDirty(false);
-          setResult(null);
+          // A draft restore may have already populated the workbench — never let
+          // the catalog's default population clobber the restored draft fields.
+          const suppressDefaults = suppressEndpointDefaultsRef.current;
+          suppressEndpointDefaultsRef.current = false;
+          if (!suppressDefaults) {
+            setRequestName(first.name);
+            setMethod(first.method);
+            setUrl(first.path);
+            setBody(autoRefreshPayloadIdentifiers(first.defaultBody || ''));
+            setRequiresSignature(first.requiresSignature);
+            setDirty(false);
+            setResult(null);
 
-          // Populate query params if defaultQuery exists
-          if (first.defaultQuery && Object.keys(first.defaultQuery).length > 0) {
-            setParamRows(
-              Object.entries(first.defaultQuery).map(([k, v], idx) => ({
-                id: `init-p-${idx}`,
-                enabled: true,
-                key: k,
-                value: v,
-              }))
-            );
-          } else {
-            setParamRows([]);
+            // Populate query params if defaultQuery exists
+            if (first.defaultQuery && Object.keys(first.defaultQuery).length > 0) {
+              setParamRows(
+                Object.entries(first.defaultQuery).map(([k, v], idx) => ({
+                  id: `init-p-${idx}`,
+                  enabled: true,
+                  key: k,
+                  value: v,
+                }))
+              );
+            } else {
+              setParamRows([]);
+            }
           }
         }
       }
@@ -272,9 +293,63 @@ export default function ConsoleDashboard() {
   // Load endpoints when country changes
   useEffect(() => {
     if (status === 'authenticated' && selectedCountry) {
-      void fetchEndpoints(selectedCountry);
+      endpointsInFlightRef.current = true;
+      void fetchEndpoints(selectedCountry).finally(() => {
+        endpointsInFlightRef.current = false;
+      });
     }
   }, [status, selectedCountry, fetchEndpoints]);
+
+  // Restore the persisted workbench draft (GET /api/draft). The catalog loader
+  // above repopulates the workbench with endpoint defaults on every country
+  // (re)load — if the draft carries a different country, that reload would
+  // clobber the restored fields, so suppress its default population.
+  const handleDraftRestore = useCallback((draft: WorkbenchState) => {
+    const countryWillChange =
+      draft.selectedCountry !== selectedCountryMirrorRef.current;
+    if (countryWillChange || endpointsInFlightRef.current) {
+      suppressEndpointDefaultsRef.current = true;
+    }
+    if (countryWillChange) {
+      setSelectedCountry(draft.selectedCountry);
+      try {
+        localStorage.setItem('assanpay_last_country', draft.selectedCountry);
+      } catch {
+        // ignore
+      }
+    }
+    setRequestName(draft.requestName);
+    setMethod(draft.method);
+    setUrl(draft.url);
+    setBody(draft.body);
+    setParamRows(draft.paramRows);
+    setHeaderRows(draft.headerRows);
+    setEnvironment(draft.environment);
+    setResult(null);
+    setDirty(false);
+    setLoadedHistoryId(null);
+  }, []);
+
+  // Workbench draft auto-save: restores once on mount, then debounced-PUTs
+  // every edit. Never fires while unauthenticated.
+  const { draftSaveStatus, draftSavedAt } = useDraftAutosave({
+    enabled: status === 'authenticated',
+    state: {
+      requestName,
+      url,
+      method,
+      paramRows,
+      headerRows,
+      body,
+      selectedCountry,
+      environment,
+    },
+    onRestore: handleDraftRestore,
+  });
+
+  const draftSavedLabel = draftSavedAt
+    ? `${String(draftSavedAt.getHours()).padStart(2, '0')}:${String(draftSavedAt.getMinutes()).padStart(2, '0')}`
+    : null;
 
   // Handle Country Change
   const handleCountryChange = (slug: string) => {
@@ -735,6 +810,8 @@ export default function ConsoleDashboard() {
                       requiresSignature={requiresSignature}
                       sidebarCollapsed={sidebarCollapsed}
                       onToggleSidebar={() => setSidebarCollapsed((prev) => !prev)}
+                      draftSaveStatus={draftSaveStatus}
+                      draftSavedLabel={draftSavedLabel}
                     />
                   </ResizablePanel>
 
@@ -814,6 +891,8 @@ export default function ConsoleDashboard() {
                   loadedHistoryId={loadedHistoryId}
                   config={config}
                   requiresSignature={requiresSignature}
+                  draftSaveStatus={draftSaveStatus}
+                  draftSavedLabel={draftSavedLabel}
                 />
               )}
 

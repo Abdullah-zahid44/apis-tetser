@@ -152,6 +152,8 @@ npm run db:migrate
 npm run db:seed
 ```
 
+Migration `0001_user_data_isolation` adds per-user scoping (`environment_variables.user_id` + `user_drafts`); on Vercel the runtime guard `lib/db/ensure-schema.ts` self-heals the schema on first data-route hit since nothing runs `db:migrate` there.
+
 ### 4. Running Locally
 ```bash
 npm run dev

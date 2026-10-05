@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { requireAuth } from '@/lib/auth/session';
 import { getDb } from '@/lib/db';
+import { ensureUserIsolationSchema } from '@/lib/db/ensure-schema';
 import { environmentVariables, countries } from '@/lib/db/schema';
 import { encryptSecret, decryptSecret } from '@/lib/security/secret-vault';
 import { eq, and, desc } from 'drizzle-orm';
@@ -19,16 +20,18 @@ const VariableSchema = z.object({
 
 export async function GET(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(request.url);
   const resolve = url.searchParams.get('resolve') === 'true'; // internal resolution mode
 
   try {
     const db = getDb();
+    await ensureUserIsolationSchema();
     const rows = await db
       .select()
       .from(environmentVariables)
+      .where(eq(environmentVariables.userId, user.id))
       .orderBy(desc(environmentVariables.updatedAt));
 
     // If resolve mode (used for execution), decrypt secrets
@@ -64,7 +67,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   let rawJson: unknown;
   try {
@@ -82,6 +85,7 @@ export async function POST(request: Request) {
 
   try {
     const db = getDb();
+    await ensureUserIsolationSchema();
 
     let countryId: string | null = null;
     if (data.country) {
@@ -96,6 +100,20 @@ export async function POST(request: Request) {
     const storedValue = data.isSecret ? encryptSecret(data.value) : data.value;
 
     if (data.id) {
+      // Ownership check before updating an existing row
+      const existing = await db
+        .select({ id: environmentVariables.id, userId: environmentVariables.userId })
+        .from(environmentVariables)
+        .where(eq(environmentVariables.id, data.id))
+        .limit(1);
+
+      if (existing.length === 0) {
+        return Response.json({ error: 'Variable not found.' }, { status: 404 });
+      }
+      if (existing[0].userId !== user.id) {
+        return Response.json({ error: 'Forbidden.' }, { status: 403 });
+      }
+
       await db
         .update(environmentVariables)
         .set({
@@ -115,13 +133,14 @@ export async function POST(request: Request) {
     const inserted = await db
       .insert(environmentVariables)
       .values({
+        userId: user.id,
         countryId,
         environment: data.environment,
         key: data.key,
         encryptedValue: storedValue,
         isSecret: data.isSecret,
         description: data.description || '',
-        createdBy: user.id || null,
+        createdBy: user.id,
       })
       .returning({ id: environmentVariables.id });
 
@@ -137,7 +156,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   const user = await requireAuth();
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || !user.id) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(request.url);
   const id = url.searchParams.get('id');
@@ -145,7 +164,14 @@ export async function DELETE(request: Request) {
 
   try {
     const db = getDb();
-    await db.delete(environmentVariables).where(eq(environmentVariables.id, id));
+    await ensureUserIsolationSchema();
+    const deleted = await db
+      .delete(environmentVariables)
+      .where(and(eq(environmentVariables.id, id), eq(environmentVariables.userId, user.id)))
+      .returning({ id: environmentVariables.id });
+    if (deleted.length === 0) {
+      return Response.json({ error: 'Variable not found.' }, { status: 404 });
+    }
     return Response.json({ success: true, id });
   } catch (err) {
     return Response.json(

@@ -42,6 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import type { Method, ParamRow, HeaderRow, SafeConfig } from './types';
+import type { DraftSaveStatus } from '@/hooks/use-draft-autosave';
 
 interface WorkbenchProps {
   countrySlug: string;
@@ -69,6 +70,10 @@ interface WorkbenchProps {
   requiresSignature?: boolean;
   sidebarCollapsed?: boolean;
   onToggleSidebar?: () => void;
+  /** Auto-save draft indicator state (silent workbench draft, separate from Save to Collection). */
+  draftSaveStatus?: DraftSaveStatus;
+  /** Local HH:MM label for the last successful auto-save. */
+  draftSavedLabel?: string | null;
 }
 
 export function Workbench({
@@ -97,6 +102,8 @@ export function Workbench({
   requiresSignature = true,
   sidebarCollapsed,
   onToggleSidebar,
+  draftSaveStatus = 'idle',
+  draftSavedLabel = null,
 }: WorkbenchProps) {
   const [jsonError, setJsonError] = useState('');
   const [copiedHeaders, setCopiedHeaders] = useState(false);
@@ -358,6 +365,28 @@ export function Workbench({
             <span className="hidden md:flex items-center gap-1 text-xs text-primary font-mono animate-fade-in">
               <RotateCcw size={11} />
               Snapshot
+            </span>
+          )}
+
+          {/* Silent workbench-draft auto-save indicator (independent of Save to Collection) */}
+          {draftSaveStatus === 'saving' && (
+            <span className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono">
+              <Loader2 size={12} className="spin" />
+              Saving…
+            </span>
+          )}
+          {draftSaveStatus === 'saved' && draftSavedLabel && (
+            <span className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono">
+              <Check size={12} />
+              Auto-saved · {draftSavedLabel}
+            </span>
+          )}
+          {draftSaveStatus === 'failed' && (
+            <span
+              className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono"
+              title="Draft save failed — will retry on the next edit"
+            >
+              Save failed
             </span>
           )}
 

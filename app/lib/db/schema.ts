@@ -167,6 +167,7 @@ export const environmentVariables = pgTable(
   'environment_variables',
   {
     id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
     countryId: uuid('country_id').references(() => countries.id, { onDelete: 'cascade' }), // null = global
     environment: text('environment').notNull().default('all'), // all, sandbox
     key: text('key').notNull(),
@@ -180,5 +181,17 @@ export const environmentVariables = pgTable(
   (table) => [
     index('env_vars_key_idx').on(table.key),
     index('env_vars_country_idx').on(table.countryId),
+    index('env_vars_user_idx').on(table.userId),
   ]
 );
+
+// Per-user console draft state (one row per user)
+export const userDrafts = pgTable('user_drafts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  state: jsonb('state').$type<Record<string, unknown>>().notNull().default({}),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});

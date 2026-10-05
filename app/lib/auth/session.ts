@@ -9,6 +9,14 @@ export type AuthenticatedUser = {
 };
 
 /**
+ * Fixed uuid used as the user id for the local dev auth bypass.
+ * Must be a valid uuid because it is stored in uuid user_id columns
+ * (per-user data isolation). The runtime schema guard upserts a matching
+ * users row when DEV_BYPASS_AUTH is on so FK constraints pass.
+ */
+export const DEV_BYPASS_USER_ID = '00000000-0000-4000-8000-000000000000';
+
+/**
  * Validates the caller's session server-side.
  * Returns the AuthenticatedUser if valid and ends in @assanpay.com.
  * Returns null if unauthenticated or unauthorized.
@@ -17,7 +25,7 @@ export async function requireAuth(): Promise<AuthenticatedUser | null> {
   // Check development bypass only if explicitly enabled in local .env
   if (process.env.NODE_ENV === 'development' && process.env.DEV_BYPASS_AUTH === 'true') {
     return {
-      id: 'dev-user-id',
+      id: DEV_BYPASS_USER_ID,
       name: 'Local Dev Engineer',
       email: 'support@assanpay.com',
       image: null,
