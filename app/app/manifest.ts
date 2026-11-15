@@ -12,9 +12,9 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: '#ffffff',
     theme_color: '#e79543',
     icons: [
-      { src: '/icons/asaanpay-app-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/asaanpay-app-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/asaanpay-app-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/asaanpay-app-v2-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/asaanpay-app-v2-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/asaanpay-app-v2-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
 }
