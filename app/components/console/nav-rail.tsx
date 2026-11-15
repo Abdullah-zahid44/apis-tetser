@@ -81,7 +81,9 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                         isActive={isActive}
                         tooltip={`${item.label} (${item.shortcut})`}
                         onClick={() => selectView(item.id)}
-                        className={`relative transition-colors duration-150 group/nav-item rounded-xl ${
+                        className={`relative h-10 px-3 transition-colors duration-150 group/nav-item rounded-xl ${
+                          item.badge !== undefined && item.badge > 0 ? 'pr-12' : ''
+                        } ${
                           isActive
                             ? 'font-semibold !text-white shadow-[0_10px_24px_-14px_rgba(8,120,232,.9)] bg-[linear-gradient(135deg,#1598ee_0%,#0756c9_100%)]'
                             : 'text-muted-foreground hover:text-foreground hover:bg-accent'
@@ -98,7 +100,11 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
 
                       {item.badge !== undefined && item.badge > 0 ? (
                         <SidebarMenuBadge
-                          className="text-xs font-semibold tabular-nums bg-primary/10 text-primary border border-primary/20 rounded-full px-1.5"
+                          className={`!right-2 !top-1/2 !-translate-y-1/2 h-5 min-w-6 rounded-full border px-1.5 text-[10px] font-bold leading-none tabular-nums shadow-none ${
+                            isActive
+                              ? 'border-white/30 bg-white/15 text-white'
+                              : 'border-primary/20 bg-primary/10 text-primary'
+                          }`}
                         >
                           {item.badge > 99 ? '99+' : item.badge}
                         </SidebarMenuBadge>
