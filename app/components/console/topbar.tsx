@@ -27,6 +27,7 @@ import { Kbd } from '@/components/ui/kbd';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { signOut } from 'next-auth/react';
 import { AsaanPayLogo } from './asaanpay-logo';
+import { InstallAppButton } from './install-app-button';
 import { AnimatedThemeToggler } from '@/registry/magicui/animated-theme-toggler';
 import type { Country, Environment, SafeConfig } from './types';
 
@@ -246,6 +247,8 @@ export function Topbar({
 
         {/* Right: Actions */}
         <div className="flex items-center justify-end gap-0.5 sm:gap-1 shrink-0">
+          <InstallAppButton />
+
           <Button
             variant="outline"
             size="icon"
