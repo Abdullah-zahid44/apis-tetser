@@ -69,7 +69,7 @@ export function InstallAppButton() {
         variant="ghost"
         size="sm"
         onClick={() => void install()}
-        className="h-8 px-2 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] gap-1.5"
+        className="flex h-9 px-2.5 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] gap-1.5"
         title="Install AssanPay Console as an app"
         aria-label="Install AssanPay Console as an app"
       >
@@ -128,7 +128,7 @@ export function InstallAppButton() {
                 <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-muted/60 border border-border">
                   <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-[11px]">3</span>
                   <p className="leading-snug">
-                    Confirm prompt to launch AssanPay as a standalone standalone app.
+                    Confirm the prompt to launch AssanPay as a standalone app.
                   </p>
                 </div>
               </div>

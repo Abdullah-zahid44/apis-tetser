@@ -45,9 +45,15 @@ import type {
 // (saved-*, history-*) would violate the uuid FK on request_history.endpoint_id.
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+function requestBodyDraftKey(country: string, environment: Environment, requestId: string): string {
+  return `${country}:${environment}:${requestId}`;
+}
+
 export default function ConsoleDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const devBypassEnabled = process.env.NEXT_PUBLIC_DEV_BYPASS_AUTH === 'true';
+  const isAuthenticated = devBypassEnabled || status === 'authenticated';
 
   // Navigation & Environment State
   const [view, setView] = useState<View>('workbench');
@@ -76,10 +82,12 @@ export default function ConsoleDashboard() {
   const [paramRows, setParamRows] = useState<ParamRow[]>([]);
   const [headerRows, setHeaderRows] = useState<HeaderRow[]>([]);
   const [requiresSignature, setRequiresSignature] = useState<boolean>(true);
+  const [bodyDrafts, setBodyDrafts] = useState<Record<string, string>>({});
 
   // Execution & Persistence UI State
   const [search, setSearch] = useState<string>('');
   const [result, setResult] = useState<ExecutionResult | null>(null);
+  const [previousResult, setPreviousResult] = useState<ExecutionResult | null>(null);
   const [running, setRunning] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
   const [dirty, setDirty] = useState<boolean>(false);
@@ -101,18 +109,26 @@ export default function ConsoleDashboard() {
   const suppressEndpointDefaultsRef = useRef(false);
   // endpointsInFlightRef: true while a fetchEndpoints call has not yet resolved.
   const endpointsInFlightRef = useRef(false);
+  const bodyDraftsRef = useRef<Record<string, string>>({});
+  useEffect(() => {
+    bodyDraftsRef.current = bodyDrafts;
+  }, [bodyDrafts]);
   // Mirror of selectedCountry for use inside stable callbacks.
   const selectedCountryMirrorRef = useRef(selectedCountry);
+  const environmentMirrorRef = useRef(environment);
   useEffect(() => {
     selectedCountryMirrorRef.current = selectedCountry;
   }, [selectedCountry]);
+  useEffect(() => {
+    environmentMirrorRef.current = environment;
+  }, [environment]);
 
   // 1. Authentication guard
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!devBypassEnabled && status === 'unauthenticated') {
       router.push('/login');
     }
-  }, [status, router]);
+  }, [devBypassEnabled, status, router]);
 
   // 2. Load persisted UI state from localStorage (country, theme, view, mobile pane)
   // so a page refresh restores the same screen instead of jumping back.
@@ -235,7 +251,9 @@ export default function ConsoleDashboard() {
             setRequestName(first.name);
             setMethod(first.method);
             setUrl(first.path);
-            setBody(autoRefreshPayloadIdentifiers(first.defaultBody || ''));
+            const draftKey = requestBodyDraftKey(countrySlug, environmentMirrorRef.current, first.id);
+            const savedBody = bodyDraftsRef.current[draftKey];
+            setBody(savedBody ?? autoRefreshPayloadIdentifiers(first.defaultBody || ''));
             setRequiresSignature(first.requiresSignature);
             setDirty(false);
             setResult(null);
@@ -275,10 +293,19 @@ export default function ConsoleDashboard() {
   }, []);
 
   // 7. Fetch history items
-  const fetchHistory = useCallback(async (env: string) => {
+  const fetchHistory = useCallback(async (env: string, countrySlug: string) => {
     setHistoryLoading(true);
     try {
-      const res = await fetch(`/api/history?kind=payin&environment=${env}&limit=100`);
+      // Clear the previous market immediately so records never flash under the
+      // newly selected country while its feed is loading.
+      setHistoryItems([]);
+      const params = new URLSearchParams({
+        kind: 'payin',
+        environment: env,
+        country: countrySlug,
+        limit: '100',
+      });
+      const res = await fetch(`/api/history?${params.toString()}`);
       if (res.ok) {
         const data = (await res.json()) as { history?: HistoryItem[] };
         setHistoryItems(data.history || []);
@@ -311,24 +338,24 @@ export default function ConsoleDashboard() {
 
   // Initial data loading
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (isAuthenticated) {
       void fetchCountries();
       void fetchConfig();
       void fetchSavedRequests(environment);
-      void fetchHistory(environment);
+      void fetchHistory(environment, selectedCountry);
       void fetchVariableKeys();
     }
-  }, [status, fetchCountries, fetchConfig, fetchSavedRequests, fetchHistory, fetchVariableKeys, environment]);
+  }, [isAuthenticated, fetchCountries, fetchConfig, fetchSavedRequests, fetchHistory, fetchVariableKeys, environment, selectedCountry]);
 
   // Load endpoints when country changes
   useEffect(() => {
-    if (status === 'authenticated' && selectedCountry) {
+    if (isAuthenticated && selectedCountry) {
       endpointsInFlightRef.current = true;
       void fetchEndpoints(selectedCountry).finally(() => {
         endpointsInFlightRef.current = false;
       });
     }
-  }, [status, selectedCountry, fetchEndpoints]);
+  }, [isAuthenticated, selectedCountry, fetchEndpoints]);
 
   // Restore the persisted workbench draft (GET /api/draft). The catalog loader
   // above repopulates the workbench with endpoint defaults on every country
@@ -354,6 +381,8 @@ export default function ConsoleDashboard() {
     setBody(draft.body);
     setParamRows(draft.paramRows);
     setHeaderRows(draft.headerRows);
+    bodyDraftsRef.current = draft.bodyDrafts;
+    setBodyDrafts(draft.bodyDrafts);
     setEnvironment(draft.environment);
     setResult(null);
     setDirty(false);
@@ -363,7 +392,7 @@ export default function ConsoleDashboard() {
   // Workbench draft auto-save: restores once on mount, then debounced-PUTs
   // every edit. Never fires while unauthenticated.
   const { draftSaveStatus, draftSavedAt } = useDraftAutosave({
-    enabled: status === 'authenticated',
+    enabled: isAuthenticated,
     state: {
       requestName,
       url,
@@ -373,6 +402,7 @@ export default function ConsoleDashboard() {
       body,
       selectedCountry,
       environment,
+      bodyDrafts,
     },
     onRestore: handleDraftRestore,
   });
@@ -380,6 +410,20 @@ export default function ConsoleDashboard() {
   const draftSavedLabel = draftSavedAt
     ? `${String(draftSavedAt.getHours()).padStart(2, '0')}:${String(draftSavedAt.getMinutes()).padStart(2, '0')}`
     : null;
+
+  const handleBodyChange = useCallback((nextBody: string) => {
+    setBody(nextBody);
+    setDirty(true);
+    if (!selectedId) return;
+
+    const draftKey = requestBodyDraftKey(selectedCountry, environment, selectedId);
+    setBodyDrafts((current) => {
+      if (current[draftKey] === nextBody) return current;
+      const next = { ...current, [draftKey]: nextBody };
+      bodyDraftsRef.current = next;
+      return next;
+    });
+  }, [selectedId, selectedCountry, environment]);
 
   // Handle Country Change
   const handleCountryChange = (slug: string) => {
@@ -389,6 +433,7 @@ export default function ConsoleDashboard() {
     }
     setSearch('');
     setResult(null);
+    setPreviousResult(null);
     setLoadedHistoryId(null);
   };
 
@@ -399,9 +444,11 @@ export default function ConsoleDashboard() {
     setRequestName(ep.name);
     setMethod(ep.method);
     setUrl(ep.path);
-    setBody(ep.defaultBody || '');
+    const draftKey = requestBodyDraftKey(selectedCountry, environment, ep.id);
+    setBody(bodyDraftsRef.current[draftKey] ?? autoRefreshPayloadIdentifiers(ep.defaultBody || ''));
     setRequiresSignature(ep.requiresSignature);
     setResult(null);
+    setPreviousResult(null);
     setDirty(false);
     setLoadedHistoryId(null);
     setMobilePane('workbench');
@@ -427,8 +474,11 @@ export default function ConsoleDashboard() {
     setRequestName(saved.name);
     setMethod(saved.method);
     setUrl(saved.relativeUrl);
-    setBody(saved.requestBody || '');
+    const requestId = `saved-${saved.id}`;
+    const draftKey = requestBodyDraftKey(selectedCountry, environment, requestId);
+    setBody(bodyDraftsRef.current[draftKey] ?? saved.requestBody ?? '');
     setResult(null);
+    setPreviousResult(null);
     setDirty(false);
     setLoadedHistoryId(null);
     setMobilePane('workbench');
@@ -500,16 +550,19 @@ export default function ConsoleDashboard() {
 
   // Load from History
   const handleLoadIntoWorkbench = (item: HistoryItem) => {
-    setSelectedId(`history-${item.id}`);
+    const requestId = `history-${item.id}`;
+    setSelectedId(requestId);
     setSelectedCategory('');
     setRequestName(item.requestName);
     setMethod(item.method);
     setUrl(item.url);
-    setBody(item.requestBody || '');
+    const draftKey = requestBodyDraftKey(selectedCountry, environment, requestId);
+    setBody(bodyDraftsRef.current[draftKey] ?? item.requestBody ?? '');
     setLoadedHistoryId(item.id);
     setDirty(false);
     setView('workbench');
     setMobilePane('workbench');
+    setPreviousResult(null);
 
     setResult({
       ok: item.responseStatus >= 200 && item.responseStatus < 300,
@@ -554,6 +607,7 @@ export default function ConsoleDashboard() {
 
   const executeActiveRequest = async () => {
     setRunning(true);
+    if (result) setPreviousResult(result);
     setResult(null);
     setMobilePane('response');
 
@@ -580,7 +634,7 @@ export default function ConsoleDashboard() {
         const refreshed = autoRefreshPayloadIdentifiers(payloadBody, { forceRefreshOrderId: true });
         if (refreshed !== payloadBody) {
           payloadBody = refreshed;
-          setBody(refreshed);
+          handleBodyChange(refreshed);
         }
       }
     }
@@ -642,7 +696,7 @@ export default function ConsoleDashboard() {
       });
     } finally {
       setRunning(false);
-      void fetchHistory(environment);
+      void fetchHistory(environment, selectedCountry);
     }
   };
 
@@ -719,7 +773,7 @@ export default function ConsoleDashboard() {
 
   const currentCountryObj = countries.find((c) => c.slug === selectedCountry);
 
-  if (status === 'loading') {
+  if (!devBypassEnabled && status === 'loading') {
     return (
       <div className="h-screen flex items-center justify-center bg-background text-muted-foreground text-xs">
         <div className="flex items-center gap-2.5">
@@ -731,7 +785,7 @@ export default function ConsoleDashboard() {
   }
 
   return (
-    <SidebarProvider className="h-dvh min-h-0 overflow-hidden select-none" style={{ '--sidebar-width': '15rem' } as React.CSSProperties}>
+    <SidebarProvider className="console-shell h-dvh min-h-0 overflow-hidden" style={{ '--sidebar-width': '15rem' } as React.CSSProperties}>
       <NavRail
         view={view}
         onViewChange={setView}
@@ -746,7 +800,11 @@ export default function ConsoleDashboard() {
           onCountryChange={handleCountryChange}
           environment={environment}
           config={config}
-          user={session?.user}
+          user={session?.user ?? (devBypassEnabled ? {
+            name: 'Local Dev Engineer',
+            email: 'support@assanpay.com',
+            role: 'admin',
+          } : null)}
           onOpenStatus={() => setView('status')}
           onOpenCommandPalette={() => setCommandPaletteOpen(true)}
           gatewayLatencyMs={gatewayLatencyMs}
@@ -763,26 +821,30 @@ export default function ConsoleDashboard() {
             <Tabs
               value={mobilePane}
               onValueChange={(value) => value && setMobilePane(value as 'catalog' | 'workbench' | 'response')}
-              className="md:hidden mx-2 mt-2 shrink-0"
+              className="xl:hidden mx-3 mt-3 w-[calc(100%_-_1.5rem)] max-w-[calc(100%_-_1.5rem)] min-w-0 shrink-0 overflow-hidden"
+              style={{ width: 'calc(100% - 1.5rem)', maxWidth: 'calc(100% - 1.5rem)' }}
             >
-              <TabsList className="grid w-full grid-cols-3 h-10 bg-muted border border-border rounded-full p-1">
-                <TabsTrigger value="catalog" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+              <TabsList
+                className="!grid !w-full min-w-0 grid-cols-3 h-12 bg-muted border border-border rounded-full p-1 overflow-hidden"
+                style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', width: '100%' }}
+              >
+                <TabsTrigger value="catalog" className="min-w-0 overflow-hidden px-2 text-xs sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Layers size={14} className="hidden sm:block" />Collections
                 </TabsTrigger>
-                <TabsTrigger value="workbench" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+                <TabsTrigger value="workbench" className="min-w-0 overflow-hidden px-2 text-xs sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Code2 size={14} className="hidden sm:block" />Request
                 </TabsTrigger>
-                <TabsTrigger value="response" className="min-w-0 px-1 text-[11px] sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+                <TabsTrigger value="response" className="min-w-0 overflow-hidden px-2 text-xs sm:text-sm gap-1 sm:gap-1.5 rounded-full data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
                   <Activity size={14} className="hidden sm:block" />Response{result ? ` (${result.upstream.status})` : ''}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
 
             {/* Desktop: collections + vertically split request/response workspace */}
-            <div className="hidden md:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden px-3 pt-2 pb-3 gap-3 bg-background">
+            <div className="hidden xl:flex flex-1 h-full min-h-0 min-w-0 overflow-hidden p-4 gap-4 bg-background">
               {/* Collapsible Left Catalog Sidebar - Fixed 280px width so it never squishes */}
               {!sidebarCollapsed && (
-                <div className="w-[296px] shrink-0 h-full min-h-0 border border-border bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
+                <div className="w-[304px] shrink-0 h-full min-h-0 border border-border/80 bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
                   <Sidebar
                     countryCode={selectedCountry}
                     countryName={currentCountryObj?.name || 'Pakistan'}
@@ -801,10 +863,10 @@ export default function ConsoleDashboard() {
               )}
 
               {/* Postman-style vertical flow: compose above, inspect below */}
-              <div className="flex-1 h-full min-h-0 min-w-0 border border-border bg-card rounded-xl overflow-hidden shadow-[var(--shadow-card)]">
+              <div className="flex-1 h-full min-h-0 min-w-0 bg-transparent overflow-hidden">
                 <ResizablePanelGroup orientation="vertical" className="w-full h-full">
                   {/* Panel: Request Workbench */}
-                  <ResizablePanel defaultSize={62} minSize={36} id="workbench-panel">
+                  <ResizablePanel className="rounded-xl border border-border/80 bg-card overflow-hidden shadow-[var(--shadow-card)]" defaultSize={58} minSize={36} id="workbench-panel">
                     <Workbench
                       countrySlug={selectedCountry}
                       environment={environment}
@@ -820,10 +882,7 @@ export default function ConsoleDashboard() {
                         setDirty(true);
                       }}
                       body={body}
-                      onBodyChange={(val) => {
-                        setBody(val);
-                        setDirty(true);
-                      }}
+                      onBodyChange={handleBodyChange}
                       paramRows={paramRows}
                       onParamRowsChange={(rows) => {
                         setParamRows(rows);
@@ -851,17 +910,20 @@ export default function ConsoleDashboard() {
                     />
                   </ResizablePanel>
 
-                  <ResizableHandle withHandle />
+                  <ResizableHandle className="!h-3 !bg-transparent [&>div]:hidden" />
 
                   {/* Panel: Response Inspector */}
-                  <ResizablePanel defaultSize={38} minSize={20} id="response-panel">
+                  <ResizablePanel className="rounded-xl border border-border/80 bg-card overflow-hidden shadow-[var(--shadow-card)]" defaultSize={42} minSize={24} id="response-panel">
                     <ResponsePanel
                       countrySlug={selectedCountry}
                       result={result}
+                      previousResult={previousResult}
                       running={running}
                       loadedHistoryId={loadedHistoryId}
+                      onOpenEnvironment={() => setView('status')}
                       onClear={() => {
                         setResult(null);
+                        setPreviousResult(null);
                         setLoadedHistoryId(null);
                       }}
                     />
@@ -871,7 +933,7 @@ export default function ConsoleDashboard() {
             </div>
 
             {/* Mobile (< 768px) Single Active Pane */}
-            <div className="md:hidden flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
+            <div className="xl:hidden flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
               {mobilePane === 'catalog' && (
                 <Sidebar
                   countryCode={selectedCountry}
@@ -904,10 +966,7 @@ export default function ConsoleDashboard() {
                     setDirty(true);
                   }}
                   body={body}
-                  onBodyChange={(val) => {
-                    setBody(val);
-                    setDirty(true);
-                  }}
+                  onBodyChange={handleBodyChange}
                   paramRows={paramRows}
                   onParamRowsChange={(rows) => {
                     setParamRows(rows);
@@ -937,10 +996,13 @@ export default function ConsoleDashboard() {
                 <ResponsePanel
                   countrySlug={selectedCountry}
                   result={result}
+                  previousResult={previousResult}
                   running={running}
                   loadedHistoryId={loadedHistoryId}
+                  onOpenEnvironment={() => setView('status')}
                   onClear={() => {
                     setResult(null);
+                    setPreviousResult(null);
                     setLoadedHistoryId(null);
                   }}
                 />
@@ -952,8 +1014,9 @@ export default function ConsoleDashboard() {
         {view === 'history' && (
           <HistoryView
             history={historyItems}
+            countrySlug={selectedCountry}
             onLoadIntoWorkbench={handleLoadIntoWorkbench}
-            onRefresh={() => void fetchHistory(environment)}
+            onRefresh={() => void fetchHistory(environment, selectedCountry)}
             loading={historyLoading}
             environment={environment}
           />

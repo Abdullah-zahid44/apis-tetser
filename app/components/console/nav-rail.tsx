@@ -1,7 +1,6 @@
 'use client';
 
-import { Code2, Command, History, PanelLeftClose, ServerCog, ShieldCheck, Webhook, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Command, Gauge, History, ServerCog, Webhook } from 'lucide-react';
 import { Kbd } from '@/components/ui/kbd';
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
@@ -9,6 +8,7 @@ import {
   SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator, useSidebar,
 } from '@/components/ui/sidebar';
 import type { View } from './types';
+import { AsaanPayLogo } from './asaanpay-logo';
 
 interface NavRailProps {
   view: View;
@@ -28,7 +28,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
     {
       label: 'Workspace',
       items: [
-        { id: 'workbench' as View, label: 'Workbench', icon: Code2, shortcut: 'Alt+1' },
+        { id: 'workbench' as View, label: 'Dashboard', icon: Gauge, shortcut: 'Alt+1' },
         { id: 'history' as View, label: 'History', icon: History, shortcut: 'Alt+2', badge: historyCount },
       ],
     },
@@ -53,29 +53,13 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
               tooltip={state === 'collapsed' ? 'Expand sidebar' : 'AssanPay Developer Console'}
               className="transition-colors duration-150"
             >
-              {/* Logo */}
-              <span
-                className="brand-mark flex size-9 items-center justify-center rounded-md text-white shrink-0"
-              >
-                <ShieldCheck size={16} strokeWidth={2.4} />
-              </span>
-              <span className="flex min-w-0 flex-col">
-                <span className="text-sm font-bold tracking-tight text-foreground">AssanPay</span>
-                <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground">Console</span>
-              </span>
+              <AsaanPayLogo
+                showWordmark={state !== 'collapsed' || isMobile}
+                className={state === 'collapsed' && !isMobile ? '[&>span:first-child]:!size-8' : undefined}
+              />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={toggleSidebar}
-          className="shrink-0 text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:hidden"
-          title={isMobile ? 'Close sidebar' : 'Collapse sidebar'}
-          aria-label={isMobile ? 'Close sidebar' : 'Collapse sidebar'}
-        >
-          {isMobile ? <X /> : <PanelLeftClose />}
-        </Button>
       </SidebarHeader>
 
       <SidebarSeparator />
@@ -99,18 +83,14 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
                         onClick={() => selectView(item.id)}
                         className={`relative transition-colors duration-150 group/nav-item rounded-xl ${
                           isActive
-                            ? 'font-semibold shadow-sm'
+                            ? 'font-semibold !text-white shadow-[0_10px_24px_-14px_rgba(8,120,232,.9)] bg-[linear-gradient(135deg,#1598ee_0%,#0756c9_100%)]'
                             : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                         }`}
-                        style={isActive ? {
-                          background: 'var(--foreground)',
-                          color: 'var(--background)',
-                        } : undefined}
                       >
                         <Icon
                           size={16}
                           className={`transition-colors duration-150 ${
-                            isActive ? 'text-background' : 'text-primary'
+                            isActive ? 'text-white' : 'text-primary'
                           }`}
                         />
                         <span>{item.label}</span>

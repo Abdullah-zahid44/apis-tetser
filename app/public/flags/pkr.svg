@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" role="img" aria-label="Flag of Pakistan">
+  <path fill="#fff" d="M0 0h225v600H0z"/>
+  <path fill="#01411c" d="M225 0h675v600H225z"/>
+  <g fill="#fff">
+    <path d="M604 113a190 190 0 1 0 103 350 165 165 0 1 1-103-350z"/>
+    <path d="m660 145 25 77 81-1-66 47 26 77-66-48-65 48 25-77-65-47 80 1z"/>
+  </g>
+</svg>

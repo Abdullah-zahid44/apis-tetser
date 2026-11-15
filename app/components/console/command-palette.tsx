@@ -75,9 +75,6 @@ export function CommandPalette({
             <p className="text-sm font-semibold text-foreground">
               No matching commands
             </p>
-            <p className="text-xs text-muted-foreground">
-              Try a different search term, or browse the endpoint list below.
-            </p>
           </div>
         </CommandEmpty>
 

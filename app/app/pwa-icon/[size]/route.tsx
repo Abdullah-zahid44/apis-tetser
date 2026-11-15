@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'nodejs';
 
-export async function GET(_request: Request, context: { params: Promise<{ size: string }> }) {
+export async function GET(request: Request, context: { params: Promise<{ size: string }> }) {
   const { size: requestedSize } = await context.params;
   const size = requestedSize === '192' ? 192 : requestedSize === '512' ? 512 : null;
   if (!size) return new Response('Not found', { status: 404 });
@@ -15,15 +15,18 @@ export async function GET(_request: Request, context: { params: Promise<{ size: 
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#0265d2',
-        color: '#ffffff',
-        fontFamily: 'Arial, sans-serif',
-        fontWeight: 800,
-        fontSize: size * 0.3,
-        letterSpacing: '-0.08em',
+        overflow: 'hidden',
+        background: '#e79543',
       }}
     >
-      AP
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={new URL('/asaanpay-logo.png', request.url).toString()}
+        alt=""
+        width={size}
+        height={size}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1.18)' }}
+      />
     </div>,
     { width: size, height: size },
   );

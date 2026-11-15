@@ -15,14 +15,14 @@ import {
   Layers,
   ShieldAlert,
   PanelLeftClose,
-  ShieldCheck,
+  FolderOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import {
   DropdownMenu,
@@ -83,14 +83,8 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<'catalog' | 'saved'>('catalog');
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
-    Payin: true,
-    Payout: true,
-    Checkout: true,
-    Status: true,
-    Balance: true,
-    Verification: true,
-  });
+  // Start every catalog category collapsed for every user/session.
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
 
   const query = search.trim().toLowerCase();
 
@@ -117,15 +111,18 @@ export function Sidebar({
 
   return (
     <aside
-      className="w-full h-full flex flex-col min-h-0 select-none border-r border-[var(--border)]"
+      className="w-full h-full flex flex-col min-h-0"
       style={{ background: 'var(--sidebar-bg)' }}
     >
       {/* Header */}
-      <div className="px-3 py-2.5 border-b border-[var(--border)] flex items-center justify-between shrink-0">
-        <div>
-          <h2 className="text-sm font-semibold text-foreground tracking-tight">
-            Collections
-          </h2>
+      <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between shrink-0">
+        <div className="flex items-center gap-2.5">
+          <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Layers size={18} />
+          </span>
+          <div>
+            <h2 className="text-base font-semibold text-foreground tracking-tight">API Collections</h2>
+          </div>
         </div>
 
         <div className="flex items-center gap-1">
@@ -134,7 +131,7 @@ export function Sidebar({
               variant="ghost"
               size="icon"
               onClick={onToggleCollapse}
-              className="w-7 h-7 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose size={14} />
@@ -144,20 +141,20 @@ export function Sidebar({
       </div>
 
       {/* Tab Switcher */}
-      <div className="px-3 py-2 border-b border-[var(--border)] shrink-0">
+      <div className="px-3 py-3 shrink-0">
         <ToggleGroup
           value={[activeTab]}
           onValueChange={(value) => value[0] && setActiveTab(value[0] as 'catalog' | 'saved')}
-          className="grid grid-cols-2 h-8 p-0.5 rounded-full bg-muted gap-1"
+          className="grid grid-cols-2 h-10 p-1 rounded-full bg-muted gap-1"
         >
-          <ToggleGroupItem value="catalog" className="text-xs gap-1.5 rounded-full text-muted-foreground data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+          <ToggleGroupItem value="catalog" className="text-sm gap-1.5 rounded-full text-muted-foreground data-active:bg-card data-active:text-primary data-active:shadow-sm">
             <Layers size={12} />
             Catalog
             <Badge variant="secondary" className="text-[11px] tabular-nums font-semibold h-5 px-1.5 ml-0.5 rounded-full">
               {filteredEndpoints.length}
             </Badge>
           </ToggleGroupItem>
-          <ToggleGroupItem value="saved" className="text-xs gap-1.5 rounded-full text-muted-foreground data-active:bg-primary data-active:text-primary-foreground data-active:shadow-sm">
+          <ToggleGroupItem value="saved" className="text-sm gap-1.5 rounded-full text-muted-foreground data-active:bg-card data-active:text-primary data-active:shadow-sm">
             <BookmarkCheck size={12} />
             Saved
             <Badge variant="secondary" className="text-[11px] tabular-nums font-semibold h-5 px-1.5 ml-0.5 rounded-full">
@@ -168,7 +165,7 @@ export function Sidebar({
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 border-b border-[var(--border)] shrink-0">
+      <div className="px-3 pb-3 border-b border-[var(--border)] shrink-0">
         <InputGroup>
           <InputGroupAddon>
             <Search size={13} className="text-muted-foreground/60" />
@@ -177,7 +174,7 @@ export function Sidebar({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={activeTab === 'catalog' ? `Filter ${countryName} APIs…` : 'Filter saved…'}
-            className="text-xs placeholder:text-muted-foreground/60"
+            className="text-sm placeholder:text-muted-foreground/60"
           />
           {search && (
             <InputGroupAddon align="inline-end">
@@ -191,14 +188,13 @@ export function Sidebar({
 
       {/* Content */}
       <ScrollArea className="flex-1 min-h-0">
-        <div className="p-2">
+        <div className="p-2.5">
           {activeTab === 'catalog' ? (
             categories.length === 0 ? (
               <Empty className="py-8">
                 <EmptyHeader>
                   <EmptyMedia variant="icon"><SearchX /></EmptyMedia>
                   <EmptyTitle className="text-sm">No endpoints found</EmptyTitle>
-                  <EmptyDescription className="text-xs">Try a different search term.</EmptyDescription>
                 </EmptyHeader>
                 {search && (
                   <EmptyContent>
@@ -212,19 +208,20 @@ export function Sidebar({
               <div className="space-y-1">
                 {categories.map((category) => {
                   const catEndpoints = filteredEndpoints.filter((ep) => ep.category === category);
-                  const isOpen = openCategories[category] ?? true;
+                  const isOpen = query.length > 0 || (openCategories[category] ?? false);
 
                   return (
                     <div key={category}>
                       {/* Category Header */}
                       <button
                         onClick={() => toggleCategory(category)}
-                        className="w-full flex items-center gap-1.5 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 cursor-pointer group/cat"
+                        className="w-full min-h-9 flex items-center gap-2 px-2.5 py-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 cursor-pointer group/cat"
                       >
                         <span className="text-muted-foreground/60">
                           {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                         </span>
-                        <span className="text-[11px] font-semibold uppercase tracking-[0.05em] flex-1 text-left text-muted-foreground">
+                        <FolderOpen size={15} className="text-primary" />
+                        <span className="text-xs font-semibold flex-1 text-left text-foreground">
                           {category}
                         </span>
                         <span className="text-[11px] tabular-nums font-semibold text-muted-foreground bg-muted border border-border px-1.5 py-0.5 rounded-full">
@@ -234,7 +231,7 @@ export function Sidebar({
 
                       {/* Endpoints */}
                       {isOpen && (
-                        <div className="mt-1 ml-1.5 pl-2 border-l border-border/80 space-y-1.5">
+                        <div className="mt-1.5 space-y-1.5">
                           {catEndpoints.map((ep) => {
                             const isSelected = selectedId === ep.id;
                             return (
@@ -242,10 +239,10 @@ export function Sidebar({
                                 <HoverCardTrigger>
                                   <button
                                     onClick={() => onSelectEndpoint(ep)}
-                                    className={`w-full group/ep relative text-left p-2.5 rounded-xl border shadow-card transition-colors duration-150 flex items-start gap-2.5 cursor-pointer select-none ${
+                                    className={`w-full min-h-14 group/ep relative text-left p-3 rounded-xl border transition-colors duration-150 flex items-start gap-3 cursor-pointer ${
                                       isSelected
-                                        ? 'bg-foreground text-background border-transparent'
-                                        : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:border-border hover:bg-accent'
+                                        ? 'bg-primary/10 text-foreground border-primary/25 shadow-[inset_3px_0_0_var(--primary)]'
+                                        : 'bg-transparent text-muted-foreground hover:text-foreground border-transparent hover:border-border hover:bg-accent'
                                     }`}
                                   >
                                     <div className="pt-0.5 shrink-0">
@@ -253,7 +250,7 @@ export function Sidebar({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex items-center justify-between gap-1">
-                                        <span className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-background' : 'font-medium text-foreground'}`}>
+                                        <span className={`text-sm leading-snug truncate ${isSelected ? 'font-semibold text-primary' : 'font-medium text-foreground'}`}>
                                           {ep.name}
                                         </span>
                                         <div className="flex items-center gap-1 shrink-0 ml-1">
@@ -268,14 +265,14 @@ export function Sidebar({
                                           {ep.requiresSignature && (
                                             <span
                                               title="HMAC-SHA256 Required"
-                                              className={`transition-colors ${isSelected ? 'text-background/60' : 'text-muted-foreground/60 group-hover/ep:text-muted-foreground'}`}
+                                              className={`transition-colors ${isSelected ? 'text-primary/70' : 'text-muted-foreground/60 group-hover/ep:text-muted-foreground'}`}
                                             >
                                               <Lock size={11} />
                                             </span>
                                           )}
                                         </div>
                                       </div>
-                                      <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-background/70' : 'text-muted-foreground/60'}`}>
+                                      <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-primary/75' : 'text-muted-foreground/60'}`}>
                                         {ep.path}
                                       </div>
                                     </div>
@@ -328,7 +325,6 @@ export function Sidebar({
                 <EmptyHeader>
                   <EmptyMedia variant="icon"><BookmarkCheck /></EmptyMedia>
                   <EmptyTitle className="text-sm">No saved requests</EmptyTitle>
-                  <EmptyDescription className="text-xs">Configure and save a request to this collection.</EmptyDescription>
                 </EmptyHeader>
               </Empty>
             ) : (
@@ -338,10 +334,10 @@ export function Sidebar({
                   return (
                     <div
                       key={saved.id}
-                      className={`group/saved relative flex items-start rounded-xl border shadow-card transition-colors duration-150 p-2.5 ${
+                      className={`group/saved relative flex items-start rounded-xl border transition-colors duration-150 p-3 ${
                         isSelected
-                          ? 'bg-foreground text-background border-transparent'
-                          : 'bg-card text-muted-foreground hover:text-foreground border-border/60 hover:border-border hover:bg-accent'
+                          ? 'bg-primary/10 text-foreground border-primary/25 shadow-[inset_3px_0_0_var(--primary)]'
+                          : 'bg-transparent text-muted-foreground hover:text-foreground border-transparent hover:border-border hover:bg-accent'
                       }`}
                     >
                       <button
@@ -352,10 +348,10 @@ export function Sidebar({
                           <MethodPill method={saved.method} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className={`text-xs leading-snug truncate ${isSelected ? 'font-semibold text-background' : 'font-medium text-foreground'}`}>
+                          <div className={`text-sm leading-snug truncate ${isSelected ? 'font-semibold text-primary' : 'font-medium text-foreground'}`}>
                             {saved.name}
                           </div>
-                          <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-background/70' : 'text-muted-foreground/60'}`}>
+                          <div className={`text-[11px] font-mono truncate mt-1 ${isSelected ? 'text-primary/75' : 'text-muted-foreground/60'}`}>
                             {saved.relativeUrl}
                           </div>
                         </div>
@@ -400,13 +396,6 @@ export function Sidebar({
         </div>
       </ScrollArea>
 
-      {/* Footer — Security info strip */}
-      <div className="px-3 py-2 border-t border-[var(--border)] flex items-center gap-1.5 shrink-0">
-        <ShieldCheck size={11} className="text-success shrink-0" />
-        <span className="text-[11px] font-mono text-muted-foreground/60 truncate">
-          HMAC-SHA256 · Nonce · Timestamp
-        </span>
-      </div>
     </aside>
   );
 }

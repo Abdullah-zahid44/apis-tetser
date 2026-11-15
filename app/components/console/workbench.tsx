@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   Braces,
   Trash2,
-  Plus,
   Save,
   CheckCircle2,
   RotateCcw,
@@ -28,6 +27,7 @@ import {
   Terminal,
   Check,
   X,
+  ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { autoRefreshPayloadIdentifiers } from '@/lib/variables/resolver';
@@ -120,6 +120,13 @@ export function Workbench({
   const [copiedHeaders, setCopiedHeaders] = useState(false);
   const [copiedBody, setCopiedBody] = useState(false);
   const [copiedCurl, setCopiedCurl] = useState(false);
+  const [requestTab, setRequestTab] = useState('body');
+
+  // Every newly opened API starts on its payload instead of preserving the
+  // tab selected for the previous request.
+  useEffect(() => {
+    setRequestTab('body');
+  }, [countrySlug, environment, name]);
 
   const currentEnvConfig = config?.[countrySlug]?.[environment];
   const baseUrl = currentEnvConfig?.hostname
@@ -317,40 +324,6 @@ export function Workbench({
     setTimeout(() => setCopiedBody(false), 1500);
   };
 
-  // Add query param row
-  const addParamRow = () => {
-    onParamRowsChange([
-      ...paramRows,
-      { id: `param-${Date.now()}`, enabled: true, key: '', value: '', description: '' },
-    ]);
-  };
-
-  const updateParamRow = (id: string, field: keyof ParamRow, val: unknown) => {
-    const updated = paramRows.map((row) => (row.id === id ? { ...row, [field]: val } : row));
-    onParamRowsChange(updated);
-  };
-
-  const deleteParamRow = (id: string) => {
-    onParamRowsChange(paramRows.filter((row) => row.id !== id));
-  };
-
-  // Add custom header row
-  const addHeaderRow = () => {
-    onHeaderRowsChange([
-      ...headerRows,
-      { id: `header-${Date.now()}`, enabled: true, key: '', value: '', description: '' },
-    ]);
-  };
-
-  const updateHeaderRow = (id: string, field: keyof HeaderRow, val: unknown) => {
-    const updated = headerRows.map((row) => (row.id === id ? { ...row, [field]: val } : row));
-    onHeaderRowsChange(updated);
-  };
-
-  const deleteHeaderRow = (id: string) => {
-    onHeaderRowsChange(headerRows.filter((row) => row.id !== id));
-  };
-
   // Synchronize params to URL query string
   useEffect(() => {
     const [path] = url.split('?');
@@ -449,67 +422,57 @@ export function Workbench({
   const getMethodColorClass = (m: Method) => {
     switch (m) {
       case 'GET':
-        return 'text-[#059669]';
+        return 'text-[var(--method-get)]';
       case 'POST':
-        return 'text-[#e05320]';
+        return 'text-[var(--method-post)]';
       case 'PUT':
-        return 'text-[#0265d2]';
+        return 'text-[var(--method-put)]';
       case 'PATCH':
-        return 'text-[#7c3aed]';
+        return 'text-[var(--method-patch)]';
       case 'DELETE':
-        return 'text-[#dc2626]';
+        return 'text-[var(--method-delete)]';
       default:
         return 'text-muted-foreground';
     }
   };
 
   return (
-    <section className="h-full flex flex-col min-w-0 select-none" style={{ background: 'var(--workbench-bg)' }}>
+    <section className="h-full flex flex-col min-w-0" style={{ background: 'var(--workbench-bg)' }}>
       {/* Top Workspace Tab Strip & Save Toolbar */}
-      <div className="min-h-[42px] px-2 sm:px-3 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0" style={{ background: 'var(--surface-1)' }}>
+      <div className="min-h-14 px-3 sm:px-4 border-b border-[var(--border)] flex items-center justify-between gap-3 shrink-0" style={{ background: 'var(--surface-1)' }}>
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {sidebarCollapsed && onToggleSidebar && (
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleSidebar}
-              className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] cursor-pointer shrink-0 -ml-1 mr-1 transition-colors"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] cursor-pointer shrink-0 -ml-1 transition-colors"
               title="Open Collections Sidebar"
             >
               <PanelLeftOpen size={13} />
             </Button>
           )}
 
-          <div className="h-9 flex items-center gap-1.5 sm:gap-2 px-2.5 border-x border-[var(--border)] min-w-0 max-w-md rounded-none" style={{ background: 'var(--surface-2)' }}>
-            <span className={`method-badge ${method.toLowerCase()}`}>{method}</span>
-            <span className="text-xs font-mono text-muted-foreground uppercase shrink-0 tracking-wider">
-              {countrySlug}
-            </span>
-            <span
-              className="text-sm font-medium text-foreground truncate min-w-0 max-w-24 sm:max-w-44 md:max-w-56"
-              title={name}
-            >
-              {name}
-            </span>
-            {dirty && (
-              <span
-                className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
-                title="Unsaved changes"
-              />
-            )}
+          <div className="min-w-0 max-w-xl">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className={`method-badge ${method.toLowerCase()}`}>{method}</span>
+              <span className="text-sm font-semibold text-foreground truncate" title={name}>{name}</span>
+              {dirty && <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" title="Unsaved changes" />}
+            </div>
+            <div className="mt-0.5 font-mono text-xs uppercase tracking-wide text-muted-foreground">{countrySlug}</div>
           </div>
         </div>
 
         {/* State Tags & Save Action */}
         <div className="flex items-center gap-2 shrink-0">
           {savedMessage && (
-            <span className="hidden md:flex items-center gap-1 text-xs text-success font-mono animate-fade-in">
+            <span className="hidden 2xl:flex items-center gap-1 text-xs text-success font-mono animate-fade-in">
               <CheckCircle2 size={12} />
               {savedMessage}
             </span>
           )}
           {loadedHistoryId && (
-            <span className="hidden md:flex items-center gap-1 text-xs text-primary font-mono animate-fade-in">
+            <span className="hidden 2xl:flex items-center gap-1 text-xs text-primary font-mono animate-fade-in">
               <RotateCcw size={11} />
               Snapshot
             </span>
@@ -517,20 +480,20 @@ export function Workbench({
 
           {/* Silent workbench-draft auto-save indicator (independent of Save to Collection) */}
           {draftSaveStatus === 'saving' && (
-            <span className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono">
+            <span className="hidden 2xl:flex items-center gap-1 text-xs text-muted-foreground font-mono">
               <Loader2 size={12} className="spin" />
               Saving…
             </span>
           )}
           {draftSaveStatus === 'saved' && draftSavedLabel && (
-            <span className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono">
+            <span className="hidden 2xl:flex items-center gap-1 text-xs text-muted-foreground font-mono">
               <Check size={12} />
               Auto-saved · {draftSavedLabel}
             </span>
           )}
           {draftSaveStatus === 'failed' && (
             <span
-              className="hidden md:flex items-center gap-1 text-xs text-muted-foreground font-mono"
+              className="hidden 2xl:flex items-center gap-1 text-xs text-muted-foreground font-mono"
               title="Draft save failed — will retry on the next edit"
             >
               Save failed
@@ -542,19 +505,18 @@ export function Workbench({
             size="sm"
             onClick={onSave}
             disabled={saving || !name.trim() || !url.trim()}
-            className="h-7 px-2.5 border-[var(--border)] text-secondary-foreground text-xs font-medium gap-1.5 cursor-pointer shadow-none transition-colors hover:text-foreground hover:border-[var(--primary)]/40"
-            style={{ background: 'var(--surface-4)' }}
+            className="h-9 px-3 border-[var(--border)] text-secondary-foreground text-sm font-medium gap-2 cursor-pointer shadow-none transition-colors hover:text-foreground hover:border-[var(--primary)]/40 bg-card"
             title="Save Request to Collection (Ctrl+S)"
           >
             {saving ? <Loader2 size={12} className="spin" /> : <Save size={12} />}
             <span>Save</span>
-            <kbd className="text-[11px] font-mono text-muted-foreground hidden sm:inline ml-0.5">Ctrl S</kbd>
+            <kbd className="text-[11px] font-mono text-muted-foreground hidden 2xl:inline ml-0.5">Ctrl S</kbd>
           </Button>
         </div>
       </div>
 
       {/* Request Bar — STICKY, always visible above keyboard */}
-      <div className="shrink-0 px-2.5 sm:px-4 lg:px-5 pt-3 sm:pt-4 pb-2 space-y-2" style={{ background: 'var(--workbench-bg)' }}>
+      <div className="shrink-0 px-3 sm:px-5 pt-4 sm:pt-5 pb-3 space-y-3" style={{ background: 'var(--workbench-bg)' }}>
 
         {/* Unified Request Bar — single cohesive instrument */}
         <div
@@ -571,27 +533,27 @@ export function Workbench({
               }}
             >
               <SelectTrigger
-                className={`w-[92px] sm:w-[104px] shrink-0 h-11 sm:h-auto font-mono font-bold text-[13px] shadow-none cursor-pointer border-0 rounded-none bg-transparent px-3 transition-colors focus:ring-0 ${getMethodColorClass(method)}`}
+                className={`w-[104px] sm:w-[116px] shrink-0 h-12 sm:h-auto font-sans font-semibold text-base tracking-wide shadow-none cursor-pointer border-0 rounded-none bg-transparent px-3.5 transition-colors focus:ring-0 ${getMethodColorClass(method)}`}
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
-                className="w-[110px] p-1 text-xs font-mono font-bold shadow-md rounded-[6px] border border-border"
+                className="w-[128px] p-1.5 text-sm font-sans font-semibold shadow-md rounded-lg border border-border"
                 style={{ background: 'var(--surface-1)' }}
               >
-                <SelectItem value="GET" className="text-[#059669] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                <SelectItem value="GET" className="text-[var(--method-get)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
                   GET
                 </SelectItem>
-                <SelectItem value="POST" className="text-[#e05320] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                <SelectItem value="POST" className="text-[var(--method-post)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
                   POST
                 </SelectItem>
-                <SelectItem value="PUT" className="text-[#0265d2] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                <SelectItem value="PUT" className="text-[var(--method-put)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
                   PUT
                 </SelectItem>
-                <SelectItem value="PATCH" className="text-[#7c3aed] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                <SelectItem value="PATCH" className="text-[var(--method-patch)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
                   PATCH
                 </SelectItem>
-                <SelectItem value="DELETE" className="text-[#dc2626] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-1.5 px-2">
+                <SelectItem value="DELETE" className="text-[var(--method-delete)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
                   DELETE
                 </SelectItem>
               </SelectContent>
@@ -603,7 +565,7 @@ export function Workbench({
             {/* URL Composer */}
             <div className="flex-1 flex items-center min-w-0">
               <div
-                className="hidden lg:flex items-center gap-1.5 pl-3 h-full text-muted-foreground font-mono text-[11px] select-none shrink-0"
+                className="hidden 2xl:flex items-center gap-1.5 pl-3 h-full text-muted-foreground font-mono text-[11px] select-none shrink-0"
               >
                 <Lock size={10} className="text-success" />
                 <span className="text-muted-foreground">{baseUrl}</span>
@@ -648,7 +610,7 @@ export function Workbench({
                   }
                 }}
                 placeholder="/api/payments/p2p/submit"
-                className="flex-1 h-11 sm:h-full px-3 bg-transparent text-sm font-mono text-foreground outline-none placeholder:text-muted-foreground/60 min-w-0"
+                className="flex-1 h-12 sm:h-full px-3 bg-transparent text-sm font-mono text-foreground outline-none placeholder:text-muted-foreground/60 min-w-0"
                 spellCheck={false}
               />
               {detectedVariables.length > 0 && (
@@ -665,7 +627,7 @@ export function Workbench({
             <button
               type="button"
               onClick={handleCopyCurl}
-              className="hidden sm:flex items-center gap-1.5 px-3 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] transition-colors cursor-pointer text-[12px] font-medium"
+              className="hidden sm:flex items-center gap-1.5 px-4 min-h-12 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-2)] transition-colors cursor-pointer text-sm font-medium"
               title="Copy as cURL"
             >
               {copiedCurl ? (
@@ -681,153 +643,57 @@ export function Workbench({
             <button
               onClick={onSend}
               disabled={running || !url.trim()}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 sm:px-6 h-11 sm:h-auto bg-primary text-primary-foreground font-semibold text-sm cursor-pointer transition-all duration-150 hover:brightness-[1.08] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100"
+              className="btn-postman-send flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 sm:px-7 h-12 sm:h-auto font-semibold text-sm cursor-pointer active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {running ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
               <span>{running ? 'Sending…' : 'Send'}</span>
-              {!running && <kbd className="hidden lg:inline text-[10px] font-mono opacity-70 bg-black/15 px-1.5 py-0.5 rounded">Ctrl ↵</kbd>}
+              {!running && <kbd className="hidden 2xl:inline text-[10px] font-mono opacity-70 bg-black/15 px-1.5 py-0.5 rounded">Ctrl ↵</kbd>}
             </button>
           </div>
         </div>
 
-        {/* Security Strip */}
-        <div className="flex flex-wrap items-center justify-between text-[11px] text-muted-foreground px-0.5 gap-2">
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck size={11} className={isStatusInquiry ? 'text-warning' : 'text-success'} />
-              <span className={isStatusInquiry ? 'text-warning/80' : 'text-success/80'}>
-                {isStatusInquiry ? 'HMAC Exempt' : 'HMAC-SHA256 Signed'}
-              </span>
-            </span>
-            <span className="text-muted-foreground">·</span>
-            <span>Plaintext JSON</span>
-          </div>
-        </div>
       </div>
 
       {/* Scrollable Tabs Area — only this part scrolls */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-2.5 sm:px-4 lg:px-5 pb-64 sm:pb-6 overscroll-y-contain">
+      <div className="flex-1 flex flex-col min-h-0 overflow-y-auto px-3 sm:px-5 pb-64 sm:pb-6 overscroll-y-contain">
 
         {/* Postman-Grade Request Tabs */}
-        <Tabs defaultValue="body" className="flex flex-col min-w-0 pt-1">
-          <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 bg-transparent border-b border-border justify-start rounded-none p-0 h-auto gap-4 sm:gap-6 overflow-x-auto overflow-y-hidden shrink-0">
+        <Tabs value={requestTab} onValueChange={setRequestTab} className="flex flex-col min-w-0 pt-1">
+          <TabsList
+            variant="line"
+            className="console-scroll-tabs w-full max-w-full min-w-0 justify-start rounded-xl border border-border/80 bg-[var(--surface-2)] p-1.5 h-auto gap-1.5 overflow-x-auto overflow-y-hidden shrink-0 shadow-[0_8px_24px_rgba(15,45,82,0.05)]"
+          >
             <TabsTrigger
-              value="params"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
+              value="body"
+              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
             >
-              <span>Params</span>
-              {paramRows.filter((p) => p.enabled && p.key).length > 0 && (
-                <span className="font-mono text-xs font-bold text-primary ml-1">
-                  ({paramRows.filter((p) => p.enabled && p.key).length})
-                </span>
+              <Braces className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
+              <span>Body</span>
+              {method !== 'GET' && (
+                <span className="rounded-md bg-[#e8f2ff] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-primary">JSON</span>
               )}
             </TabsTrigger>
 
             <TabsTrigger
               value="headers"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
+              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
             >
+              <ListChecks className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
               <span>Headers</span>
-              <span className="font-mono text-xs text-muted-foreground ml-1">
-                ({headerRows.filter((h) => h.enabled && h.key).length + (isStatusInquiry ? 2 : 4)})
+              <span className="min-w-5 rounded-full bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold leading-none text-primary">
+                {headerRows.filter((h) => h.enabled && h.key).length + (isStatusInquiry ? 2 : 4)}
               </span>
-            </TabsTrigger>
-
-            <TabsTrigger
-              value="body"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
-            >
-              <span>Body</span>
-              {method !== 'GET' && (
-                <span className="text-xs text-primary font-mono ml-1">JSON</span>
-              )}
             </TabsTrigger>
 
             <TabsTrigger
               value="signing"
-              className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs sm:text-sm py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none shrink-0"
+              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
             >
+              <ShieldCheck className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
               <span>Signing Details</span>
+              <span className="hidden sm:inline rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-emerald-700">HMAC</span>
             </TabsTrigger>
           </TabsList>
-
-          {/* PARAMS TAB */}
-          <TabsContent value="params" className="mt-3 flex-1 flex flex-col space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-              <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                Query Parameters
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={addParamRow}
-                className="h-7 text-xs text-primary hover:text-primary hover:bg-muted gap-1 cursor-pointer"
-              >
-                <Plus size={13} />
-                <span>Add Row</span>
-              </Button>
-            </div>
-
-            <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
-              <table className="request-kv-table w-full min-w-[640px] text-xs text-left">
-                <thead className="text-muted-foreground border-b border-border">
-                  <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
-                    <th className="w-8 p-2.5 text-center font-medium">✓</th>
-                    <th className="p-2.5 w-1/3 font-medium">Key</th>
-                    <th className="p-2.5 w-1/2 font-medium">Value</th>
-                    <th className="w-9 p-2.5"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/60 font-mono">
-                  {paramRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="p-6 text-center text-muted-foreground font-sans text-xs">
-                        No query parameters configured. Click &quot;Add Row&quot; or type query parameters directly in the URL path.
-                      </td>
-                    </tr>
-                  ) : (
-                    paramRows.map((row) => (
-                      <tr key={row.id} className="hover:bg-muted/50 transition-colors">
-                        <td className="p-2 text-center">
-                          <input
-                            type="checkbox"
-                            checked={row.enabled}
-                            onChange={(e) => updateParamRow(row.id, 'enabled', e.target.checked)}
-                            className="rounded border-border bg-card text-primary cursor-pointer"
-                          />
-                        </td>
-                        <td className="p-1">
-                          <input
-                            value={row.key}
-                            onChange={(e) => updateParamRow(row.id, 'key', e.target.value)}
-                            placeholder="Key"
-                            className="w-full bg-transparent px-2 py-1 outline-none text-foreground placeholder:text-muted-foreground font-mono text-xs"
-                          />
-                        </td>
-                        <td className="p-1">
-                          <input
-                            value={row.value}
-                            onChange={(e) => updateParamRow(row.id, 'value', e.target.value)}
-                            placeholder="Value"
-                            className="w-full bg-transparent px-2 py-1 outline-none text-foreground placeholder:text-muted-foreground font-mono text-xs"
-                          />
-                        </td>
-                        <td className="p-1 text-center">
-                          <button
-                            onClick={() => deleteParamRow(row.id)}
-                            className="text-muted-foreground hover:text-destructive p-1 transition-colors cursor-pointer"
-                            title="Delete Row"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </TabsContent>
 
           {/* HEADERS TAB */}
           <TabsContent value="headers" className="mt-3 flex-1 flex flex-col space-y-4">
@@ -887,82 +753,6 @@ export function Workbench({
               </div>
             </div>
 
-            {/* Custom Headers Table */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                  Custom Outbound Headers
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={addHeaderRow}
-                  className="h-7 text-xs text-primary hover:text-primary hover:bg-muted gap-1 cursor-pointer"
-                >
-                  <Plus size={13} />
-                  <span>Add Header</span>
-                </Button>
-              </div>
-
-              <div className="border border-border rounded-xl overflow-x-auto" style={{ background: 'var(--surface-1)', boxShadow: 'var(--shadow-card)' }}>
-                <table className="request-kv-table w-full min-w-[640px] text-xs text-left">
-                  <thead className="text-muted-foreground border-b border-border">
-                    <tr className="text-[11px] uppercase tracking-[0.05em] font-semibold">
-                      <th className="w-8 p-2.5 text-center font-medium">✓</th>
-                      <th className="p-2.5 w-1/3 font-medium">Header Name</th>
-                      <th className="p-2.5 w-1/2 font-medium">Header Value</th>
-                      <th className="w-9 p-2.5"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60 font-mono">
-                    {headerRows.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="p-4 text-center text-muted-foreground font-sans text-xs">
-                          No custom headers defined.
-                        </td>
-                      </tr>
-                    ) : (
-                      headerRows.map((row) => (
-                        <tr key={row.id} className="hover:bg-card/60">
-                          <td className="p-2 text-center">
-                            <input
-                              type="checkbox"
-                              checked={row.enabled}
-                              onChange={(e) => updateHeaderRow(row.id, 'enabled', e.target.checked)}
-                              className="rounded border-border bg-card text-primary cursor-pointer"
-                            />
-                          </td>
-                          <td className="p-1">
-                            <input
-                              value={row.key}
-                              onChange={(e) => updateHeaderRow(row.id, 'key', e.target.value)}
-                              placeholder="Header name"
-                              className="w-full bg-transparent px-2 py-1 outline-none text-foreground placeholder:text-muted-foreground font-mono text-xs"
-                            />
-                          </td>
-                          <td className="p-1">
-                            <input
-                              value={row.value}
-                              onChange={(e) => updateHeaderRow(row.id, 'value', e.target.value)}
-                              placeholder="Value"
-                              className="w-full bg-transparent px-2 py-1 outline-none text-foreground placeholder:text-muted-foreground font-mono text-xs"
-                            />
-                          </td>
-                          <td className="p-1 text-center">
-                            <button
-                              onClick={() => deleteHeaderRow(row.id)}
-                              className="text-muted-foreground hover:text-destructive p-1 transition-colors cursor-pointer"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </TabsContent>
 
           {/* BODY TAB */}

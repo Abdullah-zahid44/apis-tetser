@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Copy,
   CheckCircle2,
@@ -15,6 +15,14 @@ import {
   Link2,
   Trash2,
   Code2,
+  Search,
+  X,
+  Maximize2,
+  Minimize2,
+  GitCompareArrows,
+  Settings2,
+  FileJson,
+  ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,14 +34,144 @@ import type { ExecutionResult } from './types';
 interface ResponsePanelProps {
   countrySlug: string;
   result: ExecutionResult | null;
+  previousResult?: ExecutionResult | null;
   running: boolean;
   loadedHistoryId: string | null;
   onClear?: () => void;
+  onOpenEnvironment?: () => void;
 }
 
 interface FoundUrl {
   key: string;
   url: string;
+}
+
+type DiffStatus = 'added' | 'removed' | 'changed' | 'unchanged';
+type DiffRow = { path: string; previous: unknown; current: unknown; status: DiffStatus };
+
+function flattenJson(value: unknown, path = '$', out = new Map<string, unknown>()): Map<string, unknown> {
+  if (value !== null && typeof value === 'object') {
+    const entries = Array.isArray(value) ? value.map((item, index) => [index, item] as const) : Object.entries(value);
+    if (entries.length === 0) out.set(path, value);
+    for (const [key, child] of entries) {
+      flattenJson(child, Array.isArray(value) ? `${path}[${key}]` : `${path}.${key}`, out);
+    }
+  } else {
+    out.set(path, value);
+  }
+  return out;
+}
+
+function buildDiffRows(previous: unknown, current: unknown): DiffRow[] {
+  const before = flattenJson(previous);
+  const after = flattenJson(current);
+  const paths = Array.from(new Set([...before.keys(), ...after.keys()]));
+  return paths.slice(0, 1000).map((path) => {
+    const hasBefore = before.has(path);
+    const hasAfter = after.has(path);
+    const previousValue = before.get(path);
+    const currentValue = after.get(path);
+    const status: DiffStatus = !hasBefore
+      ? 'added'
+      : !hasAfter
+        ? 'removed'
+        : JSON.stringify(previousValue) === JSON.stringify(currentValue)
+          ? 'unchanged'
+          : 'changed';
+    return { path, previous: previousValue, current: currentValue, status };
+  });
+}
+
+function displayDiffValue(value: unknown): string {
+  if (value === undefined) return '—';
+  if (typeof value === 'string') return value;
+  return JSON.stringify(value);
+}
+
+function countMatches(text: string, query: string): number {
+  const needle = query.trim().toLowerCase();
+  if (!needle) return 0;
+  let count = 0;
+  let from = 0;
+  const haystack = text.toLowerCase();
+  while ((from = haystack.indexOf(needle, from)) !== -1) {
+    count += 1;
+    from += Math.max(needle.length, 1);
+  }
+  return count;
+}
+
+function highlightedText(text: string, query: string): React.ReactNode {
+  const needle = query.trim();
+  if (!needle) return text;
+  const parts = text.split(new RegExp(`(${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
+  return parts.map((part, index) =>
+    part.toLowerCase() === needle.toLowerCase() ? (
+      <mark key={index} className="rounded-sm bg-amber-200 px-0.5 text-amber-950">{part}</mark>
+    ) : part
+  );
+}
+
+type ErrorGuidance = {
+  title: string;
+  explanation: string;
+  suggestion: string;
+  environmentShortcut?: boolean;
+};
+
+function getErrorGuidance(result: ExecutionResult): ErrorGuidance {
+  const status = result.upstream.status;
+  const details = `${result.error?.type || ''} ${result.error?.code || ''} ${result.error?.message || ''}`.toLowerCase();
+
+  if (status === 401 || status === 403 || /api.?key|credential|unauthori|forbidden|secret/.test(details)) {
+    return {
+      title: 'Credentials need attention',
+      explanation: 'The gateway could not authenticate this request.',
+      suggestion: 'Check the selected country credentials and API key configuration, then send the request again.',
+      environmentShortcut: true,
+    };
+  }
+  if (result.error?.type === 'TIMEOUT' || /timeout|timed out/.test(details)) {
+    return {
+      title: 'The gateway took too long to respond',
+      explanation: 'The final payment outcome may still be processing even though this request timed out.',
+      suggestion: 'Check the status inquiry before retrying a money-movement request.',
+    };
+  }
+  if (status === 400 || status === 422) {
+    return {
+      title: 'Request data was rejected',
+      explanation: 'One or more body fields are missing, invalid, or formatted incorrectly.',
+      suggestion: 'Review the request body values highlighted by the technical response and try again.',
+    };
+  }
+  if (status === 404) {
+    return {
+      title: 'API route was not found',
+      explanation: 'This endpoint is unavailable on the selected country gateway.',
+      suggestion: 'Confirm the selected API and country, then verify the configured gateway hostname.',
+      environmentShortcut: true,
+    };
+  }
+  if (status === 429) {
+    return {
+      title: 'Too many requests',
+      explanation: 'The gateway rate limit has been reached temporarily.',
+      suggestion: 'Wait briefly before sending again; avoid rapid repeated retries.',
+    };
+  }
+  if (status >= 500) {
+    return {
+      title: 'Gateway service error',
+      explanation: 'The remote service could not complete the request.',
+      suggestion: 'Try again after a short delay. If it continues, share the request ID with the engineering team.',
+    };
+  }
+  return {
+    title: 'Request could not be completed',
+    explanation: 'The gateway returned an unsuccessful response.',
+    suggestion: 'Review the technical details and request body before sending again.',
+  };
 }
 
 /** Strip whitespace + surrounding quote layers gateways sometimes wrap around URL values. */
@@ -187,15 +325,38 @@ function renderBodyWithLinks(text: string, asJson: boolean): React.ReactNode {
 export function ResponsePanel({
   countrySlug,
   result,
+  previousResult = null,
   running,
   loadedHistoryId,
   onClear,
+  onOpenEnvironment,
 }: ResponsePanelProps) {
-  const [copiedType, setCopiedType] = useState<'json' | 'raw' | 'headers' | null>(null);
+  const [copiedType, setCopiedType] = useState<'json' | 'raw' | 'headers' | 'request' | 'meta' | null>(null);
   // Body viewer mode for the Pretty JSON tab: tree is the default for JSON bodies.
   const [bodyView, setBodyView] = useState<'tree' | 'raw'>('tree');
+  const [responseTab, setResponseTab] = useState<'pretty' | 'raw' | 'compare' | 'headers' | 'details' | 'meta'>('pretty');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [changesOnly, setChangesOnly] = useState(true);
 
-  const copyToClipboard = async (text: string, type: 'json' | 'raw' | 'headers') => {
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsFullscreen(false);
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [isFullscreen]);
+
+  useEffect(() => {
+    if (responseTab === 'compare' && !previousResult) setResponseTab('pretty');
+  }, [previousResult, responseTab]);
+
+  useEffect(() => {
+    setSearchQuery('');
+  }, [result?.meta.requestId]);
+
+  const copyToClipboard = async (text: string, type: 'json' | 'raw' | 'headers' | 'request' | 'meta') => {
     if (await copyText(text)) {
       setCopiedType(type);
       setTimeout(() => setCopiedType(null), 1600);
@@ -238,6 +399,19 @@ export function ResponsePanel({
       ? JSON.stringify(result.upstream.body, null, 2)
       : result.upstream.rawBody
     : '';
+
+  const searchMatchCount = useMemo(
+    () => countMatches(prettyJson || result?.upstream.rawBody || '', searchQuery),
+    [prettyJson, result?.upstream.rawBody, searchQuery],
+  );
+
+  const diffRows = useMemo(
+    () => previousResult && result ? buildDiffRows(previousResult.upstream.body, result.upstream.body) : [],
+    [previousResult, result],
+  );
+  const visibleDiffRows = changesOnly ? diffRows.filter((row) => row.status !== 'unchanged') : diffRows;
+  const changedFields = diffRows.filter((row) => row.status !== 'unchanged').length;
+  const errorGuidance = result && !isSuccess ? getErrorGuidance(result) : null;
 
   /** Parsed JSON value for the tree view: object body, or raw text that parses as JSON. */
   const treeData: unknown = React.useMemo(() => {
@@ -299,23 +473,30 @@ export function ResponsePanel({
   };
 
   return (
-    <section className="h-full flex flex-col min-w-0 select-none" style={{ background: 'var(--response-bg)' }}>
+    <>
+      {isFullscreen && <div className="fixed inset-0 z-[90] bg-slate-950/45 backdrop-blur-sm" aria-hidden="true" />}
+      <section
+        className={`${isFullscreen ? 'fixed inset-3 sm:inset-6 z-[100] rounded-2xl border border-border shadow-2xl' : 'h-full'} flex flex-col min-w-0 overflow-hidden`}
+        style={{ background: 'var(--response-bg)' }}
+      >
       {/* Response Panel Header */}
-      <div className="min-h-10 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0 min-w-0" style={{ background: 'var(--surface-2)' }}>
+      <div className="min-h-14 px-3 sm:px-4 py-2 border-b border-[var(--border)] flex items-center justify-between gap-3 shrink-0 min-w-0" style={{ background: 'var(--surface-1)' }}>
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <span className="text-sm font-semibold text-foreground">
             Response
           </span>
-          <span className="text-muted-foreground">•</span>
-          <span className="text-sm font-semibold text-foreground truncate">
-            {running
-              ? 'Sending request'
-              : loadedHistoryId
-                ? 'Saved run'
-                : result
-                  ? `${result.upstream.status} ${result.upstream.statusText || ''}`
-                  : 'Ready'}
-          </span>
+          {(running || loadedHistoryId || result) && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-border-strong" aria-hidden="true" />
+              <span className="text-sm text-muted-foreground truncate">
+                {running
+                  ? 'Sending request'
+                  : loadedHistoryId
+                    ? 'Saved run'
+                    : `${result?.upstream.status ?? ''} ${result?.upstream.statusText || ''}`}
+              </span>
+            </>
+          )}
         </div>
 
         {/* Quick Toolbar Actions */}
@@ -325,7 +506,7 @@ export function ResponsePanel({
               variant="ghost"
               size="sm"
               onClick={() => copyToClipboard(prettyJson, 'json')}
-              className="h-8 text-xs text-secondary-foreground hover:text-foreground hover:bg-accent px-2.5 gap-1.5 cursor-pointer rounded-lg"
+              className="h-9 text-sm text-secondary-foreground hover:text-foreground hover:bg-accent px-3 gap-2 cursor-pointer rounded-lg"
               title="Copy JSON Response"
             >
               {copiedType === 'json' ? (
@@ -336,44 +517,53 @@ export function ResponsePanel({
               <span className="hidden sm:inline">{copiedType === 'json' ? 'Copied' : 'JSON'}</span>
             </Button>
 
-            <Button variant="ghost" size="sm" onClick={downloadExample} className="h-8 text-xs text-secondary-foreground hover:text-foreground hover:bg-accent px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Save response as JSON example"><Download size={12} /><span className="hidden sm:inline">Save example</span></Button>
-            {onClear && <Button variant="ghost" size="sm" onClick={onClear} className="h-8 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10 px-2 sm:px-2.5 gap-1.5 cursor-pointer rounded-lg" title="Clear response"><Trash2 size={12} /><span className="hidden sm:inline">Clear</span></Button>}
+            <Button variant="ghost" size="sm" onClick={downloadExample} className="h-9 text-sm text-secondary-foreground hover:text-foreground hover:bg-accent px-2.5 sm:px-3 gap-2 cursor-pointer rounded-lg" title="Save response as JSON example"><Download size={13} /><span className="hidden sm:inline">Save</span></Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsFullscreen((value) => !value)}
+              className="h-9 px-2.5 text-secondary-foreground hover:text-foreground hover:bg-accent cursor-pointer rounded-lg"
+              title={isFullscreen ? 'Exit full screen' : 'View response full screen'}
+            >
+              {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+            </Button>
+            {onClear && <Button variant="ghost" size="sm" onClick={onClear} className="h-9 text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/10 px-2.5 sm:px-3 gap-2 cursor-pointer rounded-lg" title="Clear response"><Trash2 size={13} /><span className="hidden sm:inline">Clear</span></Button>}
           </div>
         )}
       </div>
 
-      {/* Developer Telemetry Bar */}
-      <div className="min-h-9 px-2 sm:px-3 py-1 border-b border-[var(--border)] flex items-center justify-between font-mono text-xs text-muted-foreground shrink-0 overflow-x-auto" style={{ background: 'var(--surface-1)' }}>
-        {result ? (
+      {/* Response metrics */}
+      {result && (
+        <div className="min-h-12 px-3 sm:px-4 py-2 border-b border-[var(--border)] flex items-center justify-between font-mono text-xs text-muted-foreground shrink-0 overflow-x-auto bg-card">
           <>
-            <div className="flex items-center gap-3 whitespace-nowrap">
+            <div className="flex items-center gap-2 whitespace-nowrap">
               {/* HTTP Status Code Badge */}
               <span
-                className={`flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-bold border ${getStatusBadgeStyle(
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${getStatusBadgeStyle(
                   result.upstream.status
                 )}`}
               >
                 {isSuccess ? <CheckCircle2 size={11} /> : <AlertCircle size={11} />}
                 <span>
-                  {result.upstream.status} {result.upstream.statusText || ''}
+                  {isSuccess ? 'Success' : 'Failed'} · {result.upstream.status} {result.upstream.statusText || ''}
                 </span>
               </span>
 
               {/* Latency */}
-              <span className="flex items-center gap-1 text-secondary-foreground text-xs">
+              <span className="console-metric">
                 <Clock3 size={11} className={result.meta.durationMs < 500 ? 'text-success' : 'text-warning'} />
                 <span>{result.meta.durationMs} ms</span>
               </span>
 
               {/* Payload Size */}
-              <span className="flex items-center gap-1 text-secondary-foreground text-xs">
+              <span className="console-metric">
                 <Activity size={11} className="text-muted-foreground" />
                 <span>{(result.meta.responseSize / 1024).toFixed(2)} KB</span>
               </span>
 
               {/* HMAC Signer Tag */}
               {result.meta.signed && (
-                <span className="hidden sm:flex items-center gap-1 text-xs text-success">
+                <span className="console-metric hidden sm:flex text-success">
                   <ShieldCheck size={11} />
                   <span>Request signed</span>
                 </span>
@@ -384,13 +574,8 @@ export function ResponsePanel({
               ID: {result.meta.requestId.slice(0, 8)}
             </div>
           </>
-        ) : (
-          <div className="flex items-center gap-1.5 text-muted-foreground text-xs">
-            <Activity size={11} />
-            <span>Ready</span>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Main Response Area */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden" style={{ background: 'var(--code-bg)' }}>
@@ -411,26 +596,85 @@ export function ResponsePanel({
           </div>
         ) : result ? (
           <div className="flex-1 flex flex-col min-h-0">
-            {/* Error banner if request failed */}
-            {!isSuccess && result.error && (
-              <Alert variant="destructive" className="m-3 w-auto">
-                <AlertCircle />
-                <AlertTitle>{result.error.type || 'GATEWAY_ERROR'} (HTTP {result.upstream.status})</AlertTitle>
-                <AlertDescription>{result.error.message}</AlertDescription>
-
-                {isTimeout && (
-                  <div className="p-2 rounded bg-warning/10 border border-warning/25 text-warning text-xs flex items-start gap-1.5 mt-1">
-                    <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
-                    <span>
-                      Timeout: Request outcome is uncertain. Do NOT blindly retry money-movement endpoints without checking status inquiry.
-                    </span>
-                  </div>
+            <Tabs
+              value={responseTab}
+              onValueChange={(value) => value && setResponseTab(value as typeof responseTab)}
+              className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden"
+            >
+              <TabsList
+                variant="line"
+                className="response-tabs-list console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden justify-start rounded-none !border-0 border-b border-border/80 bg-[#edf5ff] px-2 py-1.5 h-auto gap-1 shrink-0 shadow-none"
+              >
+                <TabsTrigger value="pretty" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden">
+                  <FileJson size={13} /> Pretty JSON
+                </TabsTrigger>
+                <TabsTrigger value="raw" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden">
+                  <Code2 size={13} /> Raw <span className="hidden min-[400px]:inline">Response</span>
+                </TabsTrigger>
+                {previousResult && (
+                  <TabsTrigger value="compare" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden gap-1.5">
+                    <GitCompareArrows size={13} />
+                    Compare
+                    {changedFields > 0 && (
+                      <span className="rounded-full bg-primary/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-primary">{changedFields}</span>
+                    )}
+                  </TabsTrigger>
                 )}
+                <TabsTrigger value="headers" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden">
+                  <ListChecks size={13} /> Headers <span className="rounded-full bg-primary/10 px-1.5 py-0.5 font-mono text-[9px] text-primary">{Object.keys(result.upstream.headers).length}</span>
+                </TabsTrigger>
+                <TabsTrigger value="details" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden">
+                  <Send size={13} /> Request <span className="hidden min-[400px]:inline">Sent</span>
+                </TabsTrigger>
+                <TabsTrigger value="meta" className="min-h-10 w-auto shrink-0 justify-center rounded-lg !border-0 text-xs px-3 text-muted-foreground font-semibold hover:bg-white/70 hover:text-foreground data-active:bg-white data-active:text-primary cursor-pointer shadow-none after:hidden">
+                  <ShieldCheck size={13} /> Audit Meta
+                </TabsTrigger>
+              </TabsList>
+
+            {/* Error banner if request failed */}
+            {responseTab === 'pretty' && !isSuccess && errorGuidance && (
+              <Alert variant="destructive" className="m-3 w-auto rounded-xl border-destructive/25 bg-destructive/[0.06]">
+                <AlertCircle />
+                <AlertTitle className="text-sm">{errorGuidance.title}</AlertTitle>
+                <AlertDescription className="space-y-2">
+                  <p>{errorGuidance.explanation}</p>
+                  <div className="rounded-lg border border-border bg-background/80 p-2.5 text-foreground">
+                    <span className="font-semibold">What to do: </span>{errorGuidance.suggestion}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {errorGuidance.environmentShortcut && onOpenEnvironment && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={onOpenEnvironment}
+                        className="h-8 gap-1.5 border-destructive/20 bg-background text-xs text-foreground"
+                      >
+                        <Settings2 size={13} />
+                        Open Environment
+                      </Button>
+                    )}
+                    <details className="text-xs text-muted-foreground">
+                      <summary className="cursor-pointer font-medium hover:text-foreground">Technical details</summary>
+                      <div className="mt-1.5 rounded-md bg-slate-950 p-2 font-mono text-slate-200">
+                        {result.error?.type || 'GATEWAY_ERROR'} · HTTP {result.upstream.status}
+                        {result.error?.message ? ` · ${result.error.message}` : ''}
+                      </div>
+                    </details>
+                  </div>
+
+                  {isTimeout && (
+                    <div className="p-2 rounded bg-warning/10 border border-warning/25 text-warning text-xs flex items-start gap-1.5">
+                      <AlertTriangle size={14} className="text-warning shrink-0 mt-0.5" />
+                      <span>Do not blindly retry a money-movement request before checking its status.</span>
+                    </div>
+                  )}
+                </AlertDescription>
               </Alert>
             )}
 
             {/* Payment link quick actions — checkout URL sanitized, ready to copy/open */}
-            {paymentUrls.length > 0 && (
+            {responseTab === 'pretty' && paymentUrls.length > 0 && (
               <div className="mx-3 mt-3 flex items-center gap-2 rounded-lg border border-primary/25 bg-primary/[0.06] px-2.5 py-2 shrink-0">
                 <Link2 size={13} className="text-primary shrink-0" />
                 <div
@@ -474,44 +718,10 @@ export function ResponsePanel({
               </div>
             )}
 
-            <Tabs defaultValue="pretty" className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
-              <TabsList variant="line" className="console-scroll-tabs w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden bg-muted border-b border-border justify-start rounded-none p-0 h-auto gap-4 px-3 shrink-0">
-                <TabsTrigger
-                  value="pretty"
-                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
-                >
-                  Pretty JSON
-                </TabsTrigger>
-                <TabsTrigger
-                  value="raw"
-                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
-                >
-                  Raw Response
-                </TabsTrigger>
-                <TabsTrigger
-                  value="headers"
-                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
-                >
-                  Headers ({Object.keys(result.upstream.headers).length})
-                </TabsTrigger>
-                <TabsTrigger
-                  value="details"
-                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
-                >
-                  Outbound Request
-                </TabsTrigger>
-                <TabsTrigger
-                  value="meta"
-                  className="rounded-none border-0 border-b-2 border-transparent data-active:border-primary data-active:text-foreground data-active:bg-transparent text-xs py-2 px-1 text-muted-foreground font-medium hover:text-foreground transition-colors cursor-pointer shadow-none"
-                >
-                  Audit Meta
-                </TabsTrigger>
-              </TabsList>
-
               {/* Pretty JSON Tab — tree view for JSON bodies, raw text otherwise */}
               <TabsContent value="pretty" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                {canShowTree && (
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  {canShowTree ? (
                     <div className="bg-muted rounded-full p-1 inline-flex" role="group" aria-label="Body view">
                       <button
                         type="button"
@@ -536,33 +746,157 @@ export function ResponsePanel({
                         Raw
                       </button>
                     </div>
+                  ) : <span />}
+                  <div className="flex w-full items-center gap-2 sm:w-auto">
+                    <label className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-lg border border-border bg-background px-2.5 text-xs shadow-sm sm:w-64">
+                      <Search size={13} className="shrink-0 text-muted-foreground" />
+                      <input
+                        value={searchQuery}
+                        onChange={(event) => setSearchQuery(event.target.value)}
+                        placeholder="Search response…"
+                        className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
+                      />
+                      {searchQuery && (
+                        <>
+                          <span className={`shrink-0 font-mono text-[10px] ${searchMatchCount ? 'text-primary' : 'text-destructive'}`}>
+                            {searchMatchCount}
+                          </span>
+                          <button type="button" onClick={() => setSearchQuery('')} className="rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground" title="Clear search">
+                            <X size={12} />
+                          </button>
+                        </>
+                      )}
+                    </label>
+                    <Button variant="outline" size="sm" onClick={() => copyToClipboard(prettyJson, 'json')} className="h-8 shrink-0 rounded-lg gap-1.5 px-2.5 text-xs">
+                      {copiedType === 'json' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                      <span className="hidden min-[400px]:inline">{copiedType === 'json' ? 'Copied' : 'Copy JSON'}</span>
+                    </Button>
                   </div>
-                )}
+                </div>
                 {effectiveBodyView === 'tree' ? (
-                  <JsonTree key={result.meta.requestId} data={treeData} />
+                  <JsonTree key={result.meta.requestId} data={treeData} searchQuery={searchQuery} />
                 ) : (
                   <pre className="text-xs font-mono text-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
-                    {prettyJson ? renderBodyWithLinks(prettyJson, bodyIsObject) : '// Empty response body.'}
+                    {prettyJson
+                      ? searchQuery
+                        ? highlightedText(prettyJson, searchQuery)
+                        : renderBodyWithLinks(prettyJson, bodyIsObject)
+                      : '// Empty response body.'}
                   </pre>
                 )}
               </TabsContent>
 
               {/* Raw Response Tab */}
               <TabsContent value="raw" className="flex-1 min-w-0 overflow-auto p-3 sm:p-4 m-0" style={{ background: 'var(--code-bg)' }}>
-                <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
-                  {result.upstream.rawBody || '// No raw body'}
-                </pre>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Original response</span>
+                  <Button variant="outline" size="sm" onClick={() => copyToClipboard(result.upstream.rawBody || '', 'raw')} className="h-8 rounded-lg gap-1.5 text-xs">
+                    {copiedType === 'raw' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                    {copiedType === 'raw' ? 'Copied' : 'Copy raw'}
+                  </Button>
+                </div>
+                <div className="rounded-xl border border-border bg-card p-3 shadow-sm">
+                  <pre className="text-xs font-mono text-muted-foreground whitespace-pre-wrap break-all leading-relaxed select-text">
+                    {result.upstream.rawBody || '// No raw body'}
+                  </pre>
+                </div>
               </TabsContent>
+
+              {/* Current vs previous response comparison */}
+              {previousResult && (
+                <TabsContent value="compare" className="flex-1 min-w-0 overflow-auto p-3 m-0" style={{ background: 'var(--code-bg)' }}>
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="rounded-full border border-border bg-card px-2.5 py-1 font-mono text-muted-foreground">
+                        Previous: {previousResult.upstream.status}
+                      </span>
+                      <span className="rounded-full border border-border bg-card px-2.5 py-1 font-mono text-foreground">
+                        Current: {result.upstream.status}
+                      </span>
+                      <span className="rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+                        {changedFields} changed
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+                        <input
+                          type="checkbox"
+                          checked={changesOnly}
+                          onChange={(event) => setChangesOnly(event.target.checked)}
+                          className="rounded border-border text-primary"
+                        />
+                        Changes only
+                      </label>
+                      <Button variant="outline" size="sm" onClick={() => copyToClipboard(prettyJson, 'json')} className="h-8 rounded-lg gap-1.5 text-xs">
+                        {copiedType === 'json' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                        {copiedType === 'json' ? 'Copied' : 'Copy current'}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                    <div className="grid min-w-[760px] grid-cols-[minmax(180px,0.8fr)_minmax(260px,1fr)_minmax(260px,1fr)] border-b border-border bg-muted text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      <div className="p-2.5">JSON path</div>
+                      <div className="border-l border-border p-2.5">Previous response</div>
+                      <div className="border-l border-border p-2.5">Current response</div>
+                    </div>
+                    <div className="min-w-[760px] divide-y divide-border/70">
+                      {visibleDiffRows.length === 0 ? (
+                        <div className="p-8 text-center text-sm text-muted-foreground">Responses are identical.</div>
+                      ) : visibleDiffRows.map((row) => (
+                        <div
+                          key={row.path}
+                          className="grid grid-cols-[minmax(180px,0.8fr)_minmax(260px,1fr)_minmax(260px,1fr)] text-xs font-mono"
+                        >
+                          <div className="flex items-start gap-2 p-2.5 text-primary">
+                            <span className={`mt-1 size-1.5 shrink-0 rounded-full ${
+                              row.status === 'added' ? 'bg-emerald-500' : row.status === 'removed' ? 'bg-red-500' : row.status === 'changed' ? 'bg-amber-500' : 'bg-slate-300'
+                            }`} />
+                            <span className="break-all">{row.path}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => void copyText(displayDiffValue(row.previous))}
+                            className={`border-l border-border p-2.5 text-left break-all transition-colors hover:bg-accent/50 ${
+                              row.status === 'removed' || row.status === 'changed' ? 'bg-red-50 text-red-800' : 'text-muted-foreground'
+                            }`}
+                            title="Copy previous value"
+                          >
+                            {displayDiffValue(row.previous)}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void copyText(displayDiffValue(row.current))}
+                            className={`border-l border-border p-2.5 text-left break-all transition-colors hover:bg-accent/50 ${
+                              row.status === 'added' || row.status === 'changed' ? 'bg-emerald-50 text-emerald-800' : 'text-foreground'
+                            }`}
+                            title="Copy current value"
+                          >
+                            {displayDiffValue(row.current)}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+              )}
 
               {/* Headers Tab */}
               <TabsContent value="headers" className="flex-1 overflow-y-auto p-3 m-0" style={{ background: 'var(--code-bg)' }}>
-                <div className="border border-[var(--border)] rounded-lg overflow-x-auto">
-                  <table className="w-full min-w-[520px] text-xs font-mono">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Response headers</span>
+                  <Button variant="outline" size="sm" onClick={() => copyToClipboard(JSON.stringify(result.upstream.headers, null, 2), 'headers')} className="h-8 rounded-lg gap-1.5 text-xs">
+                    {copiedType === 'headers' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                    {copiedType === 'headers' ? 'Copied' : 'Copy headers'}
+                  </Button>
+                </div>
+                <div className="border border-[var(--border)] rounded-xl overflow-x-auto bg-card shadow-sm">
+                  <table className="mobile-card-table w-full min-w-0 sm:min-w-[520px] text-xs font-mono">
                     <tbody className="divide-y divide-[var(--border)]">
                       {Object.entries(result.upstream.headers).map(([k, v]) => (
                         <tr key={k} className="transition-colors hover:bg-accent/50">
-                          <td className="p-2 text-primary font-semibold w-1/3 border-r border-[var(--border)] select-text">{k}</td>
-                          <td className="p-2 text-secondary-foreground break-all select-text">{v}</td>
+                          <td data-label="Header" className="p-2 text-primary font-semibold sm:w-1/3 sm:border-r border-[var(--border)] select-text">{k}</td>
+                          <td data-label="Value" className="p-2 text-secondary-foreground break-all select-text">{v}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -572,11 +906,23 @@ export function ResponsePanel({
 
               {/* Outbound Request Details Tab */}
               <TabsContent value="details" className="flex-1 overflow-y-auto p-3 m-0 space-y-3 text-xs bg-muted">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Executed request</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(JSON.stringify(result.request, null, 2), 'request')}
+                    className="h-8 rounded-lg gap-1.5 bg-card text-xs"
+                  >
+                    {copiedType === 'request' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                    {copiedType === 'request' ? 'Copied' : 'Copy request'}
+                  </Button>
+                </div>
                 <div>
                   <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                     Executed Method & Final URL
                   </span>
-                  <div className="flex items-center gap-2 p-2 rounded bg-card border border-border">
+                  <div className="flex items-start gap-2 p-2 rounded bg-card border border-border">
                     <span className={`font-bold font-mono ${getMethodTokenClass(result.request.method)}`}>{result.request.method}</span>
                     <span className="font-mono text-foreground break-all">{result.request.url}</span>
                   </div>
@@ -588,9 +934,9 @@ export function ResponsePanel({
                   </span>
                   <div className="p-2.5 rounded bg-card border border-border font-mono text-[11px] space-y-1">
                     {Object.entries(result.request.headers).map(([k, v]) => (
-                      <div key={k} className="flex justify-between gap-4">
-                        <span className="text-muted-foreground">{k}:</span>
-                        <span className="text-foreground break-all text-right">{v}</span>
+                      <div key={k} className="flex flex-col gap-1 border-b border-border/60 py-1.5 last:border-b-0 sm:flex-row sm:justify-between sm:gap-4">
+                        <span className="text-muted-foreground shrink-0">{k}:</span>
+                        <span className="text-foreground break-all sm:text-right">{v}</span>
                       </div>
                     ))}
                   </div>
@@ -600,7 +946,7 @@ export function ResponsePanel({
                   <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block mb-1">
                     Outbound Request Body
                   </span>
-                  <pre className="p-2.5 rounded bg-card border border-border font-mono text-[11px] text-secondary-foreground whitespace-pre-wrap">
+                  <pre className="p-2.5 rounded bg-card border border-border font-mono text-[11px] text-secondary-foreground whitespace-pre-wrap break-words overflow-x-auto">
                     {typeof result.request.body === 'object'
                       ? JSON.stringify(result.request.body, null, 2)
                       : String(result.request.body || '(Empty body)')}
@@ -610,6 +956,18 @@ export function ResponsePanel({
 
               {/* Audit Meta Tab */}
               <TabsContent value="meta" className="flex-1 overflow-y-auto p-3 m-0 bg-muted">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">Audit metadata</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(JSON.stringify(result.meta, null, 2), 'meta')}
+                    className="h-8 rounded-lg gap-1.5 bg-card text-xs"
+                  >
+                    {copiedType === 'meta' ? <CheckCircle2 size={12} className="text-success" /> : <Copy size={12} />}
+                    {copiedType === 'meta' ? 'Copied' : 'Copy metadata'}
+                  </Button>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div className="p-2 rounded bg-card border border-border">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Country Gateway</span>
@@ -656,7 +1014,8 @@ export function ResponsePanel({
           </div>
         )}
       </div>
-    </section>
+      </section>
+    </>
   );
 }
 

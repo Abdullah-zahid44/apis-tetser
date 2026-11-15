@@ -15,12 +15,19 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AssanPay Console — API Testing Workspace',
-  description: 'Internal API testing, debugging and support workspace for AssanPay engineering.',
+  title: 'AsaanPay Console — API Testing Workspace',
+  description: 'Internal API testing, debugging and support workspace for AsaanPay engineering.',
   manifest: '/manifest.webmanifest',
-  applicationName: 'AssanPay Developer Console',
-  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'AssanPay' },
-  icons: { apple: [{ url: '/pwa-icon/192', sizes: '192x192', type: 'image/png' }] },
+  applicationName: 'AsaanPay Developer Console',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'AsaanPay' },
+  icons: {
+    icon: [
+      { url: '/icons/asaanpay-app-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/asaanpay-app-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    shortcut: '/icons/asaanpay-app-192.png',
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

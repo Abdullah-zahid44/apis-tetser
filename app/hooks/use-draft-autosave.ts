@@ -13,6 +13,8 @@ export type WorkbenchState = {
   body: string;
   selectedCountry: string;
   environment: Environment;
+  /** Last edited request body for each country/environment/request combination. */
+  bodyDrafts: Record<string, string>;
 };
 
 export type DraftSaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
@@ -30,7 +32,18 @@ function serializeState(s: WorkbenchState): string {
     body: s.body,
     selectedCountry: s.selectedCountry,
     environment: s.environment,
+    bodyDrafts: s.bodyDrafts,
   });
+}
+
+function sanitizeBodyDrafts(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+
+  const entries = Object.entries(raw as Record<string, unknown>)
+    .filter(([key, value]) => key.length > 0 && key.length <= 300 && typeof value === 'string')
+    .slice(-200);
+
+  return Object.fromEntries(entries) as Record<string, string>;
 }
 
 function sanitizeRow(r: unknown, prefix: string, idx: number): ParamRow & HeaderRow {
@@ -57,6 +70,7 @@ function sanitizeDraft(raw: unknown): WorkbenchState | null {
     body: typeof s.body === 'string' ? s.body : '',
     selectedCountry: typeof s.selectedCountry === 'string' && s.selectedCountry ? s.selectedCountry : 'pkr',
     environment: 'sandbox',
+    bodyDrafts: sanitizeBodyDrafts(s.bodyDrafts),
   };
 }
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" role="img" aria-label="Flag of the Philippines">
+  <path fill="#0038a8" d="M0 0h1200v300H0z"/>
+  <path fill="#ce1126" d="M0 300h1200v300H0z"/>
+  <path fill="#fff" d="m0 0 520 300L0 600z"/>
+  <g fill="#fcd116">
+    <circle cx="175" cy="300" r="48"/>
+    <g transform="translate(175 300)">
+      <path d="M-10-115h20l-4 56H-6zM-10 115h20l-4-56H-6zM-115-10v20l56-4V-6zM115-10v20L59 6V-6z"/>
+      <path d="m-88-74 14-14 37 43-8 8zm176 148-14 14-37-43 8-8zM88-74l-14-14-37 43 8 8zM-88 74l14 14 37-43-8-8z"/>
+    </g>
+    <path d="m76 72 10 30h32l-26 19 10 30-26-19-26 19 10-30-26-19h32zm0 377 10 30h32l-26 19 10 30-26-19-26 19 10-30-26-19h32zm349-188 10 30h32l-26 19 10 30-26-19-26 19 10-30-26-19h32z"/>
+  </g>
+</svg>

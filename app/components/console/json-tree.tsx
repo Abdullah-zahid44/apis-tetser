@@ -48,9 +48,11 @@ function collectContainerPaths(
 interface JsonTreeProps {
   /** Already-parsed JSON value to render. */
   data: unknown;
+  /** Case-insensitive response search; matching branches stay expanded. */
+  searchQuery?: string;
 }
 
-export function JsonTree({ data }: JsonTreeProps) {
+export function JsonTree({ data, searchQuery = '' }: JsonTreeProps) {
   // Collapsed container paths. Default: first 2 levels expanded, deeper collapsed.
   const [collapsed, setCollapsed] = useState<Set<string>>(() => {
     const initial = new Set<string>();
@@ -64,13 +66,26 @@ export function JsonTree({ data }: JsonTreeProps) {
   const nodeCount = useRef(0);
   nodeCount.current = 0;
 
+  const markCopied = (path: string) => {
+    setCopiedPath(path);
+    if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
+    copyTimer.current = window.setTimeout(() => setCopiedPath(null), 1200);
+  };
+
   const copyPath = async (path: string) => {
-    if (await copyText(path)) {
-      setCopiedPath(path);
-      if (copyTimer.current !== null) window.clearTimeout(copyTimer.current);
-      copyTimer.current = window.setTimeout(() => setCopiedPath(null), 1200);
+    if (await copyText(path)) markCopied(path);
+  };
+
+  const copyValue = async (value: unknown, path: string) => {
+    const text = typeof value === 'string' ? value : JSON.stringify(value);
+    if (await copyText(text ?? String(value))) {
+      markCopied(path);
     }
   };
+
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const matchesSearch = (value: unknown) =>
+    normalizedSearch.length > 0 && String(value).toLowerCase().includes(normalizedSearch);
 
   const toggle = (path: string) => {
     setCollapsed((prev) => {
@@ -89,15 +104,17 @@ export function JsonTree({ data }: JsonTreeProps) {
   };
 
   const renderLeaf = (value: unknown, path: string): React.ReactNode => {
-    const onCopy = () => void copyPath(path);
+    const onCopy = () => void copyValue(value, path);
     const clickToCopy =
-      'cursor-pointer rounded px-0.5 -ml-0.5 hover:bg-accent/60 transition-colors duration-150';
+      `cursor-pointer rounded px-0.5 -ml-0.5 hover:bg-accent/60 transition-colors duration-150 ${
+        matchesSearch(value) ? 'bg-amber-200/70 text-amber-950 ring-1 ring-amber-300/70' : ''
+      }`;
 
     if (value === null) {
       return (
         <span
           onClick={onCopy}
-          title={`Copy path ${path}`}
+          title="Copy value"
           className={`text-muted-foreground/60 ${clickToCopy}`}
         >
           null
@@ -118,7 +135,7 @@ export function JsonTree({ data }: JsonTreeProps) {
         return (
           <span
             onClick={onCopy}
-            title={`Copy path ${path}`}
+            title="Copy value"
             className={`text-success break-all ${clickToCopy}`}
           >
             {JSON.stringify(value)}
@@ -130,7 +147,7 @@ export function JsonTree({ data }: JsonTreeProps) {
         return (
           <span
             onClick={onCopy}
-            title={`Copy path ${path}`}
+            title="Copy value"
             className={`text-primary tabular-nums ${clickToCopy}`}
           >
             {String(value)}
@@ -138,7 +155,7 @@ export function JsonTree({ data }: JsonTreeProps) {
         );
       case 'boolean':
         return (
-          <span onClick={onCopy} title={`Copy path ${path}`} className={`text-info ${clickToCopy}`}>
+          <span onClick={onCopy} title="Copy value" className={`text-info ${clickToCopy}`}>
             {String(value)}
           </span>
         );
@@ -146,7 +163,7 @@ export function JsonTree({ data }: JsonTreeProps) {
         return (
           <span
             onClick={onCopy}
-            title={`Copy path ${path}`}
+            title="Copy value"
             className={`text-muted-foreground ${clickToCopy}`}
           >
             {String(value)}
@@ -177,7 +194,7 @@ export function JsonTree({ data }: JsonTreeProps) {
       );
     }
 
-    const isCollapsed = collapsed.has(path);
+    const isCollapsed = normalizedSearch.length === 0 && collapsed.has(path);
     const togglePath = () => toggle(path);
     let truncated = false;
 
@@ -227,7 +244,9 @@ export function JsonTree({ data }: JsonTreeProps) {
                         <span
                           onClick={() => void copyPath(keyPath)}
                           title={`Copy path ${keyPath}`}
-                          className="cursor-pointer rounded px-0.5 -ml-0.5 text-foreground transition-colors duration-150 hover:bg-accent/60"
+                          className={`cursor-pointer rounded px-0.5 -ml-0.5 text-foreground transition-colors duration-150 hover:bg-accent/60 ${
+                            matchesSearch(k) ? 'bg-amber-200/70 text-amber-950 ring-1 ring-amber-300/70' : ''
+                          }`}
                         >
                           {k}
                         </span>
@@ -237,7 +256,7 @@ export function JsonTree({ data }: JsonTreeProps) {
                     {renderValue(v, keyPath)}
                     {copiedPath === keyPath && (
                       <span className="ml-1.5 text-[11px] font-semibold uppercase tracking-[0.05em] text-success">
-                        Copied
+                        Copied value
                       </span>
                     )}
                     <span className="text-muted-foreground">,</span>

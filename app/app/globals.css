@@ -71,105 +71,101 @@
   --color-code-bg: var(--code-bg);
 }
 
-/* ==============================================================================
-   DESIGN SYSTEM v2 — Light "Cream" theme (§2)
-   ============================================================================== */
+/* AsaanPay light console — cool white, blue and cyan */
 :root,
 .light,
 [data-theme="light"] {
   color-scheme: light;
-  --canvas: #ffffff;
-  --background: #faf7f1;
-  --foreground: #1c1917;
+  --canvas: #f4f8ff;
+  --background: #f4f8ff;
+  --foreground: #102344;
   --card: #ffffff;
-  --card-foreground: #1c1917;
+  --card-foreground: #102344;
   --popover: #ffffff;
-  --popover-foreground: #1c1917;
-  --primary: #d97706;
-  --primary-hover: #b45309;
-  --primary-active: #92400e;
-  --primary-focus: #d97706;
+  --popover-foreground: #102344;
+  --primary: #0878e8;
+  --primary-hover: #0568d4;
+  --primary-active: #0756b5;
+  --primary-focus: #0878e8;
   --primary-foreground: #ffffff;
-  --secondary: #f3ede2;
-  --secondary-foreground: #1c1917;
-  --muted: #f3ede2;
-  --muted-foreground: #57534e;
-  --accent: #f3ede2;
-  --accent-hover: #e9dfcd;
-  --accent-foreground: #1c1917;
-  --brand-orange: #d97706;
+  --secondary: #edf5ff;
+  --secondary-foreground: #16345f;
+  --muted: #edf5ff;
+  --muted-foreground: #5d6f8b;
+  --accent: #e5f1ff;
+  --accent-hover: #d9eaff;
+  --accent-foreground: #12315e;
+  --brand-orange: #0878e8;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --success: #16a34a;
-  --warning: #d97706;
+  --warning: #e58b0b;
   --info: #2563eb;
   --method-get: #059669;
-  --method-post: #d97706;
+  --method-post: #ea6b12;
   --method-put: #2563eb;
   --method-patch: #7c3aed;
   --method-delete: #dc2626;
-  --border: #e7ddcd;
-  --border-strong: #d9cdb6;
-  --border-tertiary: #c4b498;
-  --input: #e7ddcd;
-  --ring: #d97706;
+  --border: #d7e4f2;
+  --border-strong: #bdd1e7;
+  --border-tertiary: #9fbad8;
+  --input: #cfdeee;
+  --ring: #0878e8;
 
-  --sidebar: #f6f1e7;
-  --sidebar-foreground: #1c1917;
-  --sidebar-primary: #d97706;
+  --sidebar: #f8fbff;
+  --sidebar-foreground: #102344;
+  --sidebar-primary: #0878e8;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #efe8d8;
-  --sidebar-accent-foreground: #b45309;
-  --sidebar-border: #e7ddcd;
-  --sidebar-ring: #d97706;
+  --sidebar-accent: #e7f2ff;
+  --sidebar-accent-foreground: #0756b5;
+  --sidebar-border: #d7e4f2;
+  --sidebar-ring: #0878e8;
 
   --surface-0: #ffffff;
-  --surface-1: #faf7f1;
-  --surface-2: #f3ede2;
-  --surface-3: #e9dfcd;
-  --surface-4: #ddd2ba;
-  --surface-5: #cfc0a6;
+  --surface-1: #f8fbff;
+  --surface-2: #edf5ff;
+  --surface-3: #e2effc;
+  --surface-4: #d6e7f8;
+  --surface-5: #c7ddf2;
 
-  --topbar-bg: #faf7f1;
-  --sidebar-bg: #f6f1e7;
+  --topbar-bg: rgba(248, 251, 255, 0.88);
+  --sidebar-bg: rgba(248, 251, 255, 0.92);
   --workbench-bg: #ffffff;
-  --response-bg: #faf7f1;
-  --code-bg: #f3ede2;
+  --response-bg: #f8fbff;
+  --code-bg: #fbfdff;
 
   /* Elevation ladder (§5): hairline < --shadow-card < --shadow-md < --shadow-overlay */
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
-  --shadow-md: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
-  --shadow-overlay: 0 4px 12px rgb(0 0 0 / 0.06), 0 24px 48px -16px rgb(0 0 0 / 0.18);
+  --shadow-card: 0 1px 2px rgb(15 74 136 / 0.04), 0 12px 30px -16px rgb(37 99 235 / 0.18);
+  --shadow-md: 0 6px 18px rgb(24 89 157 / 0.08), 0 20px 45px -22px rgb(37 99 235 / 0.28);
+  --shadow-overlay: 0 14px 50px rgb(20 67 122 / 0.2);
   /* Legacy alias kept for workbench.tsx (other team): same as --shadow-md */
-  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.05), 0 16px 32px -16px rgb(0 0 0 / 0.12);
+  --shadow-lift: var(--shadow-md);
 }
 
-/* ==============================================================================
-   DESIGN SYSTEM v2 — Dark "Ember" theme (§2). Elevation via tone step, not stronger shadows.
-   ============================================================================== */
+/* AsaanPay dark console — navy */
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;
-  --canvas: #14110d;
-  --background: #14110d;
-  --foreground: #f5efe4;
-  --card: #1e1a15;
-  --card-foreground: #f5efe4;
-  --popover: #241d15;
-  --popover-foreground: #f5efe4;
-  --primary: #f59e0b;
-  --primary-hover: #fbbf24;
-  --primary-active: #d97706;
-  --primary-focus: #f59e0b;
-  --primary-foreground: #1c1917;
-  --secondary: #292420;
-  --secondary-foreground: #f5efe4;
-  --muted: #292420;
-  --muted-foreground: #a8a29e;
-  --accent: #292420;
-  --accent-hover: #332d26;
-  --accent-foreground: #f5efe4;
-  --brand-orange: #f59e0b;
+  --canvas: #071426;
+  --background: #071426;
+  --foreground: #edf6ff;
+  --card: #0d1d33;
+  --card-foreground: #edf6ff;
+  --popover: #10243e;
+  --popover-foreground: #edf6ff;
+  --primary: #38a7ff;
+  --primary-hover: #63baff;
+  --primary-active: #1688e0;
+  --primary-focus: #38a7ff;
+  --primary-foreground: #03111f;
+  --secondary: #142b47;
+  --secondary-foreground: #edf6ff;
+  --muted: #142b47;
+  --muted-foreground: #95a9c3;
+  --accent: #173451;
+  --accent-hover: #1d4062;
+  --accent-foreground: #edf6ff;
+  --brand-orange: #38a7ff;
   --destructive: #f87171;
   --destructive-foreground: #1c1917;
   --success: #4ade80;
@@ -180,33 +176,33 @@
   --method-put: #60a5fa;
   --method-patch: #a78bfa;
   --method-delete: #f87171;
-  --border: #3a332b;
-  --border-strong: #4a4238;
-  --border-tertiary: #5b5145;
-  --input: #3a332b;
-  --ring: #f59e0b;
+  --border: #203a59;
+  --border-strong: #315476;
+  --border-tertiary: #466b90;
+  --input: #274766;
+  --ring: #38a7ff;
 
-  --sidebar: #171310;
-  --sidebar-foreground: #f5efe4;
-  --sidebar-primary: #f59e0b;
-  --sidebar-primary-foreground: #1c1917;
-  --sidebar-accent: #292420;
-  --sidebar-accent-foreground: #fbbf24;
-  --sidebar-border: #3a332b;
-  --sidebar-ring: #f59e0b;
+  --sidebar: #09182b;
+  --sidebar-foreground: #edf6ff;
+  --sidebar-primary: #38a7ff;
+  --sidebar-primary-foreground: #03111f;
+  --sidebar-accent: #173451;
+  --sidebar-accent-foreground: #8bd0ff;
+  --sidebar-border: #203a59;
+  --sidebar-ring: #38a7ff;
 
-  --surface-0: #14110d;
-  --surface-1: #1a1611;
-  --surface-2: #221d16;
-  --surface-3: #292420;
-  --surface-4: #332d26;
-  --surface-5: #3f372c;
+  --surface-0: #071426;
+  --surface-1: #0b1a2e;
+  --surface-2: #10243e;
+  --surface-3: #16304d;
+  --surface-4: #1d3c5b;
+  --surface-5: #274a6b;
 
-  --topbar-bg: #171310;
-  --sidebar-bg: #171310;
-  --workbench-bg: #14110d;
-  --response-bg: #171310;
-  --code-bg: #100d0a;
+  --topbar-bg: rgba(9, 24, 43, 0.9);
+  --sidebar-bg: rgba(9, 24, 43, 0.94);
+  --workbench-bg: #0d1d33;
+  --response-bg: #0b1a2e;
+  --code-bg: #071426;
 
   /* Elevation ladder (§5): same subtle values as light — dark elevation via tone step */
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(0 0 0 / 0.08);
@@ -232,6 +228,64 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.7;
   letter-spacing: -0.16px;
+}
+
+.console-shell {
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 72% 5%, rgb(255 255 255 / 0.95), transparent 32%),
+    radial-gradient(circle at 15% 88%, rgb(103 232 249 / 0.18), transparent 28%),
+    linear-gradient(135deg, #f8fbff 0%, #eef6ff 52%, #f8fbff 100%);
+}
+
+/* Console typography: keep technical density without sacrificing readability. */
+.console-shell .text-xs {
+  font-size: 13px;
+  line-height: 1.25rem;
+}
+
+.console-shell .text-\[11px\] {
+  font-size: 12px;
+  line-height: 1.125rem;
+}
+
+.console-shell .text-\[10px\],
+.console-shell .text-\[9px\] {
+  font-size: 11px;
+  line-height: 1rem;
+}
+
+.console-shell input,
+.console-shell textarea,
+.console-shell button {
+  text-rendering: optimizeLegibility;
+}
+
+.console-shell h1,
+.console-shell h2,
+.console-shell h3,
+.console-shell strong {
+  text-wrap: balance;
+}
+
+.console-shell code,
+.console-shell pre,
+.console-shell .font-mono {
+  font-variant-ligatures: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.console-shell [data-slot='tabs-trigger'] {
+  font-weight: 500;
+}
+
+.dark .console-shell {
+  background:
+    radial-gradient(circle at 72% 5%, rgb(30 64 101 / 0.42), transparent 32%),
+    radial-gradient(circle at 15% 88%, rgb(8 145 178 / 0.18), transparent 28%),
+    linear-gradient(135deg, #071426 0%, #0a1b30 52%, #071426 100%);
 }
 
 /* Postman Heading Type */
@@ -371,7 +425,8 @@ code, pre, kbd,
 
 /* Brand mark — solid primary, no gradient, no glow (§1) */
 .brand-mark {
-  background: var(--primary);
+  background: linear-gradient(135deg, #168cff 0%, #0756c9 58%, #15b8b0 100%);
+  box-shadow: 0 8px 18px -10px rgb(8 120 232 / 0.7);
 }
 
 /* CTA button (Send / Actions) — theme tokens */
@@ -385,6 +440,20 @@ code, pre, kbd,
 }
 .btn-postman-send:active {
   background-color: var(--primary-active);
+}
+
+.console-metric {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--surface-1);
+  padding: 3px 9px;
+  color: var(--secondary-foreground);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .hairline-divider {
@@ -404,10 +473,53 @@ pre {
 .console-scroll-tabs {
   scrollbar-width: thin;
   overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 
 .console-scroll-tabs [data-slot="tabs-trigger"] {
   flex: none;
+  scroll-snap-align: start;
+}
+
+/* Callback inspector: all four actions stay visible on phones instead of
+   becoming a clipped horizontal strip. */
+.callback-tabs-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.callback-tabs-list [data-slot="tabs-trigger"] {
+  border: 0 !important;
+  box-shadow: none;
+}
+
+.callback-tabs-list [data-slot="tabs-trigger"][data-active] {
+  background: var(--card) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 8px rgba(2, 101, 210, 0.1);
+}
+
+.response-tabs-list {
+  display: flex;
+}
+
+.response-tabs-list [data-slot="tabs-trigger"] {
+  border: 0 !important;
+  box-shadow: none;
+}
+
+.response-tabs-list [data-slot="tabs-trigger"][data-active] {
+  background: var(--card) !important;
+  color: var(--primary) !important;
+  box-shadow: 0 2px 8px rgba(2, 101, 210, 0.1);
+}
+
+@media (min-width: 640px) {
+  .callback-tabs-list {
+    display: flex;
+  }
+
 }
 
 @media (max-width: 640px) {

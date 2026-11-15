@@ -4,7 +4,7 @@ import { generateRequestSignature } from './signing';
 import { validateAssanPayUrl } from '../security/ssrf';
 import { sanitizeForAudit } from '../security/audit-sanitizer';
 import { getDb, type Database } from '../db';
-import { apiEndpoints, requestHistory } from '../db/schema';
+import { apiEndpoints, countries, requestHistory } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import type { AuthenticatedUser } from '../auth/session';
 
@@ -475,9 +475,15 @@ async function logHistorySafe(params: {
       params.input.endpointCategory || null,
       params.url
     );
+    const countryRows = await db
+      .select({ id: countries.id })
+      .from(countries)
+      .where(eq(countries.slug, params.input.country))
+      .limit(1);
 
     await db.insert(requestHistory).values({
       userId: params.user?.id || null,
+      countryId: countryRows[0]?.id || null,
       environment: params.input.environment || 'sandbox',
       endpointId: params.input.endpointId || null,
       kind,

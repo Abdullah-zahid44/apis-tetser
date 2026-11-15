@@ -1,7 +1,8 @@
 import React from 'react';
 import { signIn } from '@/lib/auth/config';
-import { ShieldCheck, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AsaanPayLogo } from '@/components/console/asaanpay-logo';
 import {
   Card,
   CardHeader,
@@ -10,10 +11,15 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
+import { redirect } from 'next/navigation';
 
 export default async function LoginPage(props: {
   searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }) {
+  if (process.env.NODE_ENV === 'development' && process.env.DEV_BYPASS_AUTH === 'true') {
+    redirect('/');
+  }
+
   const searchParams = await props.searchParams;
   const isDenied = searchParams.error === 'AccessDenied' || searchParams.error === 'OAuthSignin' || Boolean(searchParams.error);
 
@@ -22,12 +28,9 @@ export default async function LoginPage(props: {
       <div className="w-full max-w-[420px] animate-fade-in">
         <Card>
           <CardHeader className="text-center pb-2">
-            {/* Brand Mark */}
-            <div className="mx-auto brand-mark inline-flex items-center justify-center w-12 h-12 rounded-xl mb-3">
-              <ShieldCheck className="w-6 h-6 text-white" strokeWidth={2.2} />
-            </div>
+            <AsaanPayLogo showWordmark={false} className="mx-auto mb-3 [&>span:first-child]:size-14" />
             <CardTitle className="text-[28px] font-bold tracking-tight text-foreground">
-              AssanPay Console
+              AsaanPay Console
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-1">
               Internal API Workbench &amp; Testing Workspace
@@ -44,7 +47,7 @@ export default async function LoginPage(props: {
                     Authentication Rejected
                   </strong>
                   <span className="text-[11px] leading-relaxed text-muted-foreground">
-                    Access restricted to authorized AssanPay employees only.
+                    Access restricted to authorized AsaanPay employees only.
                   </span>
                 </div>
               </div>

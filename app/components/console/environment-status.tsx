@@ -6,13 +6,9 @@ import {
   CheckCircle2,
   Check,
   X,
-  ShieldCheck,
-  Database,
   Globe,
-  Key,
   AlertTriangle,
   ArrowLeft,
-  Lock,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { SafeConfig, Country } from './types';
@@ -51,37 +47,6 @@ export function EnvironmentStatusView({
             <ArrowLeft size={13} />
             <span>Workbench</span>
           </Button>
-        </div>
-
-        {/* Global Infrastructure Health Bar */}
-        <div className="p-4 rounded-xl bg-card border border-border space-y-2.5">
-          <div className="flex items-center gap-2 text-xs font-semibold text-foreground">
-            <Database size={15} className="text-success" />
-            <span>Infrastructure</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
-              <span className="text-muted-foreground">Database (Neon Postgres)</span>
-              <span className="font-mono text-success flex items-center gap-1 font-bold">
-                <CheckCircle2 size={12} />
-                CONNECTED
-              </span>
-            </div>
-
-            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
-              <span className="text-muted-foreground">HMAC-SHA256 Signer</span>
-              <span className="font-mono text-success flex items-center gap-1 font-bold">
-                <CheckCircle2 size={12} />
-                READY
-              </span>
-            </div>
-
-            <div className="p-2.5 rounded-lg bg-card border border-border flex items-center justify-between">
-              <span className="text-muted-foreground">Payload Encryption</span>
-              <span className="font-mono text-primary">OFF (Plaintext)</span>
-            </div>
-          </div>
         </div>
 
         {/* Country & Gateway Readiness Matrix */}
@@ -221,17 +186,6 @@ export function EnvironmentStatusView({
           </div>
         </div>
 
-        {/* Security & Audit Strip */}
-        <div className="p-3 rounded-xl border border-border bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <ShieldCheck size={14} className="text-success" />
-            <span>Strict server-side validation active. Credentials are never sent to the browser.</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <Lock size={12} />
-            <span>HTTPS Only</span>
-          </div>
-        </div>
       </div>
     </div>
   );
