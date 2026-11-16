@@ -201,6 +201,16 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
             </div>
             <p className="mt-0.5 hidden text-[11px] text-muted-foreground sm:block">Live webhook events and signature verification</p>
           </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setEventSidebarCollapsed((collapsed) => !collapsed)}
+            className="hidden md:flex size-9 shrink-0 rounded-xl border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-primary"
+            title={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
+            aria-label={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
+          >
+            {eventSidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+          </Button>
         </div>
 
         {/* Compact endpoint disclosure on phones */}
@@ -251,16 +261,6 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
 
         {/* Controls */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setEventSidebarCollapsed((collapsed) => !collapsed)}
-            className="hidden md:flex size-9 rounded-xl border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-primary"
-            title={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
-            aria-label={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
-          >
-            {eventSidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
-          </Button>
           <label className="flex h-9 items-center gap-2 rounded-xl border border-border bg-background px-3 text-muted-foreground cursor-pointer select-none">
             <input
               type="checkbox"
