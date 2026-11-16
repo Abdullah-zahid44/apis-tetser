@@ -115,13 +115,14 @@ export function Sidebar({
       style={{ background: 'var(--sidebar-bg)' }}
     >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[var(--border)] flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      <div className="min-h-[72px] px-3.5 py-2.5 border-b border-[var(--border)] flex items-center justify-between gap-2 shrink-0 bg-card">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
             <Layers size={18} />
           </span>
-          <div>
-            <h2 className="text-base font-semibold text-foreground tracking-tight">API Collections</h2>
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-bold leading-tight text-foreground tracking-[-0.01em]">API Collections</h2>
+            <p className="mt-1 truncate text-[10px] text-muted-foreground">Browse {countryName} API requests</p>
           </div>
         </div>
 
@@ -131,7 +132,7 @@ export function Sidebar({
               variant="ghost"
               size="icon"
               onClick={onToggleCollapse}
-              className="w-9 h-9 text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              className="w-9 h-9 shrink-0 rounded-xl border border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-primary hover:bg-primary/5 transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose size={14} />

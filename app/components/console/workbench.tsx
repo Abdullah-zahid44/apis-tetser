@@ -439,27 +439,35 @@ export function Workbench({
   return (
     <section className="h-full flex flex-col min-w-0" style={{ background: 'var(--workbench-bg)' }}>
       {/* Top Workspace Tab Strip & Save Toolbar */}
-      <div className="min-h-14 px-3 sm:px-4 border-b border-[var(--border)] flex items-center justify-between gap-3 shrink-0" style={{ background: 'var(--surface-1)' }}>
-        <div className="flex items-center gap-2 min-w-0 flex-1">
+      <div className="min-h-[72px] px-2.5 sm:px-3 py-2 border-b border-[var(--border)] flex items-center justify-between gap-2.5 sm:gap-3 shrink-0" style={{ background: 'var(--surface-1)' }}>
+        <div className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/80 bg-card px-2.5 sm:px-3 py-2 shadow-[0_3px_12px_rgba(15,45,82,0.05)]">
           {sidebarCollapsed && onToggleSidebar && (
             <Button
               variant="ghost"
               size="icon"
               onClick={onToggleSidebar}
-              className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-3)] cursor-pointer shrink-0 -ml-1 transition-colors"
+              className="h-9 w-9 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 cursor-pointer shrink-0 -ml-1 transition-colors"
               title="Open Collections Sidebar"
             >
               <PanelLeftOpen size={13} />
             </Button>
           )}
 
-          <div className="min-w-0 max-w-xl">
+          <span className="hidden min-[440px]:flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <FileJson size={16} />
+          </span>
+
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 min-w-0">
               <span className={`method-badge ${method.toLowerCase()}`}>{method}</span>
-              <span className="text-sm font-semibold text-foreground truncate" title={name}>{name}</span>
+              <h1 className="min-w-0 truncate text-sm sm:text-[15px] font-bold leading-tight tracking-[-0.01em] text-foreground" title={name}>{name}</h1>
               {dirty && <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" title="Unsaved changes" />}
             </div>
-            <div className="mt-0.5 font-mono text-xs uppercase tracking-wide text-muted-foreground">{countrySlug}</div>
+            <div className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+              <span className="truncate">{countrySlug.toUpperCase()} market</span>
+              <span className="size-1 shrink-0 rounded-full bg-border-strong" />
+              <span className="truncate">{environment}</span>
+            </div>
           </div>
         </div>
 
@@ -505,11 +513,11 @@ export function Workbench({
             size="sm"
             onClick={onSave}
             disabled={saving || !name.trim() || !url.trim()}
-            className="h-9 px-3 border-[var(--border)] text-secondary-foreground text-sm font-medium gap-2 cursor-pointer shadow-none transition-colors hover:text-foreground hover:border-[var(--primary)]/40 bg-card"
+            className="h-10 min-w-10 px-2.5 sm:px-3 rounded-xl border-[var(--border)] text-secondary-foreground text-sm font-semibold gap-2 cursor-pointer shadow-[0_2px_8px_rgba(15,45,82,0.05)] transition-colors hover:text-primary hover:border-[var(--primary)]/40 bg-card"
             title="Save Request to Collection (Ctrl+S)"
           >
             {saving ? <Loader2 size={12} className="spin" /> : <Save size={12} />}
-            <span>Save</span>
+            <span className="hidden min-[420px]:inline">Save</span>
             <kbd className="text-[11px] font-mono text-muted-foreground hidden 2xl:inline ml-0.5">Ctrl S</kbd>
           </Button>
         </div>
