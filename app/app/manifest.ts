@@ -3,9 +3,9 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/',
-    name: 'AsaanPay Developer Console',
-    short_name: 'AsaanPay',
-    description: 'AsaanPay API testing workspace.',
+    name: 'AssanPay Developer Console',
+    short_name: 'AssanPay',
+    description: 'AssanPay API testing workspace.',
     start_url: '/',
     scope: '/',
     display: 'standalone',

@@ -8,7 +8,7 @@ import {
   SidebarMenuButton, SidebarMenuItem, SidebarRail, SidebarSeparator, useSidebar,
 } from '@/components/ui/sidebar';
 import type { View } from './types';
-import { AsaanPayLogo } from './asaanpay-logo';
+import { AssanPayLogo } from './assanpay-logo';
 
 interface NavRailProps {
   view: View;
@@ -53,7 +53,7 @@ export function NavRail({ view, onViewChange, callbackCount, historyCount, onOpe
               tooltip={state === 'collapsed' ? 'Expand sidebar' : 'AssanPay Developer Console'}
               className="transition-colors duration-150"
             >
-              <AsaanPayLogo
+              <AssanPayLogo
                 showWordmark={state !== 'collapsed' || isMobile}
                 className={state === 'collapsed' && !isMobile ? '[&>span:first-child]:!size-8' : undefined}
               />

@@ -71,7 +71,7 @@
   --color-code-bg: var(--code-bg);
 }
 
-/* AsaanPay light console — cool white, blue and cyan */
+/* AssanPay light console — cool white, blue and cyan */
 :root,
 .light,
 [data-theme="light"] {
@@ -142,7 +142,7 @@
   --shadow-lift: var(--shadow-md);
 }
 
-/* AsaanPay dark console — navy */
+/* AssanPay dark console — navy */
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;

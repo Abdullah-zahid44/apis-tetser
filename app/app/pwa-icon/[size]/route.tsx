@@ -21,7 +21,7 @@ export async function GET(request: Request, context: { params: Promise<{ size: s
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={new URL('/asaanpay-logo.png', request.url).toString()}
+        src={new URL('/assanpay-logo.png', request.url).toString()}
         alt=""
         width={size}
         height={size}

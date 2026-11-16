@@ -15,11 +15,11 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'AsaanPay Console — API Testing Workspace',
-  description: 'Internal API testing, debugging and support workspace for AsaanPay engineering.',
+  title: 'AssanPay Console — API Testing Workspace',
+  description: 'Internal API testing, debugging and support workspace for AssanPay engineering.',
   manifest: '/manifest.webmanifest',
-  applicationName: 'AsaanPay Developer Console',
-  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'AsaanPay' },
+  applicationName: 'AssanPay Developer Console',
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'AssanPay' },
   icons: {
     icon: [
       { url: '/icons/asaanpay-app-v2-192.png', sizes: '192x192', type: 'image/png' },

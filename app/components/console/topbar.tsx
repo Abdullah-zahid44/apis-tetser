@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Kbd } from '@/components/ui/kbd';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { signOut } from 'next-auth/react';
-import { AsaanPayLogo } from './asaanpay-logo';
+import { AssanPayLogo } from './assanpay-logo';
 import { InstallAppButton } from './install-app-button';
 import { AnimatedThemeToggler } from '@/registry/magicui/animated-theme-toggler';
 import type { Country, Environment, SafeConfig } from './types';
@@ -138,7 +138,7 @@ export function Topbar({
         <div className="flex md:hidden items-center gap-1 sm:gap-2 min-w-0 shrink-0">
           {/* Mobile nav trigger — opens the nav rail as a slide-over Sheet */}
           <SidebarTrigger className="md:hidden h-10 w-10 text-muted-foreground hover:text-foreground" />
-          <AsaanPayLogo showWordmark={false} />
+          <AssanPayLogo showWordmark={false} />
           {/* Catalog sidebar toggle — visible on all breakpoints */}
           {onToggleSidebar && (
             <button
@@ -218,7 +218,7 @@ export function Topbar({
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-xs font-semibold text-foreground">{c.name}</span>
-                        <span className="block text-[10px] text-muted-foreground"><span className="font-mono font-semibold uppercase">{c.code}</span> · AsaanPay {c.currency} APIs</span>
+                        <span className="block text-[10px] text-muted-foreground"><span className="font-mono font-semibold uppercase">{c.code}</span> · AssanPay {c.currency} APIs</span>
                       </span>
                       <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted-foreground">{c.currency}</span>
                     </span>

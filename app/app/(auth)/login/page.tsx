@@ -2,7 +2,7 @@ import React from 'react';
 import { signIn } from '@/lib/auth/config';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AsaanPayLogo } from '@/components/console/asaanpay-logo';
+import { AssanPayLogo } from '@/components/console/assanpay-logo';
 import {
   Card,
   CardHeader,
@@ -28,9 +28,9 @@ export default async function LoginPage(props: {
       <div className="w-full max-w-[420px] animate-fade-in">
         <Card>
           <CardHeader className="text-center pb-2">
-            <AsaanPayLogo showWordmark={false} className="mx-auto mb-3 [&>span:first-child]:size-14" />
+            <AssanPayLogo showWordmark={false} className="mx-auto mb-3 [&>span:first-child]:size-14" />
             <CardTitle className="text-[28px] font-bold tracking-tight text-foreground">
-              AsaanPay Console
+              AssanPay Console
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-1">
               Internal API Workbench &amp; Testing Workspace
@@ -47,7 +47,7 @@ export default async function LoginPage(props: {
                     Authentication Rejected
                   </strong>
                   <span className="text-[11px] leading-relaxed text-muted-foreground">
-                    Access restricted to authorized AsaanPay employees only.
+                    Access restricted to authorized AssanPay employees only.
                   </span>
                 </div>
               </div>
