@@ -542,7 +542,7 @@ export function Workbench({
               }}
             >
               <SelectTrigger
-                className={`w-[104px] sm:w-[116px] shrink-0 h-12 sm:h-auto font-sans font-semibold text-base tracking-wide shadow-none cursor-pointer border-0 rounded-none bg-transparent px-3.5 transition-colors focus:ring-0 ${getMethodColorClass(method)}`}
+                className={`!h-12 w-[104px] shrink-0 self-stretch rounded-none border-0 bg-transparent px-3.5 py-0 font-sans text-sm font-semibold leading-none tracking-[0.04em] shadow-none transition-colors cursor-pointer focus:ring-0 sm:w-[116px] [&_[data-slot=select-value]]:h-full [&_[data-slot=select-value]]:items-center [&>svg:last-child]:self-center ${getMethodColorClass(method)}`}
               >
                 <SelectValue />
               </SelectTrigger>
