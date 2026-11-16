@@ -169,23 +169,25 @@ export function Topbar({
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="w-[188px] sm:w-[210px] lg:w-[220px] h-11 text-sm font-medium !rounded-lg shadow-[0_2px_8px_rgba(15,45,82,0.06)] hover:border-primary/35 hover:shadow-[0_4px_12px_rgba(15,45,82,0.09)] focus-visible:ring-2 focus-visible:ring-primary/20 transition-all bg-card border-[var(--border)] text-foreground px-2.5"
+              className="group/market relative h-12 w-[200px] overflow-hidden !rounded-2xl border border-slate-200/90 bg-[linear-gradient(135deg,#ffffff_0%,#f7fbff_100%)] py-0 pl-3 pr-11 text-sm text-foreground shadow-[0_5px_16px_rgba(15,45,82,0.08)] transition-all duration-200 after:absolute after:bottom-2.5 after:right-9 after:top-2.5 after:w-px after:bg-slate-200/90 hover:-translate-y-px hover:border-primary/30 hover:shadow-[0_8px_22px_rgba(15,45,82,0.12)] focus-visible:ring-2 focus-visible:ring-primary/20 sm:w-[226px] lg:w-[238px] [&>svg:last-child]:absolute [&>svg:last-child]:right-3 [&>svg:last-child]:size-4 [&>svg:last-child]:text-slate-500 [&>svg:last-child]:transition-transform [&[data-popup-open]>svg:last-child]:rotate-180"
             >
               <SelectValue>
                 {currentCountryObj ? (
-                  <span className="flex items-center gap-2.5 w-full min-w-0">
-                    <span className="flex w-7 shrink-0 items-center justify-center">
+                  <span className="flex w-full min-w-0 items-center gap-3">
+                    <span className="flex w-9 shrink-0 items-center justify-start">
                       <Image
                         src={`/flags/${currentCountryObj.slug}.svg`}
                         alt={`${currentCountryObj.name} flag`}
-                        width={26}
-                        height={18}
-                        className="h-[18px] w-[26px] rounded-[2px] border border-slate-200 object-cover shadow-sm"
+                        width={32}
+                        height={22}
+                        className="h-[22px] w-8 rounded-[3px] border border-slate-200 object-cover shadow-[0_2px_6px_rgba(15,45,82,0.14)]"
                       />
                     </span>
-                    <span className="min-w-0 flex-1 text-left leading-tight">
-                      <span className="block truncate text-xs font-semibold text-foreground">{currentCountryObj.name}</span>
-                      <span className="block font-mono text-[9px] uppercase tracking-[0.08em] text-muted-foreground">{currentCountryObj.code} · {currentCountryObj.currency} market</span>
+                    <span className="min-w-0 flex-1 text-left leading-none">
+                      <span className="block truncate text-[13px] font-bold tracking-[-0.01em] text-slate-900">{currentCountryObj.name}</span>
+                      <span className="mt-1 block truncate text-[9px] font-semibold uppercase tracking-[0.09em] text-slate-500">
+                        {currentCountryObj.code} <span className="px-0.5 text-slate-300">•</span> {currentCountryObj.currency} Market
+                      </span>
                     </span>
                   </span>
                 ) : 'Select Market'}
@@ -194,33 +196,33 @@ export function Topbar({
             <SelectContent
               align="start"
               sideOffset={8}
-              className="w-[min(300px,calc(100vw-24px))] min-w-[260px] rounded-2xl border-border bg-card p-1.5 shadow-[0_18px_50px_rgba(15,45,82,0.18)]"
+              className="w-[min(310px,calc(100vw-24px))] min-w-[270px] rounded-2xl border-slate-200 bg-card p-2 shadow-[0_20px_55px_rgba(15,45,82,0.18)]"
             >
               <SelectGroup className="p-0.5">
-                <SelectLabel className="px-2.5 pb-2 pt-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Select market
+                <SelectLabel className="px-2.5 pb-2 pt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+                  Choose a market
                 </SelectLabel>
                 {countries.map((c) => (
                   <SelectItem
                     key={c.slug}
                     value={c.slug}
-                    className="min-h-12 cursor-pointer rounded-xl py-2 pr-9 pl-2 text-foreground hover:bg-[#eef6ff] focus:bg-[#eef6ff] data-selected:bg-[#eef6ff]"
+                    className="min-h-14 cursor-pointer rounded-xl py-2.5 pr-9 pl-2.5 text-foreground transition-colors hover:bg-[#eef6ff] focus:bg-[#eef6ff] data-selected:bg-[#e8f3ff]"
                   >
-                    <span className="flex w-full min-w-0 items-center gap-2.5">
-                      <span className="flex w-8 shrink-0 items-center justify-center">
+                    <span className="flex w-full min-w-0 items-center gap-3">
+                      <span className="flex w-9 shrink-0 items-center justify-start">
                         <Image
                           src={`/flags/${c.slug}.svg`}
                           alt={`${c.name} flag`}
-                          width={28}
-                          height={19}
-                          className="h-[19px] w-7 rounded-[2px] border border-slate-200 object-cover shadow-sm"
+                          width={32}
+                          height={22}
+                          className="h-[22px] w-8 rounded-[3px] border border-slate-200 object-cover shadow-[0_2px_6px_rgba(15,45,82,0.12)]"
                         />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-xs font-semibold text-foreground">{c.name}</span>
-                        <span className="block text-[10px] text-muted-foreground"><span className="font-mono font-semibold uppercase">{c.code}</span> · AssanPay {c.currency} APIs</span>
+                        <span className="block truncate text-[13px] font-bold tracking-[-0.01em] text-slate-900">{c.name}</span>
+                        <span className="mt-0.5 block text-[10px] font-medium text-slate-500">{c.code} <span className="px-0.5 text-slate-300">•</span> AssanPay APIs</span>
                       </span>
-                      <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-mono text-[9px] font-semibold text-muted-foreground">{c.currency}</span>
+                      <span className="shrink-0 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[9px] font-bold uppercase tracking-[0.06em] text-slate-600 shadow-sm">{c.currency}</span>
                     </span>
                   </SelectItem>
                 ))}
