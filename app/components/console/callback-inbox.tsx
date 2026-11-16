@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Webhook,
   ArrowLeft,
@@ -82,6 +82,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
   const [mobileEndpointOpen, setMobileEndpointOpen] = useState(false);
   const [mobileEventDetailsOpen, setMobileEventDetailsOpen] = useState(false);
   const [eventSidebarCollapsed, setEventSidebarCollapsed] = useState(false);
+  const fetchRequestIdRef = useRef(0);
 
   useEffect(() => {
     setPayloadSearch('');
@@ -98,26 +99,45 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
 
   const callbackUrl = `${origin}/api/callbacks/assanpay/${countrySlug}`;
 
+  // Clear the previous market synchronously on selection changes so records
+  // from the old country never flash while the new feed is loading.
+  useEffect(() => {
+    fetchRequestIdRef.current += 1;
+    setCallbacks([]);
+    setSelectedId(null);
+    setMobileSection('list');
+    setSearch('');
+  }, [countrySlug, environment]);
+
   const fetchCallbacks = useCallback(async () => {
+    const requestId = ++fetchRequestIdRef.current;
     setLoading(true);
     try {
-      const res = await fetch(`/api/callbacks?environment=${environment}&limit=50`, {
+      const params = new URLSearchParams({
+        country: countrySlug,
+        environment,
+        limit: '50',
+      });
+      const res = await fetch(`/api/callbacks?${params.toString()}`, {
         cache: 'no-store',
       });
       if (res.ok) {
         const data = (await res.json()) as { callbacks?: WebhookEventItem[] };
+        if (requestId !== fetchRequestIdRef.current) return;
         const list = data.callbacks || [];
         setCallbacks(list);
-        if (list.length > 0 && !selectedId) {
-          setSelectedId(list[0].id);
-        }
+        setSelectedId((currentId) =>
+          currentId && list.some((item) => item.id === currentId)
+            ? currentId
+            : list[0]?.id ?? null
+        );
       }
     } catch {
       // ignore
     } finally {
-      setLoading(false);
+      if (requestId === fetchRequestIdRef.current) setLoading(false);
     }
-  }, [environment, selectedId]);
+  }, [countrySlug, environment]);
 
   // Initial load
   useEffect(() => {

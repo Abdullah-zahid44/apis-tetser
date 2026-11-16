@@ -10,7 +10,7 @@ export async function GET(request: Request) {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = new URL(request.url);
-  const countrySlug = url.searchParams.get('country');
+  const countrySlug = url.searchParams.get('country')?.trim().toLowerCase();
   const environment = url.searchParams.get('environment');
   const verified = url.searchParams.get('verified');
   const search = url.searchParams.get('search')?.trim();
@@ -18,7 +18,23 @@ export async function GET(request: Request) {
 
   try {
     const db = getDb();
-    const conditions = [];
+    if (!countrySlug) {
+      return Response.json({ error: 'Country is required for callback history.' }, { status: 400 });
+    }
+
+    const countryRows = await db
+      .select({ id: countries.id })
+      .from(countries)
+      .where(eq(countries.slug, countrySlug))
+      .limit(1);
+    const countryId = countryRows[0]?.id;
+    if (!countryId) {
+      return Response.json({ callbacks: [] }, { headers: { 'Cache-Control': 'no-store' } });
+    }
+
+    // Market scope is mandatory: callback feeds must never leak records from
+    // another selected country, regardless of which authenticated user reads it.
+    const conditions = [eq(webhookEvents.countryId, countryId)];
 
     if (environment && environment !== 'all') {
       conditions.push(eq(webhookEvents.environment, environment));
@@ -60,7 +76,7 @@ export async function GET(request: Request) {
       .orderBy(desc(webhookEvents.receivedAt))
       .limit(limit);
 
-    return Response.json({ callbacks: rows });
+    return Response.json({ callbacks: rows }, { headers: { 'Cache-Control': 'no-store' } });
   } catch (err) {
     console.warn('[CALLBACKS] DB query failed:', err);
     return Response.json({ callbacks: [] });

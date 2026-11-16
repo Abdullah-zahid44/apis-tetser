@@ -1,7 +1,8 @@
 import { getDb } from '@/lib/db';
-import { webhookEvents } from '@/lib/db/schema';
+import { countries, webhookEvents } from '@/lib/db/schema';
 import { verifyCallbackSignature } from '@/lib/assanpay/callbacks';
 import { getAssanPayCallbackSecret } from '@/lib/assanpay/credentials';
+import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
   const rawBody = await request.text();
   try {
     const url = new URL(request.url);
-    const market = url.searchParams.get('market') || 'bdt';
+    const market = (url.searchParams.get('market') || 'bdt').trim().toLowerCase();
     const environment = url.searchParams.get('environment') || 'sandbox';
     if (environment !== 'sandbox') {
       return Response.json({ error: 'Invalid callback environment.' }, { status: 404 });
@@ -20,8 +21,19 @@ export async function POST(request: Request) {
 
     try {
       const db = getDb();
+      const countryRows = await db
+        .select({ id: countries.id })
+        .from(countries)
+        .where(eq(countries.slug, market))
+        .limit(1);
+      const countryId = countryRows[0]?.id;
+      if (!countryId) {
+        return Response.json({ received: false, error: 'Unknown callback market.' }, { status: 404 });
+      }
+
       await db.insert(webhookEvents).values({
         eventId: verification.eventId || `auto-${Date.now()}`,
+        countryId,
         environment,
         signature: verification.receivedSignature,
         signatureVerified: verification.valid,
