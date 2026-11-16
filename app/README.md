@@ -24,7 +24,7 @@ Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Aut
 
 ### 1. Multi-Country & Dual Environment Architecture
 - **Global Country Selector**: Seamlessly switch between **Pakistan (PKR)** and **Bangladesh (BDT)**. Built to support future countries without restructuring application code.
-- **Environment Switcher**: Toggle between **Sandbox** and **Production**.
+- **Environment Switcher**: Work in the controlled **Test Environment**.
 - **Live Production Alert**: High-visibility warning badge when connected to Production.
 - **Payout Safety Confirmation**: Modal safeguard before executing money-movement or wallet-disbursement endpoints in Production.
 

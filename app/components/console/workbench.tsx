@@ -51,6 +51,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import type { Method, ParamRow, HeaderRow, SafeConfig } from './types';
 import type { DraftSaveStatus } from '@/hooks/use-draft-autosave';
+import { environmentLabel } from '@/lib/environment-label';
 
 interface WorkbenchProps {
   countrySlug: string;
@@ -466,7 +467,7 @@ export function Workbench({
             <div className="mt-1 flex min-w-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
               <span className="truncate">{countrySlug.toUpperCase()} market</span>
               <span className="size-1 shrink-0 rounded-full bg-border-strong" />
-              <span className="truncate">{environment}</span>
+              <span className="truncate">{environmentLabel(environment)}</span>
             </div>
           </div>
         </div>

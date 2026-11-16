@@ -38,6 +38,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
 import type { WebhookEventItem } from './types';
 import { JsonTree } from './json-tree';
+import { environmentLabel } from '@/lib/environment-label';
 
 interface CallbackInboxProps {
   countrySlug: string;
@@ -172,7 +173,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
       return (
         item.eventId.toLowerCase().includes(q) ||
         item.rawBody.toLowerCase().includes(q) ||
-        item.environment.toLowerCase().includes(q)
+        environmentLabel(item.environment).toLowerCase().includes(q)
       );
     }
     return true;
@@ -439,7 +440,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                     </div>
 
                     <div className="flex items-center justify-between text-[10px] text-muted-foreground font-mono">
-                      <span className="rounded-md bg-muted px-1.5 py-0.5 uppercase">{item.environment}</span>
+                      <span className="rounded-md bg-muted px-1.5 py-0.5 uppercase">{environmentLabel(item.environment, true)}</span>
                       {item.duplicate && (
                         <span className="inline-flex items-center rounded-full bg-warning/10 border border-warning/25 px-1.5 py-0.5 font-semibold text-warning">
                           Duplicate
@@ -492,7 +493,7 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
                   {mobileEventDetailsOpen && (
                     <div className="mt-3 grid grid-cols-2 gap-2 border-t border-border pt-3 text-[10px]">
                       <div><span className="block uppercase tracking-wide text-muted-foreground">Order reference</span><strong className="font-mono text-foreground">{selectedSummary.orderId || '—'}</strong></div>
-                      <div><span className="block uppercase tracking-wide text-muted-foreground">Environment</span><strong className="font-mono uppercase text-foreground">{selectedItem.environment}</strong></div>
+                      <div><span className="block uppercase tracking-wide text-muted-foreground">Environment</span><strong className="font-mono uppercase text-foreground">{environmentLabel(selectedItem.environment)}</strong></div>
                     </div>
                   )}
 

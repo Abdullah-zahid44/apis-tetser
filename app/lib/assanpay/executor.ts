@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { getAssanPayCredentials } from './credentials';
 import { generateRequestSignature } from './signing';
 import { validateAssanPayUrl } from '../security/ssrf';
+import { environmentLabel } from '../environment-label';
 import { sanitizeForAudit } from '../security/audit-sanitizer';
 import { getDb, type Database } from '../db';
 import { apiEndpoints, countries, requestHistory } from '../db/schema';
@@ -78,7 +79,7 @@ export async function executeAssanPayRequest(
     const errObj = {
       type: 'CONFIG_MISSING',
       code: 'CREDENTIALS_NOT_CONFIGURED',
-      message: `${country.toUpperCase()} (${environment.toUpperCase()}) credentials are not configured on the server. Set the appropriate ASSANPAY_${country.toUpperCase()}_* environment variables.`,
+      message: `${country.toUpperCase()} (${environmentLabel(environment)}) credentials are not configured on the server. Set the appropriate ASSANPAY_${country.toUpperCase()}_* environment variables.`,
     };
     return buildErrorResponse(input, 503, 'Configuration Required', errObj, startedAt, requestId, executedAt);
   }

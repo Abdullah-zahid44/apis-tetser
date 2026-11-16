@@ -112,7 +112,7 @@ export function runCallbackTests(): { passed: boolean; message: string }[] {
     results.push({
       passed: getAssanPayCredentials('pkr', 'production').apiKey === undefined &&
         getAssanPayCallbackSecret('pkr', 'production') === undefined,
-      message: 'Never resolves production credentials in sandbox-only mode',
+      message: 'Never resolves production credentials in test-environment mode',
     });
   } finally {
     testKeys.forEach((key, index) => {

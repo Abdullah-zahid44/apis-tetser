@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { JsonTree } from './json-tree';
+import { environmentLabel } from '@/lib/environment-label';
 import type { ExecutionResult } from './types';
 
 interface ResponsePanelProps {
@@ -975,7 +976,7 @@ export function ResponsePanel({
                   </div>
                   <div className="p-2 rounded bg-card border border-border">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Environment</span>
-                    <strong className="text-foreground">{result.meta.environment.toUpperCase()}</strong>
+                    <strong className="text-foreground">{environmentLabel(result.meta.environment)}</strong>
                   </div>
                   <div className="p-2 rounded bg-card border border-border">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">HMAC-SHA256 Status</span>

@@ -179,7 +179,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                 className="h-8 w-full text-xs bg-card border border-border rounded-md px-2 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="all">Global (All Envs)</option>
-                <option value="sandbox">Gateway Only</option>
+                <option value="sandbox">Test Environment</option>
               </select>
             </div>
 
@@ -307,7 +307,7 @@ export function VariablesWorkspace({ countrySlug, environment }: VariablesWorksp
                     </td>
                     <td data-label="Scope" className="p-3">
                       <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-semibold uppercase text-secondary-foreground">
-                        {item.environment === 'sandbox' ? 'Gateway' : item.environment}
+                        {item.environment === 'sandbox' ? 'Test' : item.environment}
                       </span>
                     </td>
                     <td className="p-3 text-muted-foreground font-sans text-xs">{item.description || '—'}</td>

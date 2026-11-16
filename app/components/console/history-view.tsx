@@ -31,6 +31,7 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empt
 import { formatAmount } from '@/lib/parse-amount';
 import type { HistoryItem, Method } from './types';
 import { JsonTree } from './json-tree';
+import { environmentLabel } from '@/lib/environment-label';
 
 interface HistoryViewProps {
   history: HistoryItem[];
@@ -359,7 +360,7 @@ export function HistoryView({
                           {item.method}
                         </span>
                         <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-muted text-secondary-foreground uppercase">
-                          {item.environment}
+                          {environmentLabel(item.environment, true)}
                         </span>
                       </div>
                       <span
@@ -585,7 +586,7 @@ export function HistoryView({
                     </div>
                     <div className="p-2.5 rounded bg-card border border-border">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Environment</span>
-                      <strong className="text-foreground">{selectedItem.environment.toUpperCase()}</strong>
+                      <strong className="text-foreground">{environmentLabel(selectedItem.environment)}</strong>
                     </div>
                     <div className="p-2.5 rounded bg-card border border-border">
                       <span className="text-[11px] font-semibold uppercase tracking-[0.05em] text-muted-foreground block">Signing Status</span>
