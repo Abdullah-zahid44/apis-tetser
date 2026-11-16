@@ -547,22 +547,25 @@ export function Workbench({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent
-                className="w-[128px] p-1.5 text-sm font-sans font-semibold shadow-md rounded-lg border border-border"
+                align="start"
+                alignItemWithTrigger={false}
+                sideOffset={6}
+                className="w-[148px] rounded-2xl border border-border/90 p-1.5 font-sans text-sm font-semibold shadow-[0_14px_32px_-10px_rgba(15,23,42,0.24),0_4px_10px_-4px_rgba(15,23,42,0.12)]"
                 style={{ background: 'var(--surface-1)' }}
               >
-                <SelectItem value="GET" className="text-[var(--method-get)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
+                <SelectItem value="GET" className="h-9 cursor-pointer rounded-xl py-0 pl-3 pr-8 font-mono text-xs font-bold tracking-[0.03em] text-[var(--method-get)] hover:bg-emerald-50 focus:bg-emerald-50 data-selected:bg-emerald-50 dark:hover:bg-emerald-950/35 dark:focus:bg-emerald-950/35 dark:data-selected:bg-emerald-950/35">
                   GET
                 </SelectItem>
-                <SelectItem value="POST" className="text-[var(--method-post)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
+                <SelectItem value="POST" className="h-9 cursor-pointer rounded-xl py-0 pl-3 pr-8 font-mono text-xs font-bold tracking-[0.03em] text-[var(--method-post)] hover:bg-orange-50 focus:bg-orange-50 data-selected:bg-orange-50 dark:hover:bg-orange-950/35 dark:focus:bg-orange-950/35 dark:data-selected:bg-orange-950/35">
                   POST
                 </SelectItem>
-                <SelectItem value="PUT" className="text-[var(--method-put)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
+                <SelectItem value="PUT" className="h-9 cursor-pointer rounded-xl py-0 pl-3 pr-8 font-mono text-xs font-bold tracking-[0.03em] text-[var(--method-put)] hover:bg-blue-50 focus:bg-blue-50 data-selected:bg-blue-50 dark:hover:bg-blue-950/35 dark:focus:bg-blue-950/35 dark:data-selected:bg-blue-950/35">
                   PUT
                 </SelectItem>
-                <SelectItem value="PATCH" className="text-[var(--method-patch)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
+                <SelectItem value="PATCH" className="h-9 cursor-pointer rounded-xl py-0 pl-3 pr-8 font-mono text-xs font-bold tracking-[0.03em] text-[var(--method-patch)] hover:bg-violet-50 focus:bg-violet-50 data-selected:bg-violet-50 dark:hover:bg-violet-950/35 dark:focus:bg-violet-950/35 dark:data-selected:bg-violet-950/35">
                   PATCH
                 </SelectItem>
-                <SelectItem value="DELETE" className="text-[var(--method-delete)] hover:bg-muted/70 focus:bg-muted/70 cursor-pointer py-2 px-2.5">
+                <SelectItem value="DELETE" className="h-9 cursor-pointer rounded-xl py-0 pl-3 pr-8 font-mono text-xs font-bold tracking-[0.03em] text-[var(--method-delete)] hover:bg-red-50 focus:bg-red-50 data-selected:bg-red-50 dark:hover:bg-red-950/35 dark:focus:bg-red-950/35 dark:data-selected:bg-red-950/35">
                   DELETE
                 </SelectItem>
               </SelectContent>
