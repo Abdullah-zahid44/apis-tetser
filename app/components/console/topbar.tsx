@@ -5,7 +5,6 @@ import Image from 'next/image';
 import {
   Bell,
   LogOut,
-  ServerCog,
   Search,
   Wifi,
   WifiOff,
@@ -91,17 +90,17 @@ function LatencyIndicator({ ms }: { ms: number | null | undefined }) {
 function UserAvatar({ name, email, role }: { name?: string | null; email?: string | null; role?: string }) {
   const initials = name ? name.substring(0, 2).toUpperCase() : 'AP';
   return (
-    <div className="hidden sm:flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-2.5 py-1.5 shadow-[var(--shadow-card)]">
-      <div className="text-right hidden lg:block leading-tight">
-        <p className="text-xs font-semibold text-foreground leading-tight">
+    <div className="hidden h-11 items-center gap-3 rounded-full border border-slate-200/90 bg-white pl-4 pr-1.5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] dark:border-slate-800 dark:bg-slate-900 sm:flex">
+      <div className="hidden flex-col items-end justify-center leading-none lg:flex">
+        <p className="text-[12.5px] font-bold leading-tight tracking-[-0.01em] text-slate-900 dark:text-white">
           {name || 'AssanPay Support'}
         </p>
-        <p className="text-[11px] text-muted-foreground font-mono truncate max-w-[150px]">
+        <p className="mt-0.5 max-w-[160px] truncate text-[10.5px] font-medium text-slate-500 dark:text-slate-400">
           {email || 'support@assanpay.com'}
         </p>
       </div>
       <div
-        className="relative w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold select-none shrink-0 cursor-default bg-[linear-gradient(135deg,#4e72a8,#183c73)] text-white"
+        className="flex h-8 w-8 shrink-0 cursor-default select-none items-center justify-center rounded-full bg-[#1e3a6d] text-xs font-bold tracking-wide text-white shadow-sm"
         title={`${name} · ${role || 'support'}`}
       >
         {initials}
@@ -131,13 +130,12 @@ export function Topbar({
 
   return (
     <>
-      <header className="shrink-0 border-b border-[var(--border)] grid grid-cols-[1fr_auto] sm:flex sm:h-[72px] sm:items-center sm:justify-between px-3 sm:px-6 py-2.5 sm:py-0 gap-x-3 gap-y-2.5 z-30 select-none backdrop-blur-xl"
-        style={{ background: 'var(--topbar-bg)' }}>
+      <header className="z-30 grid shrink-0 select-none grid-cols-[1fr_auto] gap-x-3 gap-y-2.5 border-b border-slate-200/70 bg-[#f4f8fd]/90 px-3 py-2.5 backdrop-blur-md transition-colors duration-200 dark:border-slate-800/80 dark:bg-slate-950/90 sm:px-5 md:flex md:h-16 md:items-center md:justify-between md:py-0">
 
         {/* Brand — always visible on all breakpoints */}
-        <div className="flex md:hidden items-center gap-1 sm:gap-2 min-w-0 shrink-0">
+        <div className="flex min-w-0 shrink-0 items-center gap-2 md:hidden">
           {/* Mobile nav trigger — opens the nav rail as a slide-over Sheet */}
-          <SidebarTrigger className="md:hidden h-10 w-10 text-muted-foreground hover:text-foreground" />
+          <SidebarTrigger className="h-11 w-11 rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] hover:border-blue-300 hover:bg-white hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300" />
           <AssanPayLogo showWordmark={false} />
           {/* Catalog sidebar toggle — visible on all breakpoints */}
           {onToggleSidebar && (
@@ -155,37 +153,37 @@ export function Topbar({
         {/* Desktop navigation toggle — remains visible when the rail is collapsed. */}
         <div className="hidden md:flex shrink-0 items-center">
           <SidebarTrigger
-            className="h-10 w-10 rounded-xl border border-border bg-card text-muted-foreground shadow-[0_2px_8px_rgba(15,45,82,0.05)] hover:border-primary/25 hover:bg-accent hover:text-primary"
+            className="h-11 w-11 rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-blue-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_4px_12px_-2px_rgba(15,23,42,0.07)] focus-visible:ring-2 focus-visible:ring-blue-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white"
             title="Toggle navigation sidebar"
             aria-label="Toggle navigation sidebar"
           />
         </div>
 
         {/* Center: Selectors */}
-        <div className="order-3 col-span-2 sm:order-none sm:col-span-1 flex items-center gap-3 min-w-0 sm:flex-1 justify-start sm:justify-center">
+        <div className="order-3 col-span-2 flex min-w-0 items-center justify-start gap-2.5 sm:gap-3 md:order-none md:col-span-1 md:max-w-4xl md:flex-1 md:justify-center">
           {/* Country Selector */}
           <Select
             value={selectedCountry}
             onValueChange={(val) => { if (val) onCountryChange(val); }}
           >
             <SelectTrigger
-              className="group/market relative h-11 w-[min(265px,calc(100vw-24px))] overflow-hidden !rounded-full border border-slate-200/90 bg-white/95 py-0 pl-3.5 pr-12 text-sm text-foreground shadow-[0_2px_8px_-2px_rgba(15,23,42,0.06),0_1px_3px_-1px_rgba(15,23,42,0.04)] transition-all duration-200 after:absolute after:bottom-2.5 after:right-10 after:top-2.5 after:w-px after:bg-slate-200/80 hover:border-blue-300/80 hover:bg-white hover:shadow-[0_5px_14px_-3px_rgba(15,23,42,0.12)] focus-visible:ring-2 focus-visible:ring-blue-500/25 sm:w-[265px] [&>svg:last-child]:absolute [&>svg:last-child]:right-3.5 [&>svg:last-child]:size-4 [&>svg:last-child]:text-slate-500 [&>svg:last-child]:transition-all group-hover/market:[&>svg:last-child]:text-slate-800 [&[data-popup-open]>svg:last-child]:rotate-180"
+              className="group/market relative h-11 w-[190px] shrink-0 overflow-hidden !rounded-full border border-slate-200/90 bg-white py-0 pl-2.5 pr-10 text-sm text-foreground shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 after:absolute after:bottom-3 after:right-8 after:top-3 after:w-px after:bg-slate-200/80 hover:border-blue-300 hover:bg-white hover:shadow-[0_4px_12px_-2px_rgba(15,23,42,0.07)] focus-visible:ring-2 focus-visible:ring-blue-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:after:bg-slate-800 dark:hover:border-slate-700 sm:w-[210px] [&>svg:last-child]:absolute [&>svg:last-child]:right-2.5 [&>svg:last-child]:size-3.5 [&>svg:last-child]:text-slate-500 [&>svg:last-child]:transition-all group-hover/market:[&>svg:last-child]:text-slate-800 dark:group-hover/market:[&>svg:last-child]:text-white [&[data-popup-open]>svg:last-child]:rotate-180"
             >
               <SelectValue>
                 {currentCountryObj ? (
-                  <span className="flex w-full min-w-0 items-center gap-3">
-                    <span className="flex w-8 shrink-0 items-center justify-start">
+                  <span className="flex w-full min-w-0 items-center gap-2.5">
+                    <span className="flex w-7 shrink-0 items-center justify-start">
                       <Image
                         src={`/flags/${currentCountryObj.slug}.svg`}
                         alt={`${currentCountryObj.name} flag`}
-                        width={32}
-                        height={22}
-                        className="h-6 w-8 rounded-[5px] border border-slate-200/70 object-cover shadow-sm"
+                        width={28}
+                        height={20}
+                        className="h-5 w-7 rounded-[4px] border border-slate-200/80 object-cover dark:border-slate-700"
                       />
                     </span>
                     <span className="min-w-0 flex-1 text-left leading-none">
-                      <span className="block truncate text-[14px] font-bold tracking-[-0.01em] text-[#111827]">{currentCountryObj.name}</span>
-                      <span className="mt-0.5 block truncate text-[10.5px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">
+                      <span className="block truncate text-[13px] font-bold leading-tight tracking-[-0.01em] text-[#111827] dark:text-white">{currentCountryObj.name}</span>
+                      <span className="mt-0.5 hidden truncate text-[9.5px] font-semibold uppercase tracking-[0.06em] text-[#64748b] dark:text-slate-400 sm:block">
                         {currentCountryObj.code} <span className="px-0.5 text-slate-300">•</span> {currentCountryObj.currency} Market
                       </span>
                     </span>
@@ -196,33 +194,33 @@ export function Topbar({
             <SelectContent
               align="start"
               sideOffset={10}
-              className="w-[min(355px,calc(100vw-24px))] min-w-[280px] rounded-[24px] border-slate-200/80 bg-white p-3 shadow-[0_20px_38px_-10px_rgba(15,23,42,0.12),0_8px_16px_-6px_rgba(15,23,42,0.06)]"
+              className="w-[min(350px,calc(100vw-24px))] min-w-[280px] rounded-[22px] border-slate-200/90 bg-white p-2.5 shadow-[0_20px_38px_-10px_rgba(15,23,42,0.14),0_8px_16px_-6px_rgba(15,23,42,0.06)] dark:border-slate-800 dark:bg-slate-900"
             >
               <SelectGroup className="p-0">
-                <SelectLabel className="px-3 pb-2.5 pt-1.5 text-[11px] font-bold uppercase tracking-[0.09em] text-[#64748b]">
+                <SelectLabel className="px-3 pb-2 pt-1.5 text-[10.5px] font-bold uppercase tracking-[0.09em] text-[#64748b] dark:text-slate-400">
                   Choose a market
                 </SelectLabel>
                 {countries.map((c) => (
                   <SelectItem
                     key={c.slug}
                     value={c.slug}
-                    className="min-h-[60px] cursor-pointer rounded-2xl py-3 pl-3.5 pr-10 text-foreground transition-all duration-150 hover:bg-slate-50/90 focus:bg-slate-50/90 data-selected:bg-[#eef5ff]"
+                    className="min-h-14 cursor-pointer rounded-2xl py-2.5 pl-3 pr-10 text-foreground transition-all duration-150 hover:bg-slate-50 focus:bg-slate-50 data-selected:bg-[#eef5ff] dark:hover:bg-slate-800/70 dark:focus:bg-slate-800/70 dark:data-selected:bg-blue-950/60"
                   >
-                    <span className="flex w-full min-w-0 items-center gap-3.5">
-                      <span className="flex w-9 shrink-0 items-center justify-start">
+                    <span className="flex w-full min-w-0 items-center gap-3">
+                      <span className="flex w-8 shrink-0 items-center justify-start">
                         <Image
                           src={`/flags/${c.slug}.svg`}
                           alt={`${c.name} flag`}
                           width={32}
                           height={22}
-                          className="h-6 w-9 rounded-[5px] border border-slate-200/80 object-cover shadow-sm"
+                          className="h-5 w-8 rounded-[4px] border border-slate-200/80 object-cover dark:border-slate-700"
                         />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[14.5px] font-bold tracking-[-0.01em] text-[#111827]">{c.name}</span>
-                        <span className="mt-1 block text-[11.5px] font-medium text-[#64748b]"><span className="font-semibold">{c.code}</span> <span className="px-0.5 text-slate-300">•</span> AssanPay APIs</span>
+                        <span className="block truncate text-[13.5px] font-bold tracking-[-0.01em] text-[#111827] dark:text-white">{c.name}</span>
+                        <span className="mt-0.5 block text-[11px] font-medium text-[#64748b] dark:text-slate-400"><span className="font-semibold">{c.code}</span> <span className="px-0.5 text-slate-300 dark:text-slate-600">•</span> AssanPay APIs</span>
                       </span>
-                      <span className="shrink-0 rounded-full border border-slate-200/90 bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.04em] text-[#475569] shadow-sm">{c.currency}</span>
+                      <span className="shrink-0 rounded-full border border-slate-200/90 bg-white px-2.5 py-0.5 text-[10.5px] font-bold uppercase tracking-[0.04em] text-[#475569] shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">{c.currency}</span>
                     </span>
                   </SelectItem>
                 ))}
@@ -236,35 +234,35 @@ export function Topbar({
               variant="outline"
               size="sm"
               onClick={onOpenCommandPalette}
-              className="hidden md:flex h-11 md:w-[240px] lg:w-[320px] xl:w-[400px] 2xl:w-[520px] justify-start gap-3 text-muted-foreground hover:text-foreground border-[var(--border)] bg-card/90 hover:bg-card transition-colors rounded-xl px-4 shadow-[var(--shadow-card)]"
+              className="hidden h-11 min-w-0 flex-1 justify-start gap-2.5 rounded-full border border-slate-200/90 bg-white px-4 text-slate-400 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-blue-300 hover:bg-white hover:text-slate-700 focus-visible:ring-2 focus-visible:ring-blue-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500 dark:hover:border-slate-700 dark:hover:text-slate-200 md:flex md:max-w-xl"
               title="Search API Catalog & Commands (Ctrl+K)"
             >
-              <Search size={13} />
-              <span className="hidden lg:inline 2xl:hidden min-w-0 flex-1 truncate text-left text-sm">Search APIs...</span>
-              <span className="hidden 2xl:inline min-w-0 flex-1 truncate text-left text-sm">Search APIs, collections, or requests...</span>
-              <Kbd className="hidden lg:inline-flex text-[11px] ml-auto">Ctrl K</Kbd>
+              <Search size={16} className="shrink-0" />
+              <span className="min-w-0 flex-1 truncate text-left text-[13px]">Search APIs, collections, or requests...</span>
+              <Kbd className="ml-auto hidden shrink-0 rounded-full border border-slate-200/70 bg-slate-100 px-2.5 py-1 font-mono text-[11px] font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 lg:inline-flex">Ctrl K</Kbd>
             </Button>
           )}
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center justify-end gap-0.5 sm:gap-1 shrink-0">
+        <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
           <InstallAppButton />
 
           <Button
             variant="outline"
             size="icon"
-            className="hidden sm:inline-flex w-10 h-10 rounded-xl bg-card/85 border-border text-foreground shadow-[var(--shadow-card)]"
+            className="relative hidden h-11 w-11 rounded-full border border-slate-200/90 bg-white text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-blue-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_4px_12px_-2px_rgba(15,23,42,0.07)] focus-visible:ring-2 focus-visible:ring-blue-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white sm:inline-flex"
             title="Notifications"
           >
-            <Bell size={16} />
+            <Bell size={18} strokeWidth={1.9} />
+            <span className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white dark:ring-slate-900" />
           </Button>
 
           {/* MagicUI Animated Theme Toggler */}
           <AnimatedThemeToggler
             theme={theme === 'dark' ? 'dark' : 'light'}
             onThemeChange={(newTheme) => onThemeChange(newTheme)}
-            className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-accent rounded-md"
+            className="h-11 w-11 rounded-full border border-slate-200/90 bg-white p-0 text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-blue-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_4px_12px_-2px_rgba(15,23,42,0.07)] focus-visible:ring-2 focus-visible:ring-blue-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white"
             title="Toggle theme"
           />
 
@@ -272,13 +270,13 @@ export function Topbar({
           <UserAvatar name={user?.name} email={user?.email} role={user?.role} />
 
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="w-9 h-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors ml-0.5"
+            className="h-11 w-11 rounded-full border-slate-200/90 bg-white text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-rose-300 hover:bg-rose-50/60 hover:text-rose-600 focus-visible:ring-2 focus-visible:ring-rose-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-rose-800 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
             onClick={() => void signOut({ callbackUrl: '/login' })}
             title="Sign Out"
           >
-            <LogOut size={13} />
+            <LogOut size={18} strokeWidth={1.9} />
           </Button>
         </div>
       </header>

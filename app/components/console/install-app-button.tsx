@@ -66,15 +66,15 @@ export function InstallAppButton() {
   return (
     <>
       <Button
-        variant="ghost"
+        variant="outline"
         size="sm"
         onClick={() => void install()}
-        className="flex h-9 px-2.5 text-muted-foreground hover:text-foreground hover:bg-[var(--surface-5)] gap-1.5"
+        className="hidden h-11 items-center gap-2 rounded-full border-slate-200/90 bg-white px-3 text-slate-600 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition-all duration-150 hover:border-blue-300 hover:bg-white hover:text-slate-900 hover:shadow-[0_4px_12px_-2px_rgba(15,23,42,0.07)] focus-visible:ring-2 focus-visible:ring-blue-500/25 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-700 dark:hover:text-white md:inline-flex xl:px-4"
         title="Install AssanPay Console as an app"
         aria-label="Install AssanPay Console as an app"
       >
-        <Download size={14} />
-        <span className="hidden xl:inline text-xs">Install app</span>
+        <Download size={16} />
+        <span className="hidden text-[13px] font-medium xl:inline">Install app</span>
       </Button>
 
       <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
