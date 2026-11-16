@@ -190,29 +190,6 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
     <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-[#f6f9fd] select-none">
       {/* Top Banner with Webhook URL */}
       <div className="px-3 sm:px-5 py-3 bg-card border-b border-border flex flex-wrap items-center justify-between gap-3 shrink-0 shadow-[0_3px_16px_rgba(15,45,82,0.04)] overflow-hidden">
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-            <Inbox size={19} />
-          </span>
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              <h2 className="text-sm font-bold text-foreground leading-tight">Callback Inbox</h2>
-              <span className="rounded-full bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">{callbacks.length}</span>
-            </div>
-            <p className="mt-0.5 hidden text-[11px] text-muted-foreground sm:block">Live webhook events and signature verification</p>
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setEventSidebarCollapsed((collapsed) => !collapsed)}
-            className="hidden md:flex size-9 shrink-0 rounded-xl border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-primary"
-            title={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
-            aria-label={eventSidebarCollapsed ? 'Show callback list' : 'Hide callback list'}
-          >
-            {eventSidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
-          </Button>
-        </div>
-
         {/* Compact endpoint disclosure on phones */}
         <div className="order-3 w-full sm:hidden">
           <button
@@ -286,8 +263,53 @@ export function CallbackInbox({ countrySlug, environment }: CallbackInboxProps) 
 
       {/* Main Split Panels */}
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
+        {/* Desktop collapsed rail: keeps the reopen action visible. */}
+        {eventSidebarCollapsed && (
+          <div className="hidden md:flex w-14 shrink-0 flex-col items-center gap-2 border-r border-border bg-card py-3 shadow-[2px_0_12px_rgba(15,45,82,0.04)]">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setEventSidebarCollapsed(false)}
+              className="size-9 rounded-xl border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+              title="Show callback inbox"
+              aria-label="Show callback inbox"
+            >
+              <PanelLeftOpen size={16} />
+            </Button>
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary" title="Callback Inbox">
+              <Inbox size={15} />
+            </span>
+          </div>
+        )}
+
         {/* Left Side: Events List */}
         <div className={`${eventSidebarCollapsed ? (mobileSection === 'detail' ? 'hidden md:hidden' : 'flex md:hidden') : (mobileSection === 'detail' ? 'hidden md:flex' : 'flex')} w-full md:w-[350px] xl:w-[390px] h-full md:h-auto shrink-0 border-b md:border-b-0 md:border-r border-border flex-col min-h-0 bg-card transition-[width] duration-200`}>
+          {/* Dedicated inbox header */}
+          <div className="flex min-h-[66px] shrink-0 items-center gap-3 border-b border-border bg-card px-3.5 py-2.5">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+              <Inbox size={17} />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h2 className="truncate text-sm font-bold leading-tight text-foreground">Callback Inbox</h2>
+                <span className="inline-flex h-5 min-w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 px-1.5 font-sans text-[10px] font-bold leading-none tabular-nums text-primary">
+                  {callbacks.length > 99 ? '99+' : callbacks.length}
+                </span>
+              </div>
+              <p className="mt-0.5 truncate text-[10px] text-muted-foreground">Market-specific webhook events</p>
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setEventSidebarCollapsed(true)}
+              className="hidden md:flex size-9 shrink-0 rounded-xl border-border bg-card text-muted-foreground hover:border-primary/25 hover:text-primary"
+              title="Hide callback inbox"
+              aria-label="Hide callback inbox"
+            >
+              <PanelLeftClose size={15} />
+            </Button>
+          </div>
+
           {/* Search & Filter Bar */}
           <div className="p-3 border-b border-border space-y-2.5 bg-card">
             <div className="relative flex items-center">
