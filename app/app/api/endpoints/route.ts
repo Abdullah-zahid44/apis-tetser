@@ -38,11 +38,7 @@ export async function GET(request: Request) {
         return Response.json({ endpoints: endpointsRows.map((endpoint) => {
           const template = INITIAL_ENDPOINTS.find((item) => item.slug === endpoint.slug);
           return template
-            ? {
-                ...endpoint,
-                defaultBody: withCallbackUrl(template.defaultBody || '', template.countrySlug, publicOrigin),
-                requestEncryption: template.requestEncryption || false,
-              }
+            ? { ...endpoint, defaultBody: withCallbackUrl(template.defaultBody || '', template.countrySlug, publicOrigin) }
             : endpoint;
         }) });
       }
@@ -66,7 +62,6 @@ export async function GET(request: Request) {
       defaultHeaders: ep.defaultHeaders || {},
       defaultBody: withCallbackUrl(ep.defaultBody || '', ep.countrySlug, publicOrigin),
       requiresSignature: ep.requiresSignature,
-      requestEncryption: ep.requestEncryption || false,
       signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
       isMoneyMovement: ep.isMoneyMovement || false,
       isActive: true,

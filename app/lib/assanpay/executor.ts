@@ -1,11 +1,6 @@
 import crypto from 'node:crypto';
 import { getAssanPayCredentials } from './credentials';
 import { generateRequestSignature } from './signing';
-import {
-  decryptResponsePayload,
-  encryptRequestPayload,
-  isAssanPayEncryptedPayload,
-} from './encryption';
 import { validateAssanPayUrl } from '../security/ssrf';
 import { environmentLabel } from '../environment-label';
 import { sanitizeForAudit } from '../security/audit-sanitizer';
@@ -26,7 +21,6 @@ export type ExecuteRequestInput = {
   endpointId?: string;
   endpointCategory?: string;
   requiresSignature?: boolean;
-  requestEncryption?: boolean;
   timeoutMs?: number;
   user?: AuthenticatedUser | null;
 };
@@ -53,8 +47,8 @@ export type ExecuteResponseContract = {
     responseSize: number;
     requestId: string;
     signed: boolean;
-    encrypted: boolean;
-    decrypted: boolean;
+    encrypted: false;
+    decrypted: false;
     executedAt: string;
     executedBy?: string;
   };
@@ -86,15 +80,6 @@ export async function executeAssanPayRequest(
       type: 'CONFIG_MISSING',
       code: 'CREDENTIALS_NOT_CONFIGURED',
       message: `${country.toUpperCase()} (${environmentLabel(environment)}) credentials are not configured on the server. Set the appropriate ASSANPAY_${country.toUpperCase()}_* environment variables.`,
-    };
-    return buildErrorResponse(input, 503, 'Configuration Required', errObj, startedAt, requestId, executedAt);
-  }
-
-  if (input.requestEncryption && !creds.mainApiSecret) {
-    const errObj = {
-      type: 'CONFIG_MISSING',
-      code: 'MAIN_API_SECRET_NOT_CONFIGURED',
-      message: `${country.toUpperCase()} encrypted requests require the main merchant API secret for response decryption. Set ASSANPAY_${country.toUpperCase()}_MAIN_API_SECRET (or its SANDBOX variant).`,
     };
     return buildErrorResponse(input, 503, 'Configuration Required', errObj, startedAt, requestId, executedAt);
   }
@@ -132,7 +117,6 @@ export async function executeAssanPayRequest(
   // 3. Prepare body (serialized ONCE)
   let rawBody = '';
   let parsedJsonBody: unknown = null;
-  let requestEncrypted = false;
   if (method !== 'GET' && method !== 'HEAD') {
     rawBody = (input.body || '').trim();
     if (rawBody) {
@@ -149,20 +133,6 @@ export async function executeAssanPayRequest(
         return buildErrorResponse(input, 400, 'Bad Request', errObj, startedAt, requestId, executedAt);
       }
     }
-  }
-
-  if (input.requestEncryption) {
-    if (!parsedJsonBody || typeof parsedJsonBody !== 'object' || Array.isArray(parsedJsonBody)) {
-      const errObj = {
-        type: 'VALIDATION_ERROR',
-        code: 'ENCRYPTION_BODY_REQUIRED',
-        message: 'Encrypted endpoints require a JSON object request body.',
-      };
-      return buildErrorResponse(input, 400, 'Bad Request', errObj, startedAt, requestId, executedAt);
-    }
-    parsedJsonBody = encryptRequestPayload(parsedJsonBody, creds.apiSecret);
-    rawBody = JSON.stringify(parsedJsonBody);
-    requestEncrypted = true;
   }
 
   // 4. Generate headers and HMAC-SHA256 signature
@@ -275,7 +245,7 @@ export async function executeAssanPayRequest(
         method,
         url: targetUrl.toString(),
         headers: sanitizedRequestHeaders,
-        body: parsedJsonBody ?? rawBody,
+        body: parsedJsonBody || rawBody,
       },
       meta: {
         country,
@@ -284,7 +254,7 @@ export async function executeAssanPayRequest(
         responseSize: 0,
         requestId,
         signed,
-        encrypted: requestEncrypted,
+        encrypted: false,
         decrypted: false,
         executedAt,
         executedBy: input.user?.email || 'Anonymous',
@@ -306,24 +276,8 @@ export async function executeAssanPayRequest(
     // Keep as raw text
   }
 
-  let responseDecrypted = false;
-  let decryptionError: string | null = null;
-  if (isAssanPayEncryptedPayload(parsedResponseBody)) {
-    if (!creds.mainApiSecret) {
-      decryptionError = 'Encrypted response received, but the main merchant API secret is not configured.';
-    } else {
-      try {
-        parsedResponseBody = decryptResponsePayload(parsedResponseBody, creds.mainApiSecret);
-        responseDecrypted = true;
-      } catch (error) {
-        decryptionError = error instanceof Error ? error.message : 'Unable to decrypt encrypted response.';
-      }
-    }
-  }
-
   const responseSize = new TextEncoder().encode(rawResponseText).byteLength;
-  const isTransportSuccess = upstreamResponse.status >= 200 && upstreamResponse.status < 300;
-  const isSuccess = isTransportSuccess && !decryptionError;
+  const isSuccess = upstreamResponse.status >= 200 && upstreamResponse.status < 300;
 
   // 7. Write to Audit History (failure-safe)
   void logHistorySafe({
@@ -341,10 +295,8 @@ export async function executeAssanPayRequest(
     payloadSize: responseSize,
     requestId,
     signingStatus: signed ? 'signed' : 'skipped',
-    errorType: isSuccess ? null : decryptionError ? 'DECRYPTION_ERROR' : 'UPSTREAM_HTTP_ERROR',
-    errorMessage: isSuccess
-      ? null
-      : decryptionError || `HTTP ${upstreamResponse.status} ${upstreamResponse.statusText}`,
+    errorType: isSuccess ? null : 'UPSTREAM_HTTP_ERROR',
+    errorMessage: isSuccess ? null : `HTTP ${upstreamResponse.status} ${upstreamResponse.statusText}`,
   });
 
   return {
@@ -360,7 +312,7 @@ export async function executeAssanPayRequest(
       method,
       url: targetUrl.toString(),
       headers: sanitizedRequestHeaders,
-      body: parsedJsonBody ?? rawBody,
+      body: parsedJsonBody || rawBody,
     },
     meta: {
       country,
@@ -369,22 +321,22 @@ export async function executeAssanPayRequest(
       responseSize,
       requestId,
       signed,
-      encrypted: requestEncrypted,
-      decrypted: responseDecrypted,
+      encrypted: false,
+      decrypted: false,
       executedAt,
       executedBy: input.user?.email || 'Anonymous',
     },
     error: isSuccess
       ? undefined
       : {
-          type: decryptionError ? 'DECRYPTION_ERROR' : 'UPSTREAM_HTTP_ERROR',
-          code: decryptionError ? 'RESPONSE_DECRYPTION_FAILED' : String(upstreamResponse.status),
-          message: decryptionError ||
-            (typeof parsedResponseBody === 'object' &&
+          type: 'UPSTREAM_HTTP_ERROR',
+          code: String(upstreamResponse.status),
+          message:
+            typeof parsedResponseBody === 'object' &&
             parsedResponseBody !== null &&
             'message' in parsedResponseBody
               ? String((parsedResponseBody as { message: unknown }).message)
-              : `Upstream error HTTP ${upstreamResponse.status}`),
+              : `Upstream error HTTP ${upstreamResponse.status}`,
         },
   };
 }

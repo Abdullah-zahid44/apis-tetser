@@ -82,7 +82,6 @@ export default function ConsoleDashboard() {
   const [paramRows, setParamRows] = useState<ParamRow[]>([]);
   const [headerRows, setHeaderRows] = useState<HeaderRow[]>([]);
   const [requiresSignature, setRequiresSignature] = useState<boolean>(true);
-  const [requestEncryption, setRequestEncryption] = useState<boolean>(false);
   const [bodyDrafts, setBodyDrafts] = useState<Record<string, string>>({});
 
   // Execution & Persistence UI State
@@ -256,7 +255,6 @@ export default function ConsoleDashboard() {
             const savedBody = bodyDraftsRef.current[draftKey];
             setBody(savedBody ?? autoRefreshPayloadIdentifiers(first.defaultBody || ''));
             setRequiresSignature(first.requiresSignature);
-            setRequestEncryption(first.requestEncryption || false);
             setDirty(false);
             setResult(null);
 
@@ -449,7 +447,6 @@ export default function ConsoleDashboard() {
     const draftKey = requestBodyDraftKey(selectedCountry, environment, ep.id);
     setBody(bodyDraftsRef.current[draftKey] ?? autoRefreshPayloadIdentifiers(ep.defaultBody || ''));
     setRequiresSignature(ep.requiresSignature);
-    setRequestEncryption(ep.requestEncryption || false);
     setResult(null);
     setPreviousResult(null);
     setDirty(false);
@@ -480,7 +477,6 @@ export default function ConsoleDashboard() {
     const requestId = `saved-${saved.id}`;
     const draftKey = requestBodyDraftKey(selectedCountry, environment, requestId);
     setBody(bodyDraftsRef.current[draftKey] ?? saved.requestBody ?? '');
-    setRequestEncryption(false);
     setResult(null);
     setPreviousResult(null);
     setDirty(false);
@@ -562,7 +558,6 @@ export default function ConsoleDashboard() {
     setUrl(item.url);
     const draftKey = requestBodyDraftKey(selectedCountry, environment, requestId);
     setBody(bodyDraftsRef.current[draftKey] ?? item.requestBody ?? '');
-    setRequestEncryption(false);
     setLoadedHistoryId(item.id);
     setDirty(false);
     setView('workbench');
@@ -660,7 +655,6 @@ export default function ConsoleDashboard() {
           endpointId: UUID_RE.test(selectedId) ? selectedId : undefined,
           endpointCategory: selectedCategory || undefined,
           requiresSignature,
-          requestEncryption,
         }),
       });
 

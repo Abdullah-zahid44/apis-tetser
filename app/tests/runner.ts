@@ -6,7 +6,6 @@ import { runCallbackTests } from './callbacks.test';
 import { runParseAmountTests } from './parse-amount.test';
 import { runSuggestTests } from './variables-suggest.test';
 import { runHistoryKindTests } from './history-kind.test';
-import { runEncryptionTests } from './encryption.test';
 
 async function main() {
   console.log('🧪 Running AssanPay Console Test Suites...\n');
@@ -16,7 +15,6 @@ async function main() {
     { name: 'Postman-Style Variable Resolver', runner: runVariableTests },
     { name: 'SSRF Host Validation & Audit Masking', runner: runSecurityTests },
     { name: 'HMAC-SHA256 Request Signing Spec', runner: runSigningTests },
-    { name: 'AES-256-GCM Request/Response Encryption Spec', runner: runEncryptionTests },
     { name: 'Webhook Callback Verification & Raw Body Integrity', runner: runCallbackTests },
     { name: 'Amount Parsing for History Feed', runner: runParseAmountTests },
     { name: 'Variable Autocomplete Suggestions', runner: runSuggestTests },

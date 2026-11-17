@@ -42,10 +42,7 @@ export async function seed() {
   }
 
   // 2. Seed endpoints
-  const endpointOrderByCountry = new Map<string, number>();
   for (const ep of INITIAL_ENDPOINTS) {
-    const displayOrder = (endpointOrderByCountry.get(ep.countrySlug) || 0) + 1;
-    endpointOrderByCountry.set(ep.countrySlug, displayOrder);
     const countryId = countryMap.get(ep.countrySlug);
     if (!countryId) {
       console.warn(`⚠️ Skipping endpoint ${ep.slug}: Country ${ep.countrySlug} not found.`);
@@ -60,22 +57,7 @@ export async function seed() {
 
     if (existing.length > 0) {
       await db.update(apiEndpoints)
-        .set({
-          countryId,
-          name: ep.name,
-          category: ep.category,
-          description: ep.description,
-          method: ep.method,
-          path: ep.path,
-          defaultQuery: ep.defaultQuery || {},
-          defaultHeaders: ep.defaultHeaders || {},
-          defaultBody: ep.defaultBody || '',
-          requiresSignature: ep.requiresSignature,
-          signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
-          isMoneyMovement: ep.isMoneyMovement || false,
-          isActive: true,
-          displayOrder,
-        })
+        .set({ defaultBody: ep.defaultBody || '' })
         .where(eq(apiEndpoints.slug, ep.slug));
       console.log(`✓ Endpoint ${ep.name} (${ep.slug}) already exists.`);
     } else {
@@ -94,7 +76,6 @@ export async function seed() {
         signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
         isMoneyMovement: ep.isMoneyMovement || false,
         isActive: true,
-        displayOrder,
       });
       console.log(`✓ Inserted endpoint: ${ep.name} (${ep.slug})`);
     }
