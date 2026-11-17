@@ -6,6 +6,7 @@ import { runCallbackTests } from './callbacks.test';
 import { runParseAmountTests } from './parse-amount.test';
 import { runSuggestTests } from './variables-suggest.test';
 import { runHistoryKindTests } from './history-kind.test';
+import { runCryptoCatalogTests } from './crypto-catalog.test';
 
 async function main() {
   console.log('🧪 Running AssanPay Console Test Suites...\n');
@@ -19,6 +20,7 @@ async function main() {
     { name: 'Amount Parsing for History Feed', runner: runParseAmountTests },
     { name: 'Variable Autocomplete Suggestions', runner: runSuggestTests },
     { name: 'History Kind Classification (payin/payout)', runner: runHistoryKindTests },
+    { name: 'USDT TRC-20 Crypto API Catalog', runner: runCryptoCatalogTests },
   ];
 
   let total = 0;

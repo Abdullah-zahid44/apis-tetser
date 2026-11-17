@@ -56,6 +56,14 @@ export const INITIAL_COUNTRIES: CountryDefinition[] = [
     flagEmoji: '🇵🇭',
     displayOrder: 4,
   },
+  {
+    code: 'CRYPTO',
+    slug: 'crypto',
+    name: 'Crypto (USDT TRC-20)',
+    currency: 'USDT',
+    flagEmoji: '₮',
+    displayOrder: 5,
+  },
 ];
 
 export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
@@ -729,6 +737,81 @@ export const INITIAL_ENDPOINTS: EndpointDefinition[] = [
     name: 'Balance Check API',
     category: 'Balance',
     description: 'Check available balance, ledger balance, and branch breakdowns in PHP.',
+    method: 'GET',
+    path: '/api/merchant/balance/h2h',
+    requiresSignature: true,
+    defaultBody: '',
+  },
+
+  // --- CRYPTO: USDT ON TRON (TRC-20) ---
+  {
+    slug: 'crypto-payin',
+    countrySlug: 'crypto',
+    name: 'Create USDT Pay-in (H2H)',
+    category: 'Payin',
+    description: 'Creates a USDT TRC-20 payin and returns a fresh deposit address, QR payload, exact amount, and expiry.',
+    method: 'POST',
+    path: '/api/payments',
+    requiresSignature: true,
+    isMoneyMovement: true,
+    defaultBody: JSON.stringify(
+      {
+        branchCode: '{{branchCode}}',
+        orderId: '{{orderId}}',
+        amount: 25.5,
+        currency: 'USDT',
+        callbackUrl: '',
+        expiresInMinutes: 30,
+      },
+      null,
+      2
+    ),
+  },
+  {
+    slug: 'crypto-checkout',
+    countrySlug: 'crypto',
+    name: 'Hosted USDT Checkout Session',
+    category: 'Checkout',
+    description: 'Creates a hosted USDT TRC-20 checkout session and returns a customer-facing checkout URL.',
+    method: 'POST',
+    path: '/api/checkout/sessions',
+    requiresSignature: true,
+    defaultBody: JSON.stringify(
+      {
+        orderId: '{{orderId}}',
+        amount: 49.99,
+        branchCode: '{{branchCode}}',
+        currency: 'USDT',
+        callbackUrl: '',
+        successUrl: 'https://merchant.example.com/checkout/success',
+        failedUrl: 'https://merchant.example.com/checkout/failed',
+        pendingUrl: 'https://merchant.example.com/checkout/pending',
+        expiresInSeconds: 1800,
+      },
+      null,
+      2
+    ),
+  },
+  {
+    slug: 'crypto-payin-status',
+    countrySlug: 'crypto',
+    name: 'USDT Pay-in Status Inquiry',
+    category: 'Status',
+    description: 'Gets the latest USDT payin state by orderId. This endpoint requires X-API-KEY only.',
+    method: 'GET',
+    path: '/api/merchant/status-inquiry',
+    defaultQuery: {
+      orderId: '{{orderId}}',
+    },
+    requiresSignature: false,
+    defaultBody: '',
+  },
+  {
+    slug: 'crypto-balance',
+    countrySlug: 'crypto',
+    name: 'USDT Balance',
+    category: 'Balance',
+    description: 'Returns merchant-wide or branch-filtered USDT ledger, available, pending, and unsettled balances.',
     method: 'GET',
     path: '/api/merchant/balance/h2h',
     requiresSignature: true,

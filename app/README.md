@@ -2,7 +2,7 @@
 
 An enterprise-grade internal API testing, debugging, and webhook inspection workspace engineered specifically for the **AssanPay Support and Technical Engineering teams**.
 
-Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Auth.js**, and **Tailwind CSS**, this tool empowers support engineers to debug merchant integration issues, inspect canonical signing headers, test API endpoints, receive callbacks in real-time, and maintain comprehensive audit logs across multiple countries (Pakistan 🇵🇰, Bangladesh 🇧🇩, and future markets).
+Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Auth.js**, and **Tailwind CSS**, this tool empowers support engineers to debug merchant integration issues, inspect canonical signing headers, test API endpoints, receive callbacks in real-time, and maintain comprehensive audit logs across fiat markets plus **USDT on TRON (TRC-20)**.
 
 ---
 
@@ -23,7 +23,7 @@ Built with **Next.js (App Router)**, **Neon PostgreSQL**, **Drizzle ORM**, **Aut
 ## Key Features
 
 ### 1. Multi-Country & Dual Environment Architecture
-- **Global Country Selector**: Seamlessly switch between **Pakistan (PKR)** and **Bangladesh (BDT)**. Built to support future countries without restructuring application code.
+- **Global Market Selector**: Switch between **Pakistan (PKR)**, **Bangladesh (BDT)**, **Indonesia (IDR)**, **Philippines (PHP)**, and **Crypto (USDT on TRON/TRC-20)**.
 - **Environment Switcher**: Work in the controlled **Test Environment**.
 - **Live Production Alert**: High-visibility warning badge when connected to Production.
 - **Payout Safety Confirmation**: Modal safeguard before executing money-movement or wallet-disbursement endpoints in Production.
@@ -114,7 +114,7 @@ AUTH_GOOGLE_SECRET=GOCSPX-your_client_secret
 DEV_BYPASS_AUTH=false
 
 
-# Gateway credentials (server-only; see .env.example for all four countries)
+# Gateway credentials (server-only; see .env.example for every configured market)
 ASSANPAY_PKR_BASE_URL=https://pc.assanpay.com/
 ASSANPAY_PKR_API_KEY=your_branch_key
 ASSANPAY_PKR_API_SECRET=your_branch_secret
@@ -134,12 +134,18 @@ ASSANPAY_PHP_BASE_URL=https://ph-sandbox.assanpay.com/
 ASSANPAY_PHP_API_KEY=your_branch_key
 ASSANPAY_PHP_API_SECRET=your_branch_secret
 ASSANPAY_PHP_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+
+# Crypto - USDT on TRON (TRC-20)
+ASSANPAY_CRYPTO_BASE_URL=https://crypto-api.assanpay.com/
+ASSANPAY_CRYPTO_API_KEY=your_crypto_branch_key
+ASSANPAY_CRYPTO_API_SECRET=your_crypto_branch_secret
+ASSANPAY_CRYPTO_MAIN_API_SECRET=your_crypto_main_merchant_secret
 ```
 
 For Vercel, add these variables in Project Settings -> Environment Variables, with `APP_URL` set to the deployed HTTPS domain. Add only the names in `.env.example`, and never commit real secrets.
 
 ### 3. Database Migration & Seeding
-Generate and run migrations, then seed initial Pakistan & Bangladesh endpoint catalogs:
+Generate and run migrations, then seed all configured market endpoint catalogs:
 
 ```bash
 # Generate SQL migrations

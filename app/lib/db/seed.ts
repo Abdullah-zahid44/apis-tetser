@@ -22,6 +22,17 @@ export async function seed() {
 
     if (existing.length > 0) {
       countryMap.set(c.slug, existing[0].id);
+      await db
+        .update(countries)
+        .set({
+          code: c.code,
+          name: c.name,
+          currency: c.currency,
+          flagEmoji: c.flagEmoji,
+          displayOrder: c.displayOrder,
+          isActive: true,
+        })
+        .where(eq(countries.id, existing[0].id));
       console.log(`✓ Country ${c.name} (${c.slug}) already exists.`);
     } else {
       const inserted = await db
@@ -41,8 +52,27 @@ export async function seed() {
     }
   }
 
+  // Remove the obsolete PKR-style catalog that was briefly published under
+  // the Crypto market before the USDT/TRC-20 manual became the source of truth.
+  const obsoleteCryptoSlugs = [
+    'crypto-payin-encrypted',
+    'crypto-zindigi-confirm',
+    'crypto-sync-payin',
+    'crypto-sync-payin-encrypted',
+    'crypto-checkout-encrypted',
+    'crypto-payout',
+    'crypto-payout-encrypted',
+    'crypto-payout-status',
+  ];
+  for (const slug of obsoleteCryptoSlugs) {
+    await db.delete(apiEndpoints).where(eq(apiEndpoints.slug, slug));
+  }
+
   // 2. Seed endpoints
+  const endpointOrderByCountry = new Map<string, number>();
   for (const ep of INITIAL_ENDPOINTS) {
+    const displayOrder = (endpointOrderByCountry.get(ep.countrySlug) || 0) + 1;
+    endpointOrderByCountry.set(ep.countrySlug, displayOrder);
     const countryId = countryMap.get(ep.countrySlug);
     if (!countryId) {
       console.warn(`⚠️ Skipping endpoint ${ep.slug}: Country ${ep.countrySlug} not found.`);
@@ -57,7 +87,22 @@ export async function seed() {
 
     if (existing.length > 0) {
       await db.update(apiEndpoints)
-        .set({ defaultBody: ep.defaultBody || '' })
+        .set({
+          countryId,
+          name: ep.name,
+          category: ep.category,
+          description: ep.description,
+          method: ep.method,
+          path: ep.path,
+          defaultQuery: ep.defaultQuery || {},
+          defaultHeaders: ep.defaultHeaders || {},
+          defaultBody: ep.defaultBody || '',
+          requiresSignature: ep.requiresSignature,
+          signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
+          isMoneyMovement: ep.isMoneyMovement || false,
+          isActive: true,
+          displayOrder,
+        })
         .where(eq(apiEndpoints.slug, ep.slug));
       console.log(`✓ Endpoint ${ep.name} (${ep.slug}) already exists.`);
     } else {
@@ -76,6 +121,7 @@ export async function seed() {
         signatureStrategy: ep.signatureStrategy || 'assanpay-v1',
         isMoneyMovement: ep.isMoneyMovement || false,
         isActive: true,
+        displayOrder,
       });
       console.log(`✓ Inserted endpoint: ${ep.name} (${ep.slug})`);
     }

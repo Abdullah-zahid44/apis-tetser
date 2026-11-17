@@ -58,7 +58,7 @@ export function runCallbackTests(): { passed: boolean; message: string }[] {
   });
 
   const publicOrigin = 'https://assanpay-apis-testing.vercel.app';
-  for (const country of ['pkr', 'bdt', 'idr', 'php']) {
+  for (const country of ['pkr', 'bdt', 'idr', 'php', 'crypto']) {
     const templates = INITIAL_ENDPOINTS.filter((endpoint) => endpoint.countrySlug === country && endpoint.defaultBody?.includes('"callbackUrl"'));
     results.push({
       passed: templates.length > 0 && templates.every((endpoint) => {

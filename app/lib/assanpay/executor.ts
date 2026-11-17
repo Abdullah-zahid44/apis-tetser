@@ -75,11 +75,11 @@ export async function executeAssanPayRequest(
 
   // 1. Resolve server-side credentials
   const creds = getAssanPayCredentials(country, environment);
-  if (!creds.baseUrl || !creds.apiKey || !creds.apiSecret) {
+  if (!creds.baseUrl || !creds.apiKey) {
     const errObj = {
       type: 'CONFIG_MISSING',
       code: 'CREDENTIALS_NOT_CONFIGURED',
-      message: `${country.toUpperCase()} (${environmentLabel(environment)}) credentials are not configured on the server. Set the appropriate ASSANPAY_${country.toUpperCase()}_* environment variables.`,
+      message: `${country.toUpperCase()} (${environmentLabel(environment)}) base URL and API key are not configured on the server. Set the appropriate ASSANPAY_${country.toUpperCase()}_* environment variables.`,
     };
     return buildErrorResponse(input, 503, 'Configuration Required', errObj, startedAt, requestId, executedAt);
   }
@@ -113,6 +113,18 @@ export async function executeAssanPayRequest(
 
   const targetUrl = ssrfCheck.finalUrl;
   const pathWithQuery = `${targetUrl.pathname}${targetUrl.search}`;
+  const shouldSkipSignature =
+    input.requiresSignature === false || targetUrl.pathname.includes('/status-inquiry');
+  const signingSecret = creds.apiSecret || '';
+
+  if (!shouldSkipSignature && !signingSecret) {
+    const errObj = {
+      type: 'CONFIG_MISSING',
+      code: 'API_SECRET_NOT_CONFIGURED',
+      message: `${country.toUpperCase()} (${environmentLabel(environment)}) API secret is required for this signed endpoint.`,
+    };
+    return buildErrorResponse(input, 503, 'Configuration Required', errObj, startedAt, requestId, executedAt);
+  }
 
   // 3. Prepare body (serialized ONCE)
   let rawBody = '';
@@ -145,10 +157,6 @@ export async function executeAssanPayRequest(
     ...(input.headers || {}),
   };
 
-  // Skip signature if explicitly requested or if it is a status-inquiry endpoint per manual
-  const shouldSkipSignature =
-    input.requiresSignature === false || targetUrl.pathname.includes('/status-inquiry');
-
   let signed = false;
   if (!shouldSkipSignature) {
     const signingRes = generateRequestSignature({
@@ -157,7 +165,7 @@ export async function executeAssanPayRequest(
       timestamp,
       nonce,
       rawBody,
-      apiSecret: creds.apiSecret,
+      apiSecret: signingSecret,
     });
     outboundHeaders['X-TIMESTAMP'] = timestamp;
     outboundHeaders['X-NONCE'] = nonce;
