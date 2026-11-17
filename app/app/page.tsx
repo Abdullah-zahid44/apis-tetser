@@ -109,6 +109,8 @@ export default function ConsoleDashboard() {
   const suppressEndpointDefaultsRef = useRef(false);
   // endpointsInFlightRef: true while a fetchEndpoints call has not yet resolved.
   const endpointsInFlightRef = useRef(false);
+  // Ignore a slower response from the previously selected market.
+  const endpointsRequestSequenceRef = useRef(0);
   const bodyDraftsRef = useRef<Record<string, string>>({});
   useEffect(() => {
     bodyDraftsRef.current = bodyDrafts;
@@ -229,10 +231,12 @@ export default function ConsoleDashboard() {
 
   // 5. Fetch endpoints for selected country
   const fetchEndpoints = useCallback(async (countrySlug: string) => {
+    const requestSequence = ++endpointsRequestSequenceRef.current;
     try {
       const res = await fetch(`/api/endpoints?country=${countrySlug}`);
       if (res.ok) {
         const data = (await res.json()) as { endpoints?: Endpoint[] };
+        if (requestSequence !== endpointsRequestSequenceRef.current) return;
         const list = data.endpoints || [];
         setEndpoints(list);
 
@@ -427,6 +431,9 @@ export default function ConsoleDashboard() {
 
   // Handle Country Change
   const handleCountryChange = (slug: string) => {
+    // A direct user market switch must always load that market's endpoint
+    // defaults, even if an initial draft restore was still in flight.
+    suppressEndpointDefaultsRef.current = false;
     setSelectedCountry(slug);
     if (typeof window !== 'undefined') {
       localStorage.setItem('assanpay_last_country', slug);

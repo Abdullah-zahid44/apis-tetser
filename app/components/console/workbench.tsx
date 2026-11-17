@@ -673,22 +673,22 @@ export function Workbench({
         <Tabs value={requestTab} onValueChange={setRequestTab} className="flex flex-col min-w-0 pt-1">
           <TabsList
             variant="line"
-            className="console-scroll-tabs w-full max-w-full min-w-0 justify-start rounded-xl border border-border/80 bg-[var(--surface-2)] p-1.5 h-auto gap-1.5 overflow-x-auto overflow-y-hidden shrink-0 shadow-[0_8px_24px_rgba(15,45,82,0.05)]"
+            className="w-full max-w-full min-w-0 grid grid-cols-3 sm:inline-flex sm:justify-start rounded-xl border border-border/80 bg-[var(--surface-2)] p-1.5 h-auto gap-1 sm:gap-1.5 overflow-visible sm:overflow-x-auto sm:overflow-y-hidden shrink-0 shadow-[0_8px_24px_rgba(15,45,82,0.05)]"
           >
             <TabsTrigger
               value="body"
-              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
+              className="group/request-tab min-w-0 min-h-10 rounded-lg border border-transparent px-2 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer after:hidden"
             >
               <Braces className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
               <span>Body</span>
               {method !== 'GET' && (
-                <span className="rounded-md bg-[#e8f2ff] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-primary">JSON</span>
+                <span className="hidden sm:inline rounded-md bg-[#e8f2ff] px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-primary">JSON</span>
               )}
             </TabsTrigger>
 
             <TabsTrigger
               value="headers"
-              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
+              className="group/request-tab min-w-0 min-h-10 rounded-lg border border-transparent px-2 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer after:hidden"
             >
               <ListChecks className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
               <span>Headers</span>
@@ -699,10 +699,11 @@ export function Workbench({
 
             <TabsTrigger
               value="signing"
-              className="group/request-tab min-h-10 rounded-lg border border-transparent px-3 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer shrink-0 after:hidden"
+              className="group/request-tab min-w-0 min-h-10 rounded-lg border border-transparent px-2 sm:px-4 py-2 text-xs sm:text-sm text-muted-foreground font-semibold hover:text-foreground hover:bg-background/70 data-active:border-primary/20 data-active:bg-background data-active:text-primary data-active:shadow-[0_3px_12px_rgba(2,101,210,0.12)] cursor-pointer after:hidden"
             >
               <ShieldCheck className="size-3.5 text-muted-foreground group-data-active/request-tab:text-primary" />
-              <span>Signing Details</span>
+              <span className="hidden sm:inline">Signing Details</span>
+              <span className="sm:hidden">Signing</span>
               <span className="hidden sm:inline rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-emerald-700">HMAC</span>
             </TabsTrigger>
           </TabsList>
