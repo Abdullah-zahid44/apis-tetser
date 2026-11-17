@@ -21,7 +21,22 @@ export async function GET() {
       .orderBy(asc(countries.displayOrder));
 
     if (rows.length > 0) {
-      return Response.json({ countries: rows });
+      const rowsBySlug = new Map(rows.map((row) => [row.slug, row]));
+      const initialSlugs = new Set(INITIAL_COUNTRIES.map((country) => country.slug));
+      const merged = INITIAL_COUNTRIES.map((country, index) =>
+        rowsBySlug.get(country.slug) || {
+          id: `fallback-${country.slug}`,
+          ...country,
+          displayOrder: country.displayOrder || index + 1,
+          isActive: true,
+        }
+      );
+
+      for (const row of rows) {
+        if (!initialSlugs.has(row.slug)) merged.push(row);
+      }
+
+      return Response.json({ countries: merged });
     }
   } catch (err) {
     console.warn('[COUNTRIES] Database query failed, returning fallback static list:', err);

@@ -134,6 +134,11 @@ ASSANPAY_PHP_BASE_URL=https://ph-sandbox.assanpay.com/
 ASSANPAY_PHP_API_KEY=your_branch_key
 ASSANPAY_PHP_API_SECRET=your_branch_secret
 ASSANPAY_PHP_MAIN_API_SECRET=your_main_merchant_secret_for_callbacks
+
+ASSANPAY_CRYPTO_BASE_URL=https://crypto-api.assanpay.com/
+ASSANPAY_CRYPTO_API_KEY=your_crypto_branch_key
+ASSANPAY_CRYPTO_API_SECRET=your_crypto_branch_secret
+ASSANPAY_CRYPTO_MAIN_API_SECRET=your_crypto_main_merchant_secret
 ```
 
 For Vercel, add these variables in Project Settings -> Environment Variables, with `APP_URL` set to the deployed HTTPS domain. Add only the names in `.env.example`, and never commit real secrets.

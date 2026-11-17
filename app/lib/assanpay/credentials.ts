@@ -4,6 +4,7 @@ export type AssanPayCredentials = {
   baseUrl?: string;
   apiKey?: string;
   apiSecret?: string;
+  mainApiSecret?: string;
 };
 
 export type SafeEnvironmentReadiness = {
@@ -38,7 +39,11 @@ export function getAssanPayCredentials(
     process.env[`ASSANPAY_${normCountry}_API_SECRET`] ||
     process.env[`ASSANPAY_${normCountry}_SANDBOX_API_SECRET`];
 
-  return { baseUrl, apiKey, apiSecret };
+  const mainApiSecret =
+    process.env[`ASSANPAY_${normCountry}_MAIN_API_SECRET`] ||
+    process.env[`ASSANPAY_${normCountry}_SANDBOX_MAIN_API_SECRET`];
+
+  return { baseUrl, apiKey, apiSecret, mainApiSecret };
 }
 
 /** Main merchant secret is used only to verify incoming callback signatures. */
@@ -49,11 +54,7 @@ export function getAssanPayCallbackSecret(
   const normCountry = countrySlug.toUpperCase();
   const normEnv = environment.toUpperCase();
   if (normEnv && !['SANDBOX', 'DEFAULT', 'GATEWAY'].includes(normEnv)) return undefined;
-  return (
-    process.env[`ASSANPAY_${normCountry}_MAIN_API_SECRET`] ||
-    process.env[`ASSANPAY_${normCountry}_SANDBOX_MAIN_API_SECRET`] ||
-    undefined
-  );
+  return getAssanPayCredentials(countrySlug, environment).mainApiSecret;
 }
 
 /**

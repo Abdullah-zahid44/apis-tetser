@@ -25,6 +25,7 @@ export type Endpoint = {
   defaultHeaders?: Record<string, string>;
   defaultBody?: string;
   requiresSignature: boolean;
+  requestEncryption?: boolean;
   signatureStrategy?: string;
   isMoneyMovement?: boolean;
 };
