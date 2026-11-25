@@ -31,7 +31,7 @@ export async function POST(request: Request) {
   const user = await requireAuth();
   if (!user) {
     return Response.json(
-      { error: 'Unauthorized. Access restricted to verified @assanpay.com accounts.' },
+      { error: 'Unauthorized. Please sign in with a Google account.' },
       { status: 401 }
     );
   }

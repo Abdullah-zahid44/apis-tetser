@@ -18,8 +18,8 @@ export const DEV_BYPASS_USER_ID = '00000000-0000-4000-8000-000000000000';
 
 /**
  * Validates the caller's session server-side.
- * Returns the AuthenticatedUser if valid and ends in @assanpay.com.
- * Returns null if unauthenticated or unauthorized.
+ * Returns the AuthenticatedUser if a valid Google session exists (any email domain).
+ * Returns null if unauthenticated.
  */
 export async function requireAuth(): Promise<AuthenticatedUser | null> {
   // Check development bypass only if explicitly enabled in local .env
@@ -39,11 +39,6 @@ export async function requireAuth(): Promise<AuthenticatedUser | null> {
   }
 
   const email = session.user.email.trim().toLowerCase();
-  const domain = email.split('@').pop();
-
-  if (domain !== 'assanpay.com') {
-    return null;
-  }
 
   return {
     id: session.user.id || '',

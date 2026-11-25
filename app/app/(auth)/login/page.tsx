@@ -91,7 +91,7 @@ export default async function LoginPage(props: {
 
           <CardFooter className="flex justify-center pb-5 pt-1">
             <p className="text-xs text-muted-foreground">
-              Restricted to <span className="text-primary font-semibold">@assanpay.com</span> accounts
+              Sign in with any <span className="text-primary font-semibold">Google</span> account
             </p>
           </CardFooter>
         </Card>

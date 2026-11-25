@@ -8,7 +8,7 @@ export async function GET() {
   const user = await requireAuth();
   if (!user) {
     return Response.json(
-      { error: 'Unauthorized. Access restricted to verified @assanpay.com employees.' },
+      { error: 'Unauthorized. Please sign in with a Google account.' },
       { status: 401 }
     );
   }
