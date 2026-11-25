@@ -11,6 +11,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET || '',
       authorization: {
         params: {
+          hd: 'assanpay.com',
           prompt: 'select_account',
         },
       },
@@ -27,11 +28,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // 1. Normalize email to lowercase
       const normalizedEmail = user.email.trim().toLowerCase();
 
-      // 2. Basic format check (any Google account is allowed — no domain restriction)
+      // 2. Extract domain after the final @
       const parts = normalizedEmail.split('@');
       if (parts.length < 2) return false;
+      const domain = parts[parts.length - 1];
 
-      // 3. Check if Google verified the email
+      // 3. Reject any domain that is not exactly assanpay.com
+      if (domain !== 'assanpay.com') {
+        console.warn(`[AUTH] Rejected sign-in attempt from non-AssanPay domain: ${normalizedEmail}`);
+        return false;
+      }
+
+      // 4. Check if Google verified the email
       if (profile && typeof profile === 'object' && 'email_verified' in profile) {
         if (profile.email_verified === false) {
           console.warn(`[AUTH] Rejected sign-in attempt with unverified email: ${normalizedEmail}`);
@@ -39,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
 
-      // 4. Upsert internal user into PostgreSQL
+      // 5. Upsert internal user into PostgreSQL
       try {
         const db = getDb();
         const existing = await db
@@ -60,7 +68,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .where(eq(users.id, existing[0].id));
         } else {
           await db.insert(users).values({
-            name: user.name || 'Portal User',
+            name: user.name || 'AssanPay Staff',
             email: normalizedEmail,
             image: user.image || null,
             role: 'support',
@@ -69,7 +77,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       } catch (err) {
         console.error('[AUTH] Could not synchronize user to database:', err);
-        // Do not block login if database is momentarily degraded; email was verified by Google
+        // Do not block login if database is momentarily degraded; user domain was validated
       }
 
       return true;
